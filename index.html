@@ -260,7 +260,7 @@ const CONFIG = {
       story:'胖貓被封印在這一站了。解封的徽章碎成兩半，藏在這一站的兩處。用手機相機找到藏在異次元的徽章，合成後就能解開胖貓的封印。',
       clue:'11月盛開的美麗',
       // 輪盤上的兩個方位（度，0＝北）；〈四季〉在穿堂層北側牆面、〈大安之花〉在車站西側空橋旁廣場，現勘校正
-      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mind:'img/targets_winter.mind'}, {key:'flower', icon:'✿', name:'花', heading:222, mind:'img/targets_flower.mind'} ],   // Ming 2026-11-03：不要保險，認到才算   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
+      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mind:'img/targets_winter.mind'}, {key:'flower', icon:'✿', name:'花', heading:222, color:{pink:0.03, red:0.008, blueMax:0.04}} ],   // 大安之花：立體雕塑夜拍，MindAR 認不到 → 用顏色辨識（粉紅＋紅、不能有藍）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
       // 正式版用 MindAR 辨識：現勘拍〈四季〉冬天段、〈大安之花〉正面當目標圖；草版先對準 3 秒就出現
       hints:['地點：一半在站內、一半在站外','左半：藏在牆上的季節','右半：藏在一朵花'],
       nextText:'' },
@@ -874,7 +874,28 @@ async function openCamera(container, facing='environment'){
     return null;
   }
 }
-function stopCamera(){ if(arMind){ try{ arMind.stop(); }catch(e){} arMind=null; const c=document.getElementById('cam'); if(c) c.classList.remove('ar'); } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+function stopCamera(){ if(colorTimer){ clearInterval(colorTimer); colorTimer=null; } if(arMind){ try{ arMind.stop(); }catch(e){} arMind=null; const c=document.getElementById('cam'); if(c) c.classList.remove('ar'); } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+/* 顏色辨識：每 200ms 抓一張小圖，算粉紅／紅／藍像素比例；連續 3 次符合才算找到 */
+let colorTimer=null;
+function colorScan(video, spec, onFound){
+  const dbg=window.__AR={stage:'顏色辨識中',found:0,t0:Date.now(),pink:0,red:0,blue:0,ok:0};
+  const box=document.getElementById('ardbg'); const show=()=>{ if(box) box.textContent=`AR：${dbg.stage}｜粉 ${(dbg.pink*100).toFixed(1)}% 紅 ${(dbg.red*100).toFixed(1)}% 藍 ${(dbg.blue*100).toFixed(1)}%｜連續 ${dbg.ok}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
+  const c=document.createElement('canvas'); c.width=96; c.height=96; const g=c.getContext('2d',{willReadFrequently:true});
+  const hsl=(r,gg,b)=>{ r/=255; gg/=255; b/=255; const mx=Math.max(r,gg,b), mn=Math.min(r,gg,b), l=(mx+mn)/2; if(mx===mn) return [0,0,l]; const d=mx-mn, sat=l>.5? d/(2-mx-mn) : d/(mx+mn); let h; if(mx===r) h=((gg-b)/d+(gg<b?6:0)); else if(mx===gg) h=(b-r)/d+2; else h=(r-gg)/d+4; return [h*60,sat,l]; };
+  if(colorTimer) clearInterval(colorTimer);
+  colorTimer=setInterval(()=>{
+    if(!video.videoWidth){ return; }
+    const vw=video.videoWidth, vh=video.videoHeight, m=Math.min(vw,vh);
+    g.drawImage(video,(vw-m)/2,(vh-m)/2,m,m,0,0,96,96); const d=g.getImageData(0,0,96,96).data;
+    let pink=0, red=0, blue=0, n=96*96;
+    for(let i=0;i<d.length;i+=4){ const [h,sat,l]=hsl(d[i],d[i+1],d[i+2]); if(sat<.25) continue;
+      if(h>=285 && h<=345 && l>.35) pink++; else if((h>=345||h<=12) && l>.2 && l<.7) red++; else if(h>=195 && h<=250 && l>.2) blue++; }
+    dbg.pink=pink/n; dbg.red=red/n; dbg.blue=blue/n;
+    const hit = dbg.pink>=spec.pink && dbg.red>=spec.red && dbg.blue<=spec.blueMax;
+    dbg.ok = hit? dbg.ok+1 : 0; show();
+    if(dbg.ok>=3){ clearInterval(colorTimer); colorTimer=null; dbg.found=1; dbg.stage='找到'; show(); onFound(); }
+  },200);
+}
 /* MindAR 影像辨識（官方 three.js 流程）：MindARThree 自己開相機、載目標、跑辨識，認出任何一張就 onFound */
 let arMind=null, arThree=null;
 async function arScan(container, mindUrl, onFound){
@@ -1393,6 +1414,7 @@ function renderFireBadge(s, idx){
       $('#cam').appendChild(el(`<div class="overlay ar-found">${badgeSVG(key==='winter'?'L':'R','96px')}<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div></div>`));   // 透明底，徽章浮在畫面上、下面一行字
       sc.textContent='收下徽章'; sc.disabled=false; sc.className='nes-btn is-primary btn';                                   // 按了才跳下一步
       sc.onclick=()=>{ stopCamera(); d.got.push(key); state.extra[k]=d; save(); render(); }; };   // 兩半都到手後不自動解封，要點徽章
+    if(tgt && tgt.color){ sc.textContent='對準中…'; sc.disabled=true; colorScan(v, tgt.color, found); return; }   // 顏色辨識
     if(tgt && tgt.mind){                                            // MindAR 影像辨識：對準牆面認出來才算
       sc.textContent='對準中…'; sc.disabled=true;
       try{ await arScan($('#cam'), tgt.mind, found); }
