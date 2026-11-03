@@ -1,6 +1,6 @@
 {
-  "name": "生日列車",
-  "short_name": "生日列車",
+  "name": "三十而莉",
+  "short_name": "三十而莉",
   "description": "莉莉的 30 歲生日捷運尋寶",
   "start_url": "./index.html",
   "scope": "./",
