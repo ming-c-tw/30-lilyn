@@ -256,7 +256,7 @@ const CONFIG = {
       story:'胖貓被封印在這一站了。解封的徽章碎成兩半，藏在這一站的兩處。用手機相機找到藏在異次元的徽章，合成後就能解開胖貓的封印。',
       clue:'11月盛開的美麗',
       // 輪盤上的兩個方位（度，0＝北）；〈四季〉在穿堂層北側牆面、〈大安之花〉在車站西側空橋旁廣場，現勘校正
-      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0}, {key:'flower', icon:'✿', name:'花', heading:270} ],
+      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mind:'img/targets_winter.mind'}, {key:'flower', icon:'✿', name:'花', heading:270} ],   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
       // 正式版用 MindAR 辨識：現勘拍〈四季〉冬天段、〈大安之花〉正面當目標圖；草版先對準 3 秒就出現
       hints:['地點：一半在站內、一半在站外','左半：藏在牆上的季節','右半：藏在一朵花'],
       nextText:'' },
@@ -631,6 +631,56 @@ const MOMO_SMIRK = pxIcon([
   '..DDDDDDDDDDDDDDDDDDDD..',
   '..DDDDDDDDDDDDDDDDDDDD..'],
   {K:'#111',G:'#5a4a40',S:'#dcb48e',E:'#222',M:'#8a5a44',D:'#1e1e1e'}, 24, 24, '墨墨賊笑', '150px');   // Ming 用像素編輯器調過的版本（2026-11-03）
+const GIFT = pxIcon([
+  '.....RR..RR.....',
+  '....RYYRRYYR....',
+  '....RYYRRYYR....',
+  '.....RRYYRR.....',
+  'BBBBBBBYYBBBBBBB',
+  'BBBBBBBYYBBBBBBB',
+  'BBBBBBBYYBBBBBBB',
+  '.RRRRRRYYRRRRRR.',
+  '.RRRRRRYYRRRRRR.',
+  '.RRRRRRYYRRRRRR.',
+  '.RRRRRRYYRRRRRR.',
+  '.RRRRRRYYRRRRRR.',
+  '.RRRRRRYYRRRRRR.',
+  '.RRRRRRYYRRRRRR.',
+  '.RRRRRRRRRRRRRR.',
+  '................'],
+  {R:'#e63946',Y:'#ffd166',B:'#c1121f'}, 16, 16, '禮物', '1.2em');
+const CAMERA = pxIcon([
+  '....KKKK........',
+  'KKKKKKKKKKKKKKKK',
+  'KKKKKKKKKKKKKKKK',
+  'KKKKKWWWWKKKKKKK',
+  'KKKKWGGGGWKKKWKK',
+  'KKKKWGLGGWKKKKKK',
+  'KKKKWGGGGWKKKKKK',
+  'KKKKKWWWWKKKKKKK',
+  'KKKKKKKKKKKKKKKK',
+  'KKKKKKKKKKKKKKKK',
+  '................',
+  '................'],
+  {K:'#222',W:'#fff',G:'#4a6fa5',L:'#9bd1ff'}, 16, 12, '相機', '1.2em');
+const PARTY = pxIcon([
+  '..........Y...P.',
+  '.......B.....Y..',
+  '..........P.....',
+  '.....Y......B...',
+  '........O.......',
+  '......OOO...Y...',
+  '.....OOOOO......',
+  '....OOOOOO.P....',
+  '...OOOOOO.......',
+  '..OOOOOO........',
+  '.OOOOOO.........',
+  'OOOOOO..........',
+  'OOOO............',
+  'OO..............',
+  '................',
+  '................'],
+  {O:'#f4a261',Y:'#ffd166',P:'#f4a3c0',B:'#4cc9f0'}, 16, 16, '彩帶', '1.2em');
 const EYE = pxIcon([
   '................',
   '.....KKKKKK.....',
@@ -819,7 +869,19 @@ async function openCamera(container, facing='environment'){
     return null;
   }
 }
-function stopCamera(){ if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+function stopCamera(){ if(arCtl){ try{ arCtl.stopProcessVideo(); }catch(e){} arCtl=null; } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+/* MindAR 影像辨識：載入目標檔、處理攝影機畫面，認出目標就呼叫 onFound */
+let arCtl=null, arMod=null;
+async function arScan(video, mindUrl, onFound){
+  if(!arMod) arMod = await import('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js');
+  if(!video.videoWidth) await new Promise(r=>{ video.onloadedmetadata=()=>r(); setTimeout(r,2000); });
+  const ctl = new arMod.Controller({ inputWidth: video.videoWidth||640, inputHeight: video.videoHeight||480, warmupTolerance: 3, missTolerance: 5,
+    onUpdate: (data)=>{ if(data.type==='updateMatrix' && data.worldMatrix) onFound(); } });
+  arCtl=ctl;
+  await ctl.addImageTargets(mindUrl);
+  await ctl.dummyRun(video);
+  ctl.processVideo(video);
+}
 function scanQR(container, onText){
   openCamera(container).then(v=>{
     if(!v) return;
@@ -1312,10 +1374,17 @@ function renderFireBadge(s, idx){
   const sc=$('#scan'); if(sc) sc.onclick=async()=>{
     const v=await openCamera($('#cam')); if(!v) return;
     $('#cam').appendChild(el('<div class="reticle"></div>'));
-    sc.textContent='對準中…保持 3 秒'; sc.disabled=true;
-    setTimeout(()=>{ const key=has('winter')?'flower':'winter';
+    const key=has('winter')?'flower':'winter', tgt=s.targets.find(t=>t.key===key);
+    const found=()=>{ if(sc.dataset.done) return; sc.dataset.done=1; if(arCtl){ try{ arCtl.stopProcessVideo(); }catch(e){} arCtl=null; }
       $('#cam').appendChild(el(`<div class="overlay" style="padding:10px;letter-spacing:0">${badgeSVG(key==='winter'?'L':'R','56px')}<div style="font-size:14px;margin-top:6px">找到一半的胖貓徽章！</div></div>`));
-      setTimeout(()=>{ stopCamera(); d.got.push(key); state.extra[k]=d; save(); render(); },1600); },3000);   // 兩半都到手後不自動解封，要點徽章
+      setTimeout(()=>{ stopCamera(); d.got.push(key); state.extra[k]=d; save(); render(); },1600); };   // 兩半都到手後不自動解封，要點徽章
+    if(tgt && tgt.mind){                                            // MindAR 影像辨識：對準牆面認出來才算
+      sc.textContent='對準中…'; sc.disabled=true;
+      try{ await arScan(v, tgt.mind, found); }
+      catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
+    } else {                                                        // 還沒有目標檔：對準 3 秒就算
+      sc.textContent='對準中…保持 3 秒'; sc.disabled=true; setTimeout(found,3000);
+    }
   };
   const sm=$('#summon'); if(sm) sm.onclick=()=>{ d.summoned=true; state.extra[k]=d; state.done[s.id]=true; save(); render(); };
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
