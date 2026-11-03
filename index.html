@@ -92,6 +92,8 @@
   .frame{position:relative}
   .frame.ar{isolation:isolate;aspect-ratio:1;overflow:hidden;background:#000;border:4px solid #000;box-shadow:var(--px) var(--px) 0 #000}   /* MindAR 的 video／canvas 是負 z-index，要自己的堆疊層才看得到 */
   .frame .ar-found-text{margin-top:8px;font-size:18px;letter-spacing:.1em;color:#fff;text-shadow:2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000}
+  .frame .overlay.ar-found.L{left:32%}
+  .frame .overlay.ar-found.R{left:68%}
   .frame .overlay.ar-found{background:transparent;border:0;padding:0;box-shadow:none;animation:fbglow .5s steps(4) infinite alternate}
   .frame .reticle{position:absolute;inset:14% 12%;border:4px dashed rgba(255,255,255,.85);pointer-events:none}
   .frame .overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#000;color:var(--gold);padding:14px 18px;font-size:28px;letter-spacing:.4em;text-align:center;border:4px solid var(--gold);animation:fadein .6s steps(4)}
@@ -239,8 +241,10 @@ const CONFIG = {
       riddleAnswer:'莉莉的相片',
       // 北市圖館藏查詢 2026-11-03：總館 1 本（C01 總館／一般書庫區，可外借）；當天早上再查一次在不在架上
       book:{ title:'莉莉的相片', author:'佩姬.唐恩', call:'873.57 7760', isbn:'9789869520164', where:'總館 一般書庫區' },
-      bookAnswer:'0164',       // 書背 ISBN 末 4 碼
-      hints:['索書號 873.57 7760'],
+      bookAnswer:'164',        // 書背 ISBN 末 3 碼（Ming 2026-11-04：要明講是 ISBN，館藏條碼會混淆）
+      callDigits:'87357',      // 索書號 OOO.OO 的 5 位數字，用幾A幾B（終極密碼）猜
+      callTail:'7760',
+      hints:[],
       nextText:'請前往 <span class="big">大安站</span>' },
 
     { id:'g2', name:'科技大樓 >> 大安森林公園', code:'移動中', line:'red', transit:true, type:'game', game:'song',
@@ -447,8 +451,8 @@ function pageNext(){
   if(s.type==='final'){ if(!state.extra.s7_blown){ state.extra.s7_blown=true; save(); return render(); } state.done[s.id]=true; state.stage=CONFIG.stages.indexOf(s)+1; save(); return render(); }
   if(s.type==='library'){                                                        // 已抵達 → 謎語 → 找書 → 過關
     const k=s.id+'_lib', st=state.extra[k]||'go';
-    if(st==='go') return step(k,'riddle');
-    if(st==='riddle') return step(k,'find');
+    const order=['go','sit','riddle','riddle_ok','code','code_ok','find']; const i=order.indexOf(st);
+    if(i<order.length-1) return step(k,order[i+1]);
     return pass(s);
   }
   pass(s);
@@ -761,7 +765,7 @@ function npcBox(s, idx){
 /* 控制者看的解答（依關卡型別）；要輸入的答案附「複製」鈕 */
 function answerNote(s){
   const items=[];                                   // {label, value, copy}
-  if(s.type==='library'){ items.push({label:'書名',value:s.riddleAnswer,copy:true},{label:'書碼',value:s.bookAnswer,copy:true}); }
+  if(s.type==='library'){ items.push({label:'書名',value:s.riddleAnswer,copy:true},{label:'索書號 5 碼',value:s.callDigits,copy:true},{label:'ISBN 後 3 碼',value:s.bookAnswer,copy:true}); }
   else if(s.type==='firebadge'){ items.push({label:'線索',value:s.clue},{label:'過關',value:'掃牆上的〈四季〉＋戶外的〈大安之花〉'}); }
   else if(s.type==='spot'){ (s.photos||[{spots:s.spots}]).forEach((p,i)=>items.push({label:`照片 ${i+1}`,value:`${p.spots.length} 處 ${p.spots.map(q=>`(${q.x},${q.y})`).join(' ')}`})); }
   else if(s.type==='game' && s.game==='song'){ s.songs.forEach((x,i)=>items.push({label:`第 ${i+1} 首`,value:x.answers[0],copy:true})); }
@@ -898,6 +902,12 @@ function colorScan(video, spec, onFound){
     if(dbg.ok>=2){ clearInterval(colorTimer); colorTimer=null; dbg.found=1; dbg.stage='找到'; show(); onFound(); if(window.__AR){ window.__AR.by='顏色'; } }
   },200);
 }
+/* 預載：進到這一關就先把引擎（3 MB）跟目標檔抓下來，按掃描時立刻能用 */
+const arBlob={};
+async function arPreload(mindUrl){
+  try{ if(!arThree) arThree = await import('./vendor/mindar/mindar-image-three.prod.js'); }catch(e){}
+  if(mindUrl && !arBlob[mindUrl]){ try{ const r=await fetch(mindUrl); arBlob[mindUrl]=URL.createObjectURL(await r.blob()); }catch(e){} }
+}
 /* MindAR 影像辨識（官方 three.js 流程）：MindARThree 自己開相機、載目標、跑辨識，認出任何一張就 onFound */
 let arMind=null, arThree=null;
 async function arScan(container, mindUrl, onFound){
@@ -905,10 +915,12 @@ async function arScan(container, mindUrl, onFound){
   const box=document.getElementById('ardbg'); const show=()=>{ if(box) box.textContent=`AR：${dbg.stage}｜命中 ${dbg.found}${dbg.by?'（'+dbg.by+'）':''}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
   show();
   if(!arThree) arThree = await import('./vendor/mindar/mindar-image-three.prod.js');   /* 自己放：worker 要同網域 */
-  // 目標檔自己先抓（顯示下載 %），抓完用 blob 交給 MindAR
+  // 目標檔自己先抓（顯示下載 %），抓完用 blob 交給 MindAR；預載過就直接用
+  let blobUrl=arBlob[mindUrl];
+  if(!blobUrl){
   const res=await fetch(mindUrl); const total=+res.headers.get('content-length')||0; const reader=res.body.getReader(); const chunks=[]; let got=0;
   while(true){ const {done,value}=await reader.read(); if(done) break; chunks.push(value); got+=value.length; dbg.stage=`下載目標 ${total?Math.round(got/total*100)+'%':Math.round(got/1024)+'KB'}`; show(); }
-  const blobUrl=URL.createObjectURL(new Blob(chunks));
+  blobUrl=URL.createObjectURL(new Blob(chunks)); arBlob[mindUrl]=blobUrl; }
   dbg.stage='啟動相機'; show();
   container.innerHTML=''; container.classList.add('ar');
   const m=new arThree.MindARThree({ container, imageTargetSrc: blobUrl, uiLoading:'no', uiScanning:'no', uiError:'no', warmupTolerance: 5, missTolerance: 5 });   // warmup 拉高一點，減少誤判
@@ -1081,21 +1093,33 @@ function haversine(a,b,c,d){ const R=6371000, toR=x=>x*Math.PI/180; const dLat=t
 function renderLibrary(s, idx){
   const k=s.id+'_lib'; const step=state.extra[k]||'go';
   const set=v=>{ state.extra[k]=v; save(); render(); };
+  const gk=s.id+'_guess'; const guesses=state.extra[gk]||[];
   let body='';
   if(step==='go') body=`<p>${s.intro}</p><div class="center hero" style="margin-bottom:24px">${SHELF}</div><button class="nes-btn is-arrive btn" id="arr" style="--arrive:#209cee">${PIN} 已抵達圖書館</button>`;
-  else if(step==='riddle') body=`<div class="letter nes-container is-rounded" style="font-size:17px">${icons(s.riddle)}</div>
+  else if(step==='sit') body=`<p>找一個地方坐下，先解開兩道謎題。</p><button class="nes-btn is-primary btn" id="start">開始解謎</button>`;
+  else if(step==='riddle') body=`<p class="tag">謎題 1 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">${icons(s.riddle)}</div>
     <input class="nes-input" type="text" id="ans" placeholder="書名" style="letter-spacing:.1em"><div id="res"></div>
     <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`;
-  else body=`${ok(`就是《${s.book.title}》`)}<p class="tag">在${s.book.where}</p>
-    <p>找到書以後，把書背條碼下面那串數字的<b>最後 4 碼</b>輸進來。</p>
-    <input class="nes-input" type="text" id="ans" inputmode="numeric" maxlength="4" placeholder="4 碼"><div id="res"></div>
+  else if(step==='riddle_ok') body=`${ok(`沒錯，就是《${s.book.title}》`)}<button class="nes-btn is-success btn" id="next1">下一題</button>`;
+  else if(step==='code') body=`<p class="tag">謎題 2 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">這本書的索書號是\n<b>OOO.OO ${s.callTail}</b>\n\n猜 5 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
+    <input class="nes-input" type="text" id="ans" inputmode="numeric" maxlength="5" placeholder="5 碼"><div id="res"></div>
+    <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>
+    ${guesses.length?`<div class="letter nes-container is-rounded" style="margin-top:14px;font-size:16px">${guesses.map(g=>`${g.v.slice(0,3)}.${g.v.slice(3)}　${g.a}A${g.b}B`).join('\n')}</div>`:''}`;
+  else if(step==='code_ok') body=`${ok(`索書號 ${s.book.call}`)}<button class="nes-btn is-success btn" id="next2">去找書</button>`;
+  else body=`<p>找到《${s.book.title}》以後，看書背的 <b>ISBN</b>（978 開頭那一串），把<b>最後 3 碼</b>輸進來。</p>
+    <input class="nes-input" type="text" id="ans" inputmode="numeric" maxlength="3" placeholder="3 碼"><div id="res"></div>
     <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`;
   main.innerHTML = ticket(s, `${steps()}${body}${step==='find'?hintBox(s):''}${backupScanBox()}${npcBox(s,idx)}`);
-  const arr=$('#arr'); if(arr) arr.onclick=()=>set('riddle');
+  const arr=$('#arr'); if(arr) arr.onclick=()=>set('sit');
+  const st=$('#start'); if(st) st.onclick=()=>set('riddle');
+  const n1=$('#next1'); if(n1) n1.onclick=()=>set('code');
+  const n2=$('#next2'); if(n2) n2.onclick=()=>set('find');
   const norm=t=>t.replace(/[\s《》「」、.。]/g,'');
+  const ab=(g,ans)=>{ let a=0,b=0; const used=[]; for(let i=0;i<5;i++){ if(g[i]===ans[i]){ a++; used[i]=true; } } for(let i=0;i<5;i++){ if(g[i]===ans[i]) continue; for(let j=0;j<5;j++){ if(!used[j] && g[i]===ans[j] && g[j]!==ans[j]){ b++; used[j]=true; break; } } } return {a,b}; };
   const c=$('#chk'); if(c){ const go=()=>{ const v=$('#ans').value.trim();
-    if(step==='riddle'){ if(norm(v)===norm(s.riddleAnswer)) set('find'); else $('#res').innerHTML=bad('不是這個書名，再想想。'); }
-    else { if(v===s.bookAnswer) pass(s); else $('#res').innerHTML=bad('不是這本，再看一次書背。'); } };
+    if(step==='riddle'){ if(norm(v)===norm(s.riddleAnswer)) set('riddle_ok'); else $('#res').innerHTML=bad('不是這個書名，再想想。'); }
+    else if(step==='code'){ if(!/^\d{5}$/.test(v)){ $('#res').innerHTML=bad('要 5 個數字。'); return; } const r=ab(v,s.callDigits); guesses.push({v,a:r.a,b:r.b}); state.extra[gk]=guesses; save(); if(v===s.callDigits) set('code_ok'); else render(); }
+    else { if(v===s.bookAnswer) pass(s); else $('#res').innerHTML=bad('不是這本，再看一次書背的 ISBN。'); } };
     c.onclick=go; $('#ans').onkeydown=e=>{ if(e.key==='Enter') go(); }; }
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
 }
@@ -1365,6 +1389,7 @@ function renderPhotoTask(s, idx){
 let fbOri=null;
 function renderFireBadge(s, idx){
   const k=s.id+'_fb'; const d=state.extra[k]||{got:[]};
+  if(s.mind && !d.summoned) arPreload(s.mind);
   const nx=CONFIG.stages[idx+1];
   const has=key=>d.got.includes(key);
   if(fbOri){ window.removeEventListener('deviceorientation',fbOri); window.removeEventListener('deviceorientationabsolute',fbOri); fbOri=null; }
@@ -1412,7 +1437,7 @@ function renderFireBadge(s, idx){
     // 兩半同時找、不分先後：牆走 MindAR、花走顏色；哪個先命中就收哪一半
     const todo=s.targets.filter(t=>!has(t.key)); const flower=todo.find(t=>t.color); const keyOfIdx=i=>(s.targets.find(t=>(t.mindIdx||[]).includes(i))||{}).key;
     const found=(key)=>{ if(sc.dataset.done) return; sc.dataset.done=1; if(colorTimer){ clearInterval(colorTimer); colorTimer=null; }
-      $('#cam').appendChild(el(`<div class="overlay ar-found">${badgeSVG(key==='winter'?'L':'R','96px')}<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div></div>`));   // 透明底，徽章浮在畫面上、下面一行字
+      $('#cam').appendChild(el(`<div class="overlay ar-found ${key==='winter'?'L':'R'}">${badgeSVG(key==='winter'?'L':'R','120px')}<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div></div>`));   // 透明底；左半靠左、右半靠右
       sc.textContent='收下徽章'; sc.disabled=false; sc.className='nes-btn is-primary btn';                                   // 按了才跳下一步
       sc.onclick=()=>{ stopCamera(); d.got.push(key); state.extra[k]=d; save(); render(); }; };   // 兩半都到手後不自動解封，要點徽章
     sc.textContent='對準中…'; sc.disabled=true;
@@ -1420,7 +1445,6 @@ function renderFireBadge(s, idx){
       let v=null;
       await arScan($('#cam'), s.mind, (i)=>{ const key=keyOfIdx(i); if(!key || has(key)) return; if(key==='winter'){ const c=window.__ARC; if(flower && c && c.pink>=flower.color.pink) return; }   // 畫面一片粉紅＝在花前面，牆的命中當誤判
         if(window.__AR) window.__AR.by='影像#'+i; found(key); }); v=arMind && arMind.video;
-      $('#cam').appendChild(el('<div class="reticle"></div>'));
       if(flower && v) colorScan(v, flower.color, ()=>{ if(window.__AR) window.__AR.by='顏色'; found(flower.key); });
     }catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
   };
@@ -1621,6 +1645,8 @@ async function makeStrip(){
 if(location.search.includes('reset')) reset();
 if(location.search.includes('npc')){ const pin=prompt('NPC 密碼'); if(pin===CONFIG.npcPin){ state.npc=true; save(); } history.replaceState(null,'',location.pathname); }
 if(CONFIG.testMode){ state.npc=true; }
+window.addEventListener('error', e=>{ if(!state.npc) return; let b=document.getElementById('errbox'); if(!b){ b=document.createElement('div'); b.id='errbox'; b.style.cssText='position:fixed;left:0;right:0;top:0;z-index:99;background:#e76e55;color:#fff;font-size:12px;padding:6px 10px;word-break:break-all'; document.body.appendChild(b); } b.textContent='錯誤：'+(e.message||e)+' @'+(e.lineno||''); });
+setTimeout(()=>{ const fb=CONFIG.stages.find(x=>x.type==='firebadge'); if(fb && fb.mind && !state.done[fb.id]) arPreload(fb.mind); },4000);   // 開 App 幾秒後先把 AR 引擎與目標檔抓好
 testBar();
 updateBar();
 render();
