@@ -260,7 +260,8 @@ const CONFIG = {
       story:'胖貓被封印在這一站了。解封的徽章碎成兩半，藏在這一站的兩處。用手機相機找到藏在異次元的徽章，合成後就能解開胖貓的封印。',
       clue:'11月盛開的美麗',
       // 輪盤上的兩個方位（度，0＝北）；〈四季〉在穿堂層北側牆面、〈大安之花〉在車站西側空橋旁廣場，現勘校正
-      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mind:'img/targets_winter.mind'}, {key:'flower', icon:'✿', name:'花', heading:222, color:{pink:0.02, red:0.004, blueMax:0.08}} ],   // 大安之花：立體雕塑夜拍，MindAR 認不到 → 用顏色辨識（粉紅＋紅、不能有藍）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
+      mind:'img/targets_all.mind',   // 一個目標檔：索引 0–1＝〈四季〉牆、2–4＝〈大安之花〉
+      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mindIdx:[0,1]}, {key:'flower', icon:'✿', name:'花', heading:222, mindIdx:[2,3,4], color:{pink:0.02, red:0.004, blueMax:0.08}} ],   // 花：影像＋顏色同時跑，哪個先命中算哪個；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
       // 正式版用 MindAR 辨識：現勘拍〈四季〉冬天段、〈大安之花〉正面當目標圖；草版先對準 3 秒就出現
       hints:['地點：一半在站內、一半在站外','左半：藏在牆上的季節','右半：藏在一朵花'],
       nextText:'' },
@@ -894,14 +895,14 @@ function colorScan(video, spec, onFound){
     dbg.pink=pink/n; dbg.red=red/n; dbg.blue=blue/n;
     const hit = dbg.pink>=spec.pink && dbg.red>=spec.red && dbg.blue<=spec.blueMax;
     dbg.ok = hit? dbg.ok+1 : 0; show();
-    if(dbg.ok>=2){ clearInterval(colorTimer); colorTimer=null; dbg.found=1; dbg.stage='找到'; show(); onFound(); }
+    if(dbg.ok>=2){ clearInterval(colorTimer); colorTimer=null; dbg.found=1; dbg.stage='找到'; show(); onFound(); if(window.__AR){ window.__AR.by='顏色'; } }
   },200);
 }
 /* MindAR 影像辨識（官方 three.js 流程）：MindARThree 自己開相機、載目標、跑辨識，認出任何一張就 onFound */
 let arMind=null, arThree=null;
 async function arScan(container, mindUrl, onFound){
   const dbg=window.__AR={stage:'載入引擎',found:0,t0:Date.now()};
-  const box=document.getElementById('ardbg'); const show=()=>{ if(box) box.textContent=`AR：${dbg.stage}｜命中 ${dbg.found}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
+  const box=document.getElementById('ardbg'); const show=()=>{ if(box) box.textContent=`AR：${dbg.stage}｜命中 ${dbg.found}${dbg.by?'（'+dbg.by+'）':''}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
   show();
   if(!arThree) arThree = await import('./vendor/mindar/mindar-image-three.prod.js');   /* 自己放：worker 要同網域 */
   // 目標檔自己先抓（顯示下載 %），抓完用 blob 交給 MindAR
@@ -912,7 +913,7 @@ async function arScan(container, mindUrl, onFound){
   container.innerHTML=''; container.classList.add('ar');
   const m=new arThree.MindARThree({ container, imageTargetSrc: blobUrl, uiLoading:'no', uiScanning:'no', uiError:'no', warmupTolerance: 5, missTolerance: 5 });   // warmup 拉高一點，減少誤判
   arMind=m;
-  for(let i=0;i<8;i++){ try{ const an=m.addAnchor(i); an.onTargetFound=()=>{ dbg.found++; show(); onFound(); }; }catch(e){ break; } }
+  for(let i=0;i<8;i++){ try{ const an=m.addAnchor(i); an.onTargetFound=()=>{ dbg.found++; show(); onFound(i); }; }catch(e){ break; } }
   await m.start(); dbg.stage='辨識中'; show();
   const tick=()=>{ if(!arMind) return; show(); setTimeout(tick,500); }; tick();
 }
@@ -1409,7 +1410,7 @@ function renderFireBadge(s, idx){
   };
   const sc=$('#scan'); if(sc) sc.onclick=async()=>{
     // 兩半同時找、不分先後：牆走 MindAR、花走顏色；哪個先命中就收哪一半
-    const todo=s.targets.filter(t=>!has(t.key)); const wall=todo.find(t=>t.mind), flower=todo.find(t=>t.color);
+    const todo=s.targets.filter(t=>!has(t.key)); const flower=todo.find(t=>t.color); const keyOfIdx=i=>(s.targets.find(t=>(t.mindIdx||[]).includes(i))||{}).key;
     const found=(key)=>{ if(sc.dataset.done) return; sc.dataset.done=1; if(colorTimer){ clearInterval(colorTimer); colorTimer=null; }
       $('#cam').appendChild(el(`<div class="overlay ar-found">${badgeSVG(key==='winter'?'L':'R','96px')}<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div></div>`));   // 透明底，徽章浮在畫面上、下面一行字
       sc.textContent='收下徽章'; sc.disabled=false; sc.className='nes-btn is-primary btn';                                   // 按了才跳下一步
@@ -1417,10 +1418,10 @@ function renderFireBadge(s, idx){
     sc.textContent='對準中…'; sc.disabled=true;
     try{
       let v=null;
-      if(wall){ await arScan($('#cam'), wall.mind, ()=>{ const c=window.__ARC; if(flower && c && c.pink>=flower.color.pink) return; found(wall.key); }); v=arMind && arMind.video; }   // 畫面一片粉紅＝在花前面，牆的命中當誤判
-      else { v=await openCamera($('#cam')); if(!v){ sc.textContent='再試一次'; sc.disabled=false; return; } }
+      await arScan($('#cam'), s.mind, (i)=>{ const key=keyOfIdx(i); if(!key || has(key)) return; if(key==='winter'){ const c=window.__ARC; if(flower && c && c.pink>=flower.color.pink) return; }   // 畫面一片粉紅＝在花前面，牆的命中當誤判
+        if(window.__AR) window.__AR.by='影像#'+i; found(key); }); v=arMind && arMind.video;
       $('#cam').appendChild(el('<div class="reticle"></div>'));
-      if(flower && v) colorScan(v, flower.color, ()=>found(flower.key));
+      if(flower && v) colorScan(v, flower.color, ()=>{ if(window.__AR) window.__AR.by='顏色'; found(flower.key); });
     }catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
   };
   const sm=$('#summon'); if(sm) sm.onclick=()=>{ d.summoned=true; state.extra[k]=d; state.done[s.id]=true; save(); render(); };
