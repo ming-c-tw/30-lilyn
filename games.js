@@ -99,8 +99,8 @@ const LILY_RUN=[
   '.KKKKKKKKBB.',
   '.KKBSBSBSBB.',
   '.KKBSSSSSKB.',
-  '.KKSWESESKB.',
-  '.BKWPSSSPBB.',
+  '.KKSWESSDKB.',
+  '.BKWPSSSSBB.',
   '.BKBSWRRSBB.',
   '.BKKBBSWKB..',
   '.BBBWSWWWB..',
@@ -110,7 +110,7 @@ const LILY_RUN=[
   '.....W..W...',
   '.....B..B...',
   '.....BB.BB..',
-  '.....BB.BB..'];   // Ming 2026-11-04 自己點的跑步幀
+  '.....BB.BB..'];   // Ming 2026-11-04 自己點的跑步幀 v2
 const LILY_FULL=[
   '......CC......',
   '.....HHHH.....',
