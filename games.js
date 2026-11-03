@@ -107,10 +107,10 @@ const LILY_RUN=[
   '..KDDDDDDB..',
   '...DDDDDD...',
   '...WDDDDW...',
-  '..W....W....',
-  '..D....D....',
-  '.BB....BB...',
-  '.B......B...'];
+  '...W....W...',
+  '...D....D...',
+  '..BB....BB..',
+  '..BB....BB..'];
 const LILY_FULL=[
   '......CC......',
   '.....HHHH.....',
@@ -119,7 +119,7 @@ const LILY_FULL=[
   '....HHHHHH....',
   '...YYYYYYYY...',
   '...HHHHHHHH...',
-  '..YYYYYYYYYY..',
+  '...YYYYYYYY...',
   '...KKKKKKKK...',
   '..KKKKKKKKBK..',
   '..KKBSBSBSBK..',
