@@ -91,11 +91,11 @@
   video{width:100%;background:#000;display:block;border:4px solid #000}
   .frame{position:relative}
   .frame.ar{isolation:isolate;aspect-ratio:1;overflow:hidden;background:#000;border:4px solid #000;box-shadow:var(--px) var(--px) 0 #000}   /* MindAR 的 video／canvas 是負 z-index，要自己的堆疊層才看得到 */
-  .frame .ar-found-text{position:absolute;left:0;right:0;bottom:12%;text-align:center;font-size:18px;letter-spacing:.1em;color:#fff;text-shadow:2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000}
-  .frame .overlay.ar-found.L{left:32%}
-  .frame .overlay.ar-found.R{left:68%}
+  .frame .ar-found-text{position:absolute;left:0;right:0;bottom:8%;text-align:center;font-size:18px;letter-spacing:.1em;color:#fff;text-shadow:2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000}
+  .frame .overlay.ar-found.L{left:32%;top:40%}
+  .frame .overlay.ar-found.R{left:68%;top:40%}   /* 往上放，不壓到下方的字 */
   .frame .overlay.ar-found{background:transparent;border:0;padding:0;box-shadow:none;animation:fbglow .5s steps(4) infinite alternate, arbob 1.2s steps(6) infinite alternate}
-  @keyframes arbob{from{transform:translate(-50%,-50%) translateY(-10px)}to{transform:translate(-50%,-50%) translateY(10px)}}   /* 命中的半片徽章上下飄 */
+  @keyframes arbob{from{transform:translate(-50%,-50%) translateY(-8px)}to{transform:translate(-50%,-50%) translateY(8px)}}   /* 命中的半片徽章上下飄 */
   .frame .reticle{position:absolute;inset:14% 12%;border:4px dashed rgba(255,255,255,.85);pointer-events:none}
   .frame .overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#000;color:var(--gold);padding:14px 18px;font-size:28px;letter-spacing:.4em;text-align:center;border:4px solid var(--gold);animation:fadein .6s steps(4)}
   @keyframes fadein{from{opacity:0}to{opacity:1}}
@@ -1438,7 +1438,7 @@ function renderFireBadge(s, idx){
     // 兩半同時找、不分先後：牆走 MindAR、花走顏色；哪個先命中就收哪一半
     const todo=s.targets.filter(t=>!has(t.key)); const flower=todo.find(t=>t.color); const keyOfIdx=i=>(s.targets.find(t=>(t.mindIdx||[]).includes(i))||{}).key;
     const found=(key)=>{ if(sc.dataset.done) return; sc.dataset.done=1; if(colorTimer){ clearInterval(colorTimer); colorTimer=null; }
-      $('#cam').appendChild(el(`<div class="overlay ar-found ${key==='winter'?'L':'R'}">${badgeSVG(key==='winter'?'L':'R','120px')}</div>`));   // 徽章靠該側上下飄
+      $('#cam').appendChild(el(`<div class="overlay ar-found ${key==='winter'?'L':'R'}">${badgeSVG(key==='winter'?'L':'R','104px')}</div>`));   // 徽章靠該側上下飄
       $('#cam').appendChild(el(`<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div>`));                                     // 字置中在下方（el() 只回第一個元素，要分開加）
       sc.textContent='收下徽章'; sc.disabled=false; sc.className='nes-btn is-primary btn';                                   // 按了才跳下一步
       sc.onclick=()=>{ stopCamera(); d.got.push(key); state.extra[k]=d; save(); render(); }; };   // 兩半都到手後不自動解封，要點徽章
