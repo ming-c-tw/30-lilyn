@@ -874,10 +874,13 @@ function stopCamera(){ if(arCtl){ try{ arCtl.stopProcessVideo(); }catch(e){} arC
 /* MindAR 影像辨識：載入目標檔、處理攝影機畫面，認出目標就呼叫 onFound */
 let arCtl=null, arMod=null;
 async function arScan(video, mindUrl, onFound){
-  if(!arMod) arMod = await import('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js');
-  if(!video.videoWidth) await new Promise(r=>{ video.onloadedmetadata=()=>r(); setTimeout(r,2000); });
-  const dbg=window.__AR={stage:'init',updates:0,matrix:0,w:video.videoWidth,h:video.videoHeight,t0:Date.now()};   // 控制者介面會顯示這些數字
+  const dbg=window.__AR={stage:'載入引擎',updates:0,matrix:0,w:0,h:0,t0:Date.now()};   // 控制者介面會顯示這些數字
   const box=document.getElementById('ardbg'); const show=()=>{ if(box) box.textContent=`AR：${dbg.stage}｜畫面 ${dbg.w}×${dbg.h}｜回呼 ${dbg.updates}｜命中 ${dbg.matrix}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
+  show();
+  if(!arMod) arMod = await import('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js');
+  dbg.stage='引擎就緒'; show();
+  if(!video.videoWidth) await new Promise(r=>{ video.onloadedmetadata=()=>r(); setTimeout(r,2000); });
+  dbg.w=video.videoWidth; dbg.h=video.videoHeight; dbg.stage='下載目標檔'; show();
   const ctl = new arMod.Controller({ inputWidth: video.videoWidth||640, inputHeight: video.videoHeight||480, warmupTolerance: 2, missTolerance: 5,
     onUpdate: (data)=>{ dbg.updates++; if(data.type==='updateMatrix' && data.worldMatrix){ dbg.matrix++; onFound(); } } });
   arCtl=ctl;
