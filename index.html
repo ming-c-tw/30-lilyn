@@ -878,8 +878,9 @@ function stopCamera(){ if(colorTimer){ clearInterval(colorTimer); colorTimer=nul
 /* 顏色辨識：每 200ms 抓一張小圖，算粉紅／紅／藍像素比例；連續 3 次符合才算找到 */
 let colorTimer=null;
 function colorScan(video, spec, onFound){
-  const dbg=window.__AR={stage:'顏色辨識中',found:0,t0:Date.now(),pink:0,red:0,blue:0,ok:0};
-  const box=document.getElementById('ardbg'); const show=()=>{ if(box) box.textContent=`AR：${dbg.stage}｜粉 ${(dbg.pink*100).toFixed(1)}% 紅 ${(dbg.red*100).toFixed(1)}% 藍 ${(dbg.blue*100).toFixed(1)}%｜連續 ${dbg.ok}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
+  const dbg=window.__ARC={stage:'顏色辨識中',found:0,t0:Date.now(),pink:0,red:0,blue:0,ok:0};
+  let box=document.getElementById('ardbg2'); if(!box){ const b1=document.getElementById('ardbg'); if(b1){ box=document.createElement('p'); box.className='tag'; box.id='ardbg2'; box.style.margin='4px 0 0'; b1.after(box); } }
+  const show=()=>{ if(box) box.textContent=`花：${dbg.stage}｜粉 ${(dbg.pink*100).toFixed(1)}% 紅 ${(dbg.red*100).toFixed(1)}% 藍 ${(dbg.blue*100).toFixed(1)}%｜連續 ${dbg.ok}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
   const c=document.createElement('canvas'); c.width=96; c.height=96; const g=c.getContext('2d',{willReadFrequently:true});
   const hsl=(r,gg,b)=>{ r/=255; gg/=255; b/=255; const mx=Math.max(r,gg,b), mn=Math.min(r,gg,b), l=(mx+mn)/2; if(mx===mn) return [0,0,l]; const d=mx-mn, sat=l>.5? d/(2-mx-mn) : d/(mx+mn); let h; if(mx===r) h=((gg-b)/d+(gg<b?6:0)); else if(mx===gg) h=(b-r)/d+2; else h=(r-gg)/d+4; return [h*60,sat,l]; };
   if(colorTimer) clearInterval(colorTimer);
@@ -1407,21 +1408,20 @@ function renderFireBadge(s, idx){
     }catch(e){ perm.textContent='輪盤啟用失敗：'+(e.message||e); }
   };
   const sc=$('#scan'); if(sc) sc.onclick=async()=>{
-    const key=has('winter')?'flower':'winter', tgt=s.targets.find(t=>t.key===key);
-    let v=null; if(!(tgt && tgt.mind)){ v=await openCamera($('#cam')); if(!v) return; }
-    $('#cam').appendChild(el('<div class="reticle"></div>'));
-    const found=()=>{ if(sc.dataset.done) return; sc.dataset.done=1;
+    // 兩半同時找、不分先後：牆走 MindAR、花走顏色；哪個先命中就收哪一半
+    const todo=s.targets.filter(t=>!has(t.key)); const wall=todo.find(t=>t.mind), flower=todo.find(t=>t.color);
+    const found=(key)=>{ if(sc.dataset.done) return; sc.dataset.done=1; if(colorTimer){ clearInterval(colorTimer); colorTimer=null; }
       $('#cam').appendChild(el(`<div class="overlay ar-found">${badgeSVG(key==='winter'?'L':'R','96px')}<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div></div>`));   // 透明底，徽章浮在畫面上、下面一行字
       sc.textContent='收下徽章'; sc.disabled=false; sc.className='nes-btn is-primary btn';                                   // 按了才跳下一步
       sc.onclick=()=>{ stopCamera(); d.got.push(key); state.extra[k]=d; save(); render(); }; };   // 兩半都到手後不自動解封，要點徽章
-    if(tgt && tgt.color){ sc.textContent='對準中…'; sc.disabled=true; colorScan(v, tgt.color, found); return; }   // 顏色辨識
-    if(tgt && tgt.mind){                                            // MindAR 影像辨識：對準牆面認出來才算
-      sc.textContent='對準中…'; sc.disabled=true;
-      try{ await arScan($('#cam'), tgt.mind, found); }
-      catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
-    } else {                                                        // 還沒有目標檔：對準 3 秒就算
-      sc.textContent='對準中…保持 3 秒'; sc.disabled=true; setTimeout(found,3000);
-    }
+    sc.textContent='對準中…'; sc.disabled=true;
+    try{
+      let v=null;
+      if(wall){ await arScan($('#cam'), wall.mind, ()=>found(wall.key)); v=arMind && arMind.video; }
+      else { v=await openCamera($('#cam')); if(!v){ sc.textContent='再試一次'; sc.disabled=false; return; } }
+      $('#cam').appendChild(el('<div class="reticle"></div>'));
+      if(flower && v) colorScan(v, flower.color, ()=>found(flower.key));
+    }catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
   };
   const sm=$('#summon'); if(sm) sm.onclick=()=>{ d.summoned=true; state.extra[k]=d; state.done[s.id]=true; save(); render(); };
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
