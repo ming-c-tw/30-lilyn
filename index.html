@@ -910,7 +910,7 @@ async function arScan(container, mindUrl, onFound){
   const blobUrl=URL.createObjectURL(new Blob(chunks));
   dbg.stage='啟動相機'; show();
   container.innerHTML=''; container.classList.add('ar');
-  const m=new arThree.MindARThree({ container, imageTargetSrc: blobUrl, uiLoading:'no', uiScanning:'no', uiError:'no', warmupTolerance: 2, missTolerance: 5 });
+  const m=new arThree.MindARThree({ container, imageTargetSrc: blobUrl, uiLoading:'no', uiScanning:'no', uiError:'no', warmupTolerance: 5, missTolerance: 5 });   // warmup 拉高一點，減少誤判
   arMind=m;
   for(let i=0;i<8;i++){ try{ const an=m.addAnchor(i); an.onTargetFound=()=>{ dbg.found++; show(); onFound(); }; }catch(e){ break; } }
   await m.start(); dbg.stage='辨識中'; show();
@@ -1417,7 +1417,7 @@ function renderFireBadge(s, idx){
     sc.textContent='對準中…'; sc.disabled=true;
     try{
       let v=null;
-      if(wall){ await arScan($('#cam'), wall.mind, ()=>found(wall.key)); v=arMind && arMind.video; }
+      if(wall){ await arScan($('#cam'), wall.mind, ()=>{ const c=window.__ARC; if(flower && c && c.pink>=flower.color.pink) return; found(wall.key); }); v=arMind && arMind.video; }   // 畫面一片粉紅＝在花前面，牆的命中當誤判
       else { v=await openCamera($('#cam')); if(!v){ sc.textContent='再試一次'; sc.disabled=false; return; } }
       $('#cam').appendChild(el('<div class="reticle"></div>'));
       if(flower && v) colorScan(v, flower.color, ()=>found(flower.key));
