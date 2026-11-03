@@ -1635,8 +1635,7 @@ async function makeStrip(){
   drawRows(g, TRAIN_ROWS, TRAIN_PAL, tx, ty, tk);
   const {LILY,LILY_PAL,MOMO,MOMO_PAL}=window.MG_SPRITES;
   drawRows(g, MOMO, MOMO_PAL, Math.round(W/2+6), py, pk);
-  drawRows(g, LILY, LILY_PAL, Math.round(W/2-6-LILY[0].length*pk), py, pk);
-  drawRows(g, HAT_ROWS, HAT_PAL, Math.round(W/2-6-LILY[0].length*pk)+(LILY[0].length-HAT_ROWS[0].length)*pk/2, py-HAT_ROWS.length*pk+2, pk);
+  const LF=window.MG_SPRITES.LILY_FULL; drawRows(g, LF, LILY_PAL, Math.round(W/2-6-LF[0].length*pk), py-(LF.length-LILY.length)*pk, pk);   // 戴帽全身版，底部對齊墨墨
   g.textAlign='center';
   g.font=F(64); g.fillStyle=T.shadow; g.fillText(CONFIG.stripTitle, W/2+5, 84+5); g.fillStyle=T.title; g.fillText(CONFIG.stripTitle, W/2, 84);
   const d=new Date(), ds=CONFIG.stripDate||`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`; g.font=F(18); g.fillStyle=T.date; g.fillText(`${ds} · 墨墨環狀線`, W/2, H-16);

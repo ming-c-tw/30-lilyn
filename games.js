@@ -76,41 +76,67 @@ function sprite(rows, pal){
 function flip(src){ const c=document.createElement('canvas'); c.width=src.width; c.height=src.height; const g=c.getContext('2d'); g.translate(src.width,0); g.scale(-1,1); g.drawImage(src,0,0); return c; }
 
 /* 莉莉：黑長髮平瀏海、黑色露肩上衣、窄裙、長靴（12×16） */
-const LILY_PAL={K:'#111',H:'#1b1b1b',S:'#f6d2b5',E:'#222',R:'#e05a6b',D:'#1e1e1e',W:'#f6d2b5',B:'#000'};
+const LILY_PAL={K:'#111',H:'#e63946',S:'#f6d2b5',E:'#222',R:'#e05a6b',D:'#1e1e1e',W:'#f6d2b5',B:'#000',P:'#f4a3c0',Y:'#fff',C:'#4cc9f0'};   // 2026-11-04 Ming 用像素編輯器重畫（含腮紅、帽子色）
 const LILY=[
-  '...KKKKKK...',
   '..KKKKKKKK..',
-  '.KKKKKKKKKK.',
-  '.KKSSSSSSKK.',
+  '.KKKKKKKKBK.',
+  '.KKBSBSBSBK.',
+  '.KKSSSSSSKB.',
   '.KKSESSESKK.',
-  '.KKSSSSSSKK.',
-  '.KKSSRRSSKK.',
-  '.KKKSSSSKKK.',
-  '.KKWDDDDWKK.',
-  '.KKDDDDDDKK.',
-  '..KSDDDDSK..',
-  '..KDDDDDDK..',
+  '.BKPSSSSPBB.',
+  '.BKSSRRSSBB.',
+  '.BKKDSSDKB..',
+  '.BKWWSWWWB..',
+  '..KDDDDDDB..',
   '...DDDDDD...',
+  '...WDDDDW...',
   '....W..W....',
+  '....D..D....',
   '...BB..BB...',
   '...BB..BB...'];
 const LILY_RUN=[
-  '...KKKKKK...',
   '..KKKKKKKK..',
-  '.KKKKKKKKKK.',
-  '.KKSSSSSSKK.',
+  '.KKKKKKKKBK.',
+  '.KKBSBSBSBK.',
+  '.KKSSSSSSKB.',
   '.KKSESSESKK.',
-  '.KKSSSSSSKK.',
-  '.KKSSRRSSKK.',
-  '.KKKSSSSKKK.',
-  '.KKWDDDDWKK.',
-  '.KKDDDDDDKK.',
-  '..KSDDDDSK..',
-  '..KDDDDDDK..',
+  '.BKPSSSSPBB.',
+  '.BKSSRRSSBB.',
+  '.BKKDSSDKB..',
+  '.BKWWSWWWB..',
+  '..KDDDDDDB..',
   '...DDDDDD...',
-  '...W....W...',
-  '..BB....BB..',
-  '..B......B..'];
+  '...WDDDDW...',
+  '..W....W....',
+  '..D....D....',
+  '.BB....BB...',
+  '.B......B...'];
+const LILY_FULL=[
+  '......CC......',
+  '.....HHHH.....',
+  '.....HHHH.....',
+  '....YYYYYY....',
+  '....HHHHHH....',
+  '...YYYYYYYY...',
+  '...HHHHHHHH...',
+  '..YYYYYYYYYY..',
+  '...KKKKKKKK...',
+  '..KKKKKKKKBK..',
+  '..KKBSBSBSBK..',
+  '..KKSSSSSSKB..',
+  '..KKSESSESKK..',
+  '..BKPSSSSPBB..',
+  '..BKSSRRSSBB..',
+  '..BKKDSSDKB...',
+  '..BKWWSWWWB...',
+  '...KDDDDDDB...',
+  '....DDDDDD....',
+  '....WDDDDW....',
+  '.....W..W.....',
+  '.....D..D.....',
+  '....BB..BB....',
+  '....BB..BB....'];
+/* LILY_FULL：戴生日帽的全身版（拍貼、圖示用），14×24 */
 /* 墨墨：兩側推短、頭頂全黑微翹、平瀏海、細長眼、淡笑，小麥膚色、全黑（12×16） */
 const MOMO_PAL={K:'#111',H:'#3d3632',G:'#5a4a40',S:'#dcb48e',E:'#222',M:'#8a5a44',D:'#1e1e1e',B:'#000'};
 const MOMO=[
@@ -536,5 +562,5 @@ function puzzle(el, cfg, onWin){
 }
 
 window.MiniGames={ song, memory, mario, volley, puzzle };
-window.MG_SPRITES={ LILY, LILY_PAL, MOMO, MOMO_PAL };   // 給 app.html 的拍貼畫人物用
+window.MG_SPRITES={ LILY, LILY_PAL, LILY_FULL, MOMO, MOMO_PAL };   // 給 app.html 的拍貼畫人物用
 })();
