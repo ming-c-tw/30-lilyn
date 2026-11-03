@@ -193,6 +193,7 @@
 <main id="main"></main>
 <footer id="foot">生日列車長 · 墨墨</footer>
 
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script src="games.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" integrity="sha384-b5Ya4Bq3qCyz39m2ISh+4DxjAIljdeFwK/BsXLuj9gugaNwAcj/ia15fxNZL9Nlx" crossorigin="anonymous"></script>
 <script>
@@ -870,28 +871,21 @@ async function openCamera(container, facing='environment'){
     return null;
   }
 }
-function stopCamera(){ if(arCtl){ try{ arCtl.stopProcessVideo(); }catch(e){} arCtl=null; } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
-/* MindAR 影像辨識：載入目標檔、處理攝影機畫面，認出目標就呼叫 onFound */
-let arCtl=null, arMod=null;
-async function arScan(video, mindUrl, onFound){
-  const dbg=window.__AR={stage:'載入引擎',updates:0,matrix:0,w:0,h:0,t0:Date.now()};   // 控制者介面會顯示這些數字
-  const box=document.getElementById('ardbg'); const show=()=>{ if(box) box.textContent=`AR：${dbg.stage}｜畫面 ${dbg.w}×${dbg.h}｜回呼 ${dbg.updates}｜命中 ${dbg.matrix}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
+function stopCamera(){ if(arMind){ try{ arMind.stop(); }catch(e){} arMind=null; } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+/* MindAR 影像辨識（官方 three.js 流程）：MindARThree 自己開相機、載目標、跑辨識，認出任何一張就 onFound */
+let arMind=null, arThree=null;
+async function arScan(container, mindUrl, onFound){
+  const dbg=window.__AR={stage:'載入引擎',found:0,t0:Date.now()};
+  const box=document.getElementById('ardbg'); const show=()=>{ if(box) box.textContent=`AR：${dbg.stage}｜命中 ${dbg.found}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
   show();
-  if(!arMod) arMod = await import('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js');
-  dbg.stage='引擎就緒'; show();
-  if(!video.videoWidth) await new Promise(r=>{ video.onloadedmetadata=()=>r(); setTimeout(r,2000); });
-  dbg.w=video.videoWidth; dbg.h=video.videoHeight; dbg.stage='下載目標檔'; show();
-  const ctl = new arMod.Controller({ inputWidth: video.videoWidth||640, inputHeight: video.videoHeight||480, warmupTolerance: 2, missTolerance: 5,
-    onUpdate: (data)=>{ dbg.updates++; if(data.type==='updateMatrix' && data.worldMatrix){ dbg.matrix++; onFound(); } } });
-  arCtl=ctl;
-  // 自己抓目標檔、顯示下載進度，抓完再丟給 MindAR（直接給網址看不到卡在哪）
-  const res=await fetch(mindUrl); const total=+res.headers.get('content-length')||0; const reader=res.body.getReader(); const chunks=[]; let got=0;
-  while(true){ const {done,value}=await reader.read(); if(done) break; chunks.push(value); got+=value.length; dbg.stage=`下載目標檔 ${total?Math.round(got/total*100)+'%':Math.round(got/1024)+'KB'}`; show(); }
-  const blobUrl=URL.createObjectURL(new Blob(chunks)); dbg.stage='解析目標檔'; show();
-  await ctl.addImageTargets(blobUrl); dbg.stage='目標載入'; show();
-  await ctl.dummyRun(video); dbg.stage='暖機完成'; show();
-  ctl.processVideo(video); dbg.stage='辨識中';
-  const tick=()=>{ if(!arCtl) return; show(); setTimeout(tick,500); }; tick();
+  if(!arThree) arThree = await import('./vendor/mindar/mindar-image-three.prod.js');   /* 自己放：worker 要同網域 */
+  dbg.stage='啟動相機與目標'; show();
+  container.innerHTML='';
+  const m=new arThree.MindARThree({ container, imageTargetSrc: mindUrl, uiLoading:'no', uiScanning:'no', uiError:'no', warmupTolerance: 2, missTolerance: 5 });
+  arMind=m;
+  for(let i=0;i<8;i++){ try{ const an=m.addAnchor(i); an.onTargetFound=()=>{ dbg.found++; show(); onFound(); }; }catch(e){ break; } }
+  await m.start(); dbg.stage='辨識中'; show();
+  const tick=()=>{ if(!arMind) return; show(); setTimeout(tick,500); }; tick();
 }
 function scanQR(container, onText){
   openCamera(container).then(v=>{
@@ -1383,15 +1377,15 @@ function renderFireBadge(s, idx){
     }catch(e){ perm.textContent='輪盤啟用失敗：'+(e.message||e); }
   };
   const sc=$('#scan'); if(sc) sc.onclick=async()=>{
-    const v=await openCamera($('#cam')); if(!v) return;
-    $('#cam').appendChild(el('<div class="reticle"></div>'));
     const key=has('winter')?'flower':'winter', tgt=s.targets.find(t=>t.key===key);
-    const found=()=>{ if(sc.dataset.done) return; sc.dataset.done=1; if(arCtl){ try{ arCtl.stopProcessVideo(); }catch(e){} arCtl=null; }
+    let v=null; if(!(tgt && tgt.mind)){ v=await openCamera($('#cam')); if(!v) return; }
+    $('#cam').appendChild(el('<div class="reticle"></div>'));
+    const found=()=>{ if(sc.dataset.done) return; sc.dataset.done=1;
       $('#cam').appendChild(el(`<div class="overlay" style="padding:10px;letter-spacing:0">${badgeSVG(key==='winter'?'L':'R','56px')}<div style="font-size:14px;margin-top:6px">找到一半的胖貓徽章！</div></div>`));
       setTimeout(()=>{ stopCamera(); d.got.push(key); state.extra[k]=d; save(); render(); },1600); };   // 兩半都到手後不自動解封，要點徽章
     if(tgt && tgt.mind){                                            // MindAR 影像辨識：對準牆面認出來才算
       sc.textContent='對準中…'; sc.disabled=true;
-      try{ await arScan(v, tgt.mind, found); }
+      try{ await arScan($('#cam'), tgt.mind, found); }
       catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
     } else {                                                        // 還沒有目標檔：對準 3 秒就算
       sc.textContent='對準中…保持 3 秒'; sc.disabled=true; setTimeout(found,3000);

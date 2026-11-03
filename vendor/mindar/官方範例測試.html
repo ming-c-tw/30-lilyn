@@ -1,0 +1,10 @@
+<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0}#c{width:100vw;height:100vh;position:relative}</style></head><body><div id="c"></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import { MindARThree } from './mindar-image-three.prod.js';
+const q=new URLSearchParams(location.search); const mind=q.get('mind')||'../../img/targets_card_test.mind';
+const m=new MindARThree({ container: document.getElementById('c'), imageTargetSrc: mind });
+window.__FOUND=0; window.__LOST=0;
+for(let i=0;i<4;i++){ try{ const a=m.addAnchor(i); a.onTargetFound=()=>{ window.__FOUND++; console.log('FOUND',i); }; a.onTargetLost=()=>{ window.__LOST++; }; }catch(e){} }
+await m.start(); console.log('started'); window.__STARTED=true;
+</script></body></html>
