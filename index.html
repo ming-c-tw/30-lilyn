@@ -91,7 +91,7 @@
   video{width:100%;background:#000;display:block;border:4px solid #000}
   .frame{position:relative}
   .frame.ar{isolation:isolate;aspect-ratio:1;overflow:hidden;background:#000;border:4px solid #000;box-shadow:var(--px) var(--px) 0 #000}   /* MindAR 的 video／canvas 是負 z-index，要自己的堆疊層才看得到 */
-  .frame .ar-found-text{position:absolute;left:0;right:0;bottom:8%;text-align:center;font-size:18px;letter-spacing:.1em;color:#fff;text-shadow:2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000}
+  .frame .ar-found-text{position:absolute;left:0;right:0;bottom:8%;text-align:center;font-size:18px;letter-spacing:.1em;color:var(--gold);text-shadow:2px 2px 0 #000,-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000}
   .frame .overlay.ar-found.L{left:32%;top:40%}
   .frame .overlay.ar-found.R{left:68%;top:40%}   /* 往上放，不壓到下方的字 */
   .frame .overlay.ar-found{background:transparent;border:0;padding:0;box-shadow:none;animation:fbglow .5s steps(4) infinite alternate, arbob 1.2s steps(6) infinite alternate}
