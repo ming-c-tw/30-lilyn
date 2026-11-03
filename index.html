@@ -1375,7 +1375,7 @@ function renderFireBadge(s, idx){
       fbOri=e=>{ const h=(e.webkitCompassHeading!=null)? e.webkitCompassHeading : (e.alpha!=null? (360-e.alpha)%360 : null); if(h==null) return;
         document.querySelectorAll('#dial .mk').forEach(m=>{ m.style.transform=`rotate(${(+m.dataset.h - h + 360)%360}deg)`; });
         const dg=$('#deg'); if(dg) dg.textContent=`${Math.round(h)}°`; };
-      window.addEventListener('deviceorientation',fbOri); perm.textContent='輪盤啟用中'; perm.disabled=true;
+      window.addEventListener('ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation', fbOri);   // Android 要用 absolute 才是真的羅盤方位，不然是相對開啟時的角度 perm.textContent='輪盤啟用中'; perm.disabled=true;
     }catch(e){ perm.textContent='輪盤啟用失敗：'+(e.message||e); }
   };
   const sc=$('#scan'); if(sc) sc.onclick=async()=>{
