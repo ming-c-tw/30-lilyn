@@ -260,7 +260,7 @@ const CONFIG = {
       story:'胖貓被封印在這一站了。解封的徽章碎成兩半，藏在這一站的兩處。用手機相機找到藏在異次元的徽章，合成後就能解開胖貓的封印。',
       clue:'11月盛開的美麗',
       // 輪盤上的兩個方位（度，0＝北）；〈四季〉在穿堂層北側牆面、〈大安之花〉在車站西側空橋旁廣場，現勘校正
-      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mind:'img/targets_winter.mind'}, {key:'flower', icon:'✿', name:'花', heading:222, color:{pink:0.03, red:0.008, blueMax:0.04}} ],   // 大安之花：立體雕塑夜拍，MindAR 認不到 → 用顏色辨識（粉紅＋紅、不能有藍）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
+      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mind:'img/targets_winter.mind'}, {key:'flower', icon:'✿', name:'花', heading:222, color:{pink:0.02, red:0.004, blueMax:0.08}} ],   // 大安之花：立體雕塑夜拍，MindAR 認不到 → 用顏色辨識（粉紅＋紅、不能有藍）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
       // 正式版用 MindAR 辨識：現勘拍〈四季〉冬天段、〈大安之花〉正面當目標圖；草版先對準 3 秒就出現
       hints:['地點：一半在站內、一半在站外','左半：藏在牆上的季節','右半：藏在一朵花'],
       nextText:'' },
@@ -893,7 +893,7 @@ function colorScan(video, spec, onFound){
     dbg.pink=pink/n; dbg.red=red/n; dbg.blue=blue/n;
     const hit = dbg.pink>=spec.pink && dbg.red>=spec.red && dbg.blue<=spec.blueMax;
     dbg.ok = hit? dbg.ok+1 : 0; show();
-    if(dbg.ok>=3){ clearInterval(colorTimer); colorTimer=null; dbg.found=1; dbg.stage='找到'; show(); onFound(); }
+    if(dbg.ok>=2){ clearInterval(colorTimer); colorTimer=null; dbg.found=1; dbg.stage='找到'; show(); onFound(); }
   },200);
 }
 /* MindAR 影像辨識（官方 three.js 流程）：MindARThree 自己開相機、載目標、跑辨識，認出任何一張就 onFound */
