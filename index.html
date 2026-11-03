@@ -90,6 +90,7 @@
   @keyframes pop{to{opacity:0;transform:scale(1.5)}}
   video{width:100%;background:#000;display:block;border:4px solid #000}
   .frame{position:relative}
+  .frame.ar{isolation:isolate;aspect-ratio:1;overflow:hidden;background:#000;border:4px solid #000;box-shadow:var(--px) var(--px) 0 #000}   /* MindAR 的 video／canvas 是負 z-index，要自己的堆疊層才看得到 */
   .frame .reticle{position:absolute;inset:14% 12%;border:4px dashed rgba(255,255,255,.85);pointer-events:none}
   .frame .overlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:#000;color:var(--gold);padding:14px 18px;font-size:28px;letter-spacing:.4em;text-align:center;border:4px solid var(--gold);animation:fadein .6s steps(4)}
   @keyframes fadein{from{opacity:0}to{opacity:1}}
@@ -871,7 +872,7 @@ async function openCamera(container, facing='environment'){
     return null;
   }
 }
-function stopCamera(){ if(arMind){ try{ arMind.stop(); }catch(e){} arMind=null; } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+function stopCamera(){ if(arMind){ try{ arMind.stop(); }catch(e){} arMind=null; const c=document.getElementById('cam'); if(c) c.classList.remove('ar'); } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
 /* MindAR 影像辨識（官方 three.js 流程）：MindARThree 自己開相機、載目標、跑辨識，認出任何一張就 onFound */
 let arMind=null, arThree=null;
 async function arScan(container, mindUrl, onFound){
@@ -880,7 +881,7 @@ async function arScan(container, mindUrl, onFound){
   show();
   if(!arThree) arThree = await import('./vendor/mindar/mindar-image-three.prod.js');   /* 自己放：worker 要同網域 */
   dbg.stage='啟動相機與目標'; show();
-  container.innerHTML='';
+  container.innerHTML=''; container.classList.add('ar');
   const m=new arThree.MindARThree({ container, imageTargetSrc: mindUrl, uiLoading:'no', uiScanning:'no', uiError:'no', warmupTolerance: 2, missTolerance: 5 });
   arMind=m;
   for(let i=0;i<8;i++){ try{ const an=m.addAnchor(i); an.onTargetFound=()=>{ dbg.found++; show(); onFound(); }; }catch(e){ break; } }
