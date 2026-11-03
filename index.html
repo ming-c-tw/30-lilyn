@@ -884,7 +884,11 @@ async function arScan(video, mindUrl, onFound){
   const ctl = new arMod.Controller({ inputWidth: video.videoWidth||640, inputHeight: video.videoHeight||480, warmupTolerance: 2, missTolerance: 5,
     onUpdate: (data)=>{ dbg.updates++; if(data.type==='updateMatrix' && data.worldMatrix){ dbg.matrix++; onFound(); } } });
   arCtl=ctl;
-  await ctl.addImageTargets(mindUrl); dbg.stage='目標載入'; show();
+  // 自己抓目標檔、顯示下載進度，抓完再丟給 MindAR（直接給網址看不到卡在哪）
+  const res=await fetch(mindUrl); const total=+res.headers.get('content-length')||0; const reader=res.body.getReader(); const chunks=[]; let got=0;
+  while(true){ const {done,value}=await reader.read(); if(done) break; chunks.push(value); got+=value.length; dbg.stage=`下載目標檔 ${total?Math.round(got/total*100)+'%':Math.round(got/1024)+'KB'}`; show(); }
+  const blobUrl=URL.createObjectURL(new Blob(chunks)); dbg.stage='解析目標檔'; show();
+  await ctl.addImageTargets(blobUrl); dbg.stage='目標載入'; show();
   await ctl.dummyRun(video); dbg.stage='暖機完成'; show();
   ctl.processVideo(video); dbg.stage='辨識中';
   const tick=()=>{ if(!arCtl) return; show(); setTimeout(tick,500); }; tick();
