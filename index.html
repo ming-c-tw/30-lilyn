@@ -760,7 +760,7 @@ function npcBox(s, idx){
 function answerNote(s){
   const items=[];                                   // {label, value, copy}
   if(s.type==='library'){ items.push({label:'書名',value:s.riddleAnswer,copy:true},{label:'書碼',value:s.bookAnswer,copy:true}); }
-  else if(s.type==='firebadge'){ items.push({label:'方位',value:s.targets.map(t=>`${t.icon} ${t.heading}°`).join('　')},{label:'線索',value:s.clue}); }
+  else if(s.type==='firebadge'){ items.push({label:'線索',value:s.clue},{label:'過關',value:'掃牆上的〈四季〉＋戶外的〈大安之花〉'}); }
   else if(s.type==='spot'){ (s.photos||[{spots:s.spots}]).forEach((p,i)=>items.push({label:`照片 ${i+1}`,value:`${p.spots.length} 處 ${p.spots.map(q=>`(${q.x},${q.y})`).join(' ')}`})); }
   else if(s.type==='game' && s.game==='song'){ s.songs.forEach((x,i)=>items.push({label:`第 ${i+1} 首`,value:x.answers[0],copy:true})); }
   else if(s.type==='ticket_puzzle'){ items.push({label:'過關',value:'合照上傳就點蠟燭'}); }
@@ -881,9 +881,13 @@ async function arScan(container, mindUrl, onFound){
   const box=document.getElementById('ardbg'); const show=()=>{ if(box) box.textContent=`AR：${dbg.stage}｜命中 ${dbg.found}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
   show();
   if(!arThree) arThree = await import('./vendor/mindar/mindar-image-three.prod.js');   /* 自己放：worker 要同網域 */
-  dbg.stage='啟動相機與目標'; show();
+  // 目標檔自己先抓（顯示下載 %），抓完用 blob 交給 MindAR
+  const res=await fetch(mindUrl); const total=+res.headers.get('content-length')||0; const reader=res.body.getReader(); const chunks=[]; let got=0;
+  while(true){ const {done,value}=await reader.read(); if(done) break; chunks.push(value); got+=value.length; dbg.stage=`下載目標 ${total?Math.round(got/total*100)+'%':Math.round(got/1024)+'KB'}`; show(); }
+  const blobUrl=URL.createObjectURL(new Blob(chunks));
+  dbg.stage='啟動相機'; show();
   container.innerHTML=''; container.classList.add('ar');
-  const m=new arThree.MindARThree({ container, imageTargetSrc: mindUrl, uiLoading:'no', uiScanning:'no', uiError:'no', warmupTolerance: 2, missTolerance: 5 });
+  const m=new arThree.MindARThree({ container, imageTargetSrc: blobUrl, uiLoading:'no', uiScanning:'no', uiError:'no', warmupTolerance: 2, missTolerance: 5 });
   arMind=m;
   for(let i=0;i<8;i++){ try{ const an=m.addAnchor(i); an.onTargetFound=()=>{ dbg.found++; show(); onFound(); }; }catch(e){ break; } }
   await m.start(); dbg.stage='辨識中'; show();
@@ -1364,10 +1368,7 @@ function renderFireBadge(s, idx){
     <div class="letter nes-container is-rounded center" style="font-size:18px">${s.clue}</div>
     ${both?`<div class="fb-merge fb-tap hero" id="summon">${badgeSVG('',  '128px')}</div><p class="center" style="font-size:18px;margin:0 0 22px">點擊徽章解封</p>`
     :`<div class="fb-slots"><div class="fb-slot L ${has('winter')?'got':''}">${has('winter')?badgeSVG('L','64px'):'?'}</div><div class="fb-slot R ${has('flower')?'got':''}">${has('flower')?badgeSVG('R','64px'):'?'}</div></div>
-      <div class="dial" id="dial"><div class="me">▲ 妳面對的方向</div><div class="ctr" id="deg">轉動手機看方位</div>
-        ${s.targets.map(t=>`<div class="mk ${t.key} ${has(t.key)?'done':''}" data-h="${t.heading}" style="transform:rotate(${t.heading}deg)"><span>${t.icon}</span></div>`).join('')}</div>
-      <button class="nes-btn btn" id="perm">啟用輪盤</button>
-      <div class="frame" id="cam"></div>
+      <div class="frame" id="cam" style="margin-top:14px"></div>
       <button class="nes-btn is-primary btn" id="scan" style="margin-top:14px">${CAMERA} 掃描徽章碎片</button>`}
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
   const perm=$('#perm'); if(perm) perm.onclick=async()=>{
