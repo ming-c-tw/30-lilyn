@@ -750,6 +750,7 @@ function npcBox(s, idx){
     <button class="nes-btn is-primary btn small" id="tbNext">下一頁 ▶</button>
     <button class="nes-btn is-error btn small" id="npcreset">全部重來</button>
   </div>${s.type==='game' && !state.extra[s.id+'_won']?'<button class="nes-btn is-warning btn small" id="npcwin" style="margin-top:8px;width:100%">小遊戲通關</button>':''}
+  ${s.type==='firebadge'?'<p class="tag" id="ardbg" style="margin:8px 0 0">AR：未啟動</p>':''}
   ${answerNote(s)}<p class="tag" style="margin-top:8px">5 碼：${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}　櫃號：${CONFIG.lockerNumber}</p></div>`;
 }
 /* 控制者看的解答（依關卡型別）；要輸入的答案附「複製」鈕 */
@@ -875,12 +876,15 @@ let arCtl=null, arMod=null;
 async function arScan(video, mindUrl, onFound){
   if(!arMod) arMod = await import('https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image.prod.js');
   if(!video.videoWidth) await new Promise(r=>{ video.onloadedmetadata=()=>r(); setTimeout(r,2000); });
-  const ctl = new arMod.Controller({ inputWidth: video.videoWidth||640, inputHeight: video.videoHeight||480, warmupTolerance: 3, missTolerance: 5,
-    onUpdate: (data)=>{ if(data.type==='updateMatrix' && data.worldMatrix) onFound(); } });
+  const dbg=window.__AR={stage:'init',updates:0,matrix:0,w:video.videoWidth,h:video.videoHeight,t0:Date.now()};   // 控制者介面會顯示這些數字
+  const box=document.getElementById('ardbg'); const show=()=>{ if(box) box.textContent=`AR：${dbg.stage}｜畫面 ${dbg.w}×${dbg.h}｜回呼 ${dbg.updates}｜命中 ${dbg.matrix}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
+  const ctl = new arMod.Controller({ inputWidth: video.videoWidth||640, inputHeight: video.videoHeight||480, warmupTolerance: 2, missTolerance: 5,
+    onUpdate: (data)=>{ dbg.updates++; if(data.type==='updateMatrix' && data.worldMatrix){ dbg.matrix++; onFound(); } } });
   arCtl=ctl;
-  await ctl.addImageTargets(mindUrl);
-  await ctl.dummyRun(video);
-  ctl.processVideo(video);
+  await ctl.addImageTargets(mindUrl); dbg.stage='目標載入'; show();
+  await ctl.dummyRun(video); dbg.stage='暖機完成'; show();
+  ctl.processVideo(video); dbg.stage='辨識中';
+  const tick=()=>{ if(!arCtl) return; show(); setTimeout(tick,500); }; tick();
 }
 function scanQR(container, onText){
   openCamera(container).then(v=>{
