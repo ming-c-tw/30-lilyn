@@ -1372,10 +1372,15 @@ function renderFireBadge(s, idx){
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
   const perm=$('#perm'); if(perm) perm.onclick=async()=>{
     try{ if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission==='function'){ const r=await DeviceOrientationEvent.requestPermission(); if(r!=='granted') throw new Error('沒有允許'); }
-      fbOri=e=>{ const h=(e.webkitCompassHeading!=null)? e.webkitCompassHeading : (e.alpha!=null? (360-e.alpha)%360 : null); if(h==null) return;
+      // 兩種事件都聽：absolute（真羅盤）優先；3 秒內有 absolute 就忽略相對的。iOS 用 webkitCompassHeading
+      let lastAbs=0;
+      fbOri=e=>{ const isAbs = e.type==='deviceorientationabsolute' || e.absolute===true || e.webkitCompassHeading!=null;
+        if(isAbs) lastAbs=Date.now(); else if(Date.now()-lastAbs<3000) return;
+        const h=(e.webkitCompassHeading!=null)? e.webkitCompassHeading : (e.alpha!=null? (360-e.alpha)%360 : null); if(h==null) return;
         document.querySelectorAll('#dial .mk').forEach(m=>{ m.style.transform=`rotate(${(+m.dataset.h - h + 360)%360}deg)`; });
-        const dg=$('#deg'); if(dg) dg.textContent=`${Math.round(h)}°`; };
-      window.addEventListener('ondeviceorientationabsolute' in window ? 'deviceorientationabsolute' : 'deviceorientation', fbOri);   // Android 要用 absolute 才是真的羅盤方位，不然是相對開啟時的角度 perm.textContent='輪盤啟用中'; perm.disabled=true;
+        const dg=$('#deg'); if(dg) dg.textContent=`${Math.round(h)}°${isAbs?'':' (相對)'}`; };
+      window.addEventListener('deviceorientationabsolute', fbOri); window.addEventListener('deviceorientation', fbOri);
+      perm.textContent='輪盤啟用中'; perm.disabled=true;
     }catch(e){ perm.textContent='輪盤啟用失敗：'+(e.message||e); }
   };
   const sc=$('#scan'); if(sc) sc.onclick=async()=>{
