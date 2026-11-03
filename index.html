@@ -141,7 +141,8 @@
   #testbar b{font-size:13px;white-space:nowrap}
   #testbar .nes-btn{flex:1;margin:0;font-size:14px;padding:4px 6px}
   .fb-slots{display:flex;justify-content:center;gap:0;margin:10px 0}
-  .fb-slot{width:64px;height:128px;border:4px dashed #b9a98f;display:flex;align-items:center;justify-content:center;background:#fff9db}
+  .fb-slot{box-sizing:content-box;width:64px;height:128px;border:4px dashed #b9a98f;display:flex;align-items:center;justify-content:center;background:#fff9db}
+  .fb-slot svg{flex:none}   /* 槽內半片徽章要剛好是完整 128px 的一半（64×128），不被擠扁 */
   .fb-slot.got{border-style:solid;border-color:#000}
   .fb-slot.L{border-right-width:2px}.fb-slot.R{border-left-width:2px}
   .fb-merge{display:flex;justify-content:center;margin:10px 0;animation:fbglow 1s steps(4) infinite alternate}
@@ -1438,7 +1439,7 @@ function renderFireBadge(s, idx){
     // 兩半同時找、不分先後：牆走 MindAR、花走顏色；哪個先命中就收哪一半
     const todo=s.targets.filter(t=>!has(t.key)); const flower=todo.find(t=>t.color); const keyOfIdx=i=>(s.targets.find(t=>(t.mindIdx||[]).includes(i))||{}).key;
     const found=(key)=>{ if(sc.dataset.done) return; sc.dataset.done=1; if(colorTimer){ clearInterval(colorTimer); colorTimer=null; }
-      $('#cam').appendChild(el(`<div class="overlay ar-found ${key==='winter'?'L':'R'}">${badgeSVG(key==='winter'?'L':'R','96px')}</div>`));   // 徽章靠該側上下飄（96px，比合成的 128 小一點）
+      $('#cam').appendChild(el(`<div class="overlay ar-found ${key==='winter'?'L':'R'}">${badgeSVG(key==='winter'?'L':'R','64px')}</div>`));   // 半片＝完整徽章 128px 的一半（64px），跟合成後切半一樣大
       $('#cam').appendChild(el(`<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div>`));                                     // 字置中在下方（el() 只回第一個元素，要分開加）
       sc.textContent='收下徽章'; sc.disabled=false; sc.className='nes-btn is-primary btn';                                   // 按了才跳下一步
       sc.onclick=()=>{ stopCamera(); d.got.push(key); state.extra[k]=d; save(); render(); }; };   // 兩半都到手後不自動解封，要點徽章
@@ -1634,7 +1635,7 @@ async function makeStrip(){
   const pk=4, ph2=window.MG_SPRITES.LILY.length*pk, py=ty-ph2+2;
   drawRows(g, TRAIN_ROWS, TRAIN_PAL, tx, ty, tk);
   const {LILY,LILY_PAL,MOMO,MOMO_PAL}=window.MG_SPRITES;
-  drawRows(g, MOMO, MOMO_PAL, Math.round(W/2+6), py, pk);
+  drawRows(g, MOMO, MOMO_PAL, Math.round(W/2+6), py-(MOMO.length-LILY.length)*pk, pk);   // 腳底對齊莉莉
   const LF=window.MG_SPRITES.LILY_FULL; drawRows(g, LF, LILY_PAL, Math.round(W/2-6-LF[0].length*pk), py-(LF.length-LILY.length)*pk, pk);   // 戴帽全身版，底部對齊墨墨
   g.textAlign='center';
   g.font=F(64); g.fillStyle=T.shadow; g.fillText(CONFIG.stripTitle, W/2+5, 84+5); g.fillStyle=T.title; g.fillText(CONFIG.stripTitle, W/2, 84);

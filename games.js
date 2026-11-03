@@ -78,84 +78,101 @@ function flip(src){ const c=document.createElement('canvas'); c.width=src.width;
 /* 莉莉：黑長髮平瀏海、黑色露肩上衣、窄裙、長靴（12×16） */
 const LILY_PAL={K:'#111',H:'#e63946',S:'#f6d2b5',E:'#222',R:'#e05a6b',D:'#1e1e1e',W:'#f6d2b5',B:'#000',P:'#f4a3c0',Y:'#fff',C:'#4cc9f0'};   // 2026-11-04 Ming 用像素編輯器重畫（含腮紅、帽子色）
 const LILY=[
-  '..KKKKKKKK..',
-  '.KKKKKKKKBK.',
-  '.KKBSBSBSBK.',
-  '.KKSSSSSSKB.',
+  '...KKKKKK...',
+  '..KKKKKKKB..',
+  '.KKBBBBBBBK.',
+  '.KKBSBBSBKB.',
   '.KKSESSESKK.',
   '.BKPSSSSPBB.',
   '.BKSSRRSSBB.',
-  '.BKKDSSDKB..',
-  '.BKWWSWWWB..',
+  '.BKKBSSBKB..',
+  '.BKWDDDDWB..',
   '..KDDDDDDB..',
   '...DDDDDD...',
   '...WDDDDW...',
   '....W..W....',
-  '....D..D....',
-  '...BB..BB...',
-  '...BB..BB...'];
+  '....B..B....',
+  '....BB.BB...',
+  '....BB.BB...'];   // 站姿（Ming 2026-11-04 v3，領口高一點）
 const LILY_RUN=[
-  '..KKKKKKKK..',
-  '.KKKKKKKKBB.',
-  '.KKBSBSBSBB.',
-  '.KKBSSSSSKB.',
-  '.KKSWESSDKB.',
+  '...KKKKKK...',
+  '..KKKKKKKB..',
+  '.BKBBBBBBBB.',
+  '.BKBBWBBSKB.',
+  '.BKSWESSDKB.',
   '.BKWPSSSSBB.',
   '.BKBSWRRSBB.',
-  '.BKKBBSWKB..',
-  '.BBBWSWWWB..',
-  '..BBDDDDD...',
-  '...BWDDDD...',
-  '.....DDDD...',
-  '.....W..W...',
-  '.....B..B...',
-  '.....BB.BB..',
-  '.....BB.BB..'];   // Ming 2026-11-04 自己點的跑步幀 v2
+  '.BKKBWSBKB..',
+  '..BBWDDDWB..',
+  '..BBDDDDDW..',
+  '...BWDDD....',
+  '.....DDDWW..',
+  '..BBBWW..B..',
+  '..BB.....BB.',
+  '.........BB.',
+  '............'];   // 跑步幀 v6（Ming 2026-11-04）
+const LILY_MID=[
+  '...KKKKKK...',
+  '..KKKKKKKB..',
+  '.KKBBBBBBBK.',
+  '.KKBBWBBWKB.',
+  '.KKSWDSWDKK.',
+  '.BKWPSSWWBB.',
+  '.BBBSWRRSBB.',
+  '.BKKBSSBKB..',
+  '.BKWDDDDWB..',
+  '..KDDDDDDB..',
+  '...DDDDDD...',
+  '...WDDDDW...',
+  '....W...W...',
+  '....B...B...',
+  '....BB..BB..',
+  '....BB..BB..'];   // 過渡幀（Ming 2026-11-04 自己點）；站→過渡→跑→過渡
 const LILY_FULL=[
   '......CC......',
-  '.....HHHH.....',
+  '......HH......',
+  '.....YYYY.....',
   '.....HHHH.....',
   '....YYYYYY....',
   '....HHHHHH....',
   '...YYYYYYYY...',
   '...HHHHHHHH...',
-  '...YYYYYYYY...',
-  '...KKKKKKKK...',
-  '..KKKKKKKKBK..',
-  '..KKBSBSBSBK..',
-  '..KKSSSSSSKB..',
+  '...KKKKKKKB...',
+  '..KKBBBBBBBK..',
+  '..KKBSBBSBKB..',
   '..KKSESSESKK..',
   '..BKPSSSSPBB..',
   '..BKSSRRSSBB..',
-  '..BKKDSSDKB...',
-  '..BKWWSWWWB...',
+  '..BKKBSSBKB...',
+  '..BKWDDDDWB...',
   '...KDDDDDDB...',
   '....DDDDDD....',
   '....WDDDDW....',
   '.....W..W.....',
-  '.....D..D.....',
-  '....BB..BB....',
-  '....BB..BB....'];
+  '.....B..B.....',
+  '.....BB.BB....',
+  '.....BB.BB....'];   // 帽子版（Ming 2026-11-04 自己點；圖示、拍貼用）
 /* LILY_FULL：戴生日帽的全身版（拍貼、圖示用），14×24 */
 /* 墨墨：兩側推短、頭頂全黑微翹、平瀏海、細長眼、淡笑，小麥膚色、全黑（12×16） */
 const MOMO_PAL={K:'#111',H:'#3d3632',G:'#5a4a40',S:'#dcb48e',E:'#222',M:'#8a5a44',D:'#1e1e1e',B:'#000'};
 const MOMO=[
-  '....KKKK....',
-  '..KKKKKKKK..',
-  '.KKKKKKKKKK.',
-  '.GKKKKKKKKG.',
-  '.GSKKSSKKSG.',
+  '...BBBBBB...',
+  '..BBBBBBBB..',
+  '.BBBBBBBBBB.',
+  '.GBBBBBBBBG.',
+  '.GSBBBBBBSG.',
   '.SSSSSSSSSS.',
   '.MSEESSEESM.',
   '..SSSSSSSS..',
   '...SSMMSS...',
-  '..DDDDDDDD..',
-  '.DDDDDDDDDD.',
-  '.SDDDDDDDDS.',
-  '..DDDDDDDD..',
-  '..DDDDDDDD..',
-  '..DDD..DDD..',
-  '..BBB..BBB..'];
+  '..BBBBBBBB..',
+  '.BBBBBBBBBB.',
+  '.BBBBBBBBBB.',
+  '.BBBBBBBBBB.',
+  '.SBBBBBBBBS.',
+  '..BBB..BBB..',
+  '.BBBB..BBBB.',
+  '.BBBB..BBBB.'];   // 12×17（Ming 2026-11-04 定版）；畫的時候以腳底對齊
 /* 通勤怪（超級莉莉的敵人，12×12） */
 const GOON=[
   '....GGGG....',
@@ -339,7 +356,7 @@ function mario(el, cfg, onWin){
   el.appendChild(w);
   const cv=w.querySelector('canvas'), g=cv.getContext('2d'); g.imageSmoothingEnabled=false;
   const pad=makePad(w,[{id:'left',label:'◀',side:'L'},{id:'right',label:'▶',side:'L'},{id:'jump',label:'跳',side:'R',red:true}],'jump');
-  const sp=sprite(LILY,LILY_PAL), spR=sprite(LILY_RUN,LILY_PAL), spL=flip(sp), spRL=flip(spR);
+  const sp=sprite(LILY,LILY_PAL), spR=sprite(LILY_RUN,LILY_PAL), spM=sprite(LILY_MID,LILY_PAL), spL=flip(sp), spRL=flip(spR), spML=flip(spM);
   const boy=sprite(MOMO,MOMO_PAL), boyL=flip(boy);
 
   let P, cats, cam, petCount=0, bumps=[], hearts=[], won=0, dead=0, petting=0, petCat=null, raf, lastT=0, acc=0, frame=0;
@@ -423,10 +440,10 @@ function mario(el, cfg, onWin){
       if(c.petted && Math.floor(frame/30)%2) heart(X+4, Y-8, '#f4a3a8'); });
     // 男主角（終點）
     const BX=Math.round(BOY_X-cam);
-    if(BX>-16 && BX<W+16){ g.drawImage(boy, BX, 13*T-16); if(!won && Math.floor(frame/40)%2) heart(BX+3, 13*T-26); }
+    if(BX>-16 && BX<W+16){ g.drawImage(boy, BX, 13*T-boy.height); if(!won && Math.floor(frame/40)%2) heart(BX+3, 13*T-26); }
     // 莉莉
     let img; if(won){ img=sp; }
-    else { const moving=Math.abs(P.vx)>0.2 && P.on && Math.floor(frame/6)%2; img=P.face>0?(moving?spR:sp):(moving?spRL:spL); }
+    else { const moving=Math.abs(P.vx)>0.2 && P.on, f2=Math.floor(frame/6)%2; img=!moving?(P.face>0?sp:spL):(P.face>0?(f2?spR:spM):(f2?spRL:spML)); }   // 站著＝站姿；跑動＝跑步幀與過渡幀交替，不回站姿
     g.drawImage(img, won&&P.on?BX-9:Math.round(P.x-cam)-1, Math.round(P.y));   // 通關：兩人靠在一起
     // 摸貓的手
     if(petting && petCat){ const hx=Math.round((P.face>0?P.x+P.w:P.x-3)-cam), hy=Math.round(P.y+10); g.fillStyle='#f6d2b5'; g.fillRect(hx, hy+((frame>>3)%2), 3, 2); }
@@ -522,7 +539,7 @@ function volley(el, cfg, onWin){
     g.fillStyle='#fff'; g.fillRect(NETX-NETW/2,NETTOP,NETW,GROUND-NETTOP); g.fillStyle='#555'; for(let y=NETTOP;y<GROUND;y+=8) g.fillRect(NETX-NETW/2,y,NETW,2);
     g.fillStyle='#e76e8a'; g.fillRect(NETX-NETW/2-1,NETTOP-4,NETW+2,6);
     // 人物（12×16 放大 3 倍）
-    const drawP=(img,p)=>{ g.drawImage(img, Math.round(p.x-18), Math.round(p.y-PR-6), 36, 48); };
+    const drawP=(img,p)=>{ g.drawImage(img, Math.round(p.x-18), Math.round(p.y-PR-6)-(img.height-16)*3, img.width*3, img.height*3); };   // 腳底對齊，墨墨比較高也不會被壓扁
     drawP(sL,me); drawP(sM,ai);
     // 影子與球
     g.fillStyle='rgba(0,0,0,.2)'; g.fillRect(Math.round(ball.x-BR),GROUND+2,BR*2,4);
@@ -562,5 +579,5 @@ function puzzle(el, cfg, onWin){
 }
 
 window.MiniGames={ song, memory, mario, volley, puzzle };
-window.MG_SPRITES={ LILY, LILY_PAL, LILY_FULL, MOMO, MOMO_PAL };   // 給 app.html 的拍貼畫人物用
+window.MG_SPRITES={ LILY, LILY_PAL, LILY_RUN, LILY_MID, LILY_FULL, MOMO, MOMO_PAL, ICON_ART };   // 給 app.html 的拍貼畫人物用
 })();
