@@ -1438,7 +1438,7 @@ function renderFireBadge(s, idx){
     // 兩半同時找、不分先後：牆走 MindAR、花走顏色；哪個先命中就收哪一半
     const todo=s.targets.filter(t=>!has(t.key)); const flower=todo.find(t=>t.color); const keyOfIdx=i=>(s.targets.find(t=>(t.mindIdx||[]).includes(i))||{}).key;
     const found=(key)=>{ if(sc.dataset.done) return; sc.dataset.done=1; if(colorTimer){ clearInterval(colorTimer); colorTimer=null; }
-      $('#cam').appendChild(el(`<div class="overlay ar-found ${key==='winter'?'L':'R'}">${badgeSVG(key==='winter'?'L':'R','104px')}</div>`));   // 徽章靠該側上下飄
+      $('#cam').appendChild(el(`<div class="overlay ar-found ${key==='winter'?'L':'R'}">${badgeSVG(key==='winter'?'L':'R','128px')}</div>`));   // 徽章靠該側上下飄，跟合成後的徽章一樣大（128px）
       $('#cam').appendChild(el(`<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div>`));                                     // 字置中在下方（el() 只回第一個元素，要分開加）
       sc.textContent='收下徽章'; sc.disabled=false; sc.className='nes-btn is-primary btn';                                   // 按了才跳下一步
       sc.onclick=()=>{ stopCamera(); d.got.push(key); state.extra[k]=d; save(); render(); }; };   // 兩半都到手後不自動解封，要點徽章
