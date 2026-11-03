@@ -1339,7 +1339,7 @@ function renderFireBadge(s, idx){
   const k=s.id+'_fb'; const d=state.extra[k]||{got:[]};
   const nx=CONFIG.stages[idx+1];
   const has=key=>d.got.includes(key);
-  if(fbOri){ window.removeEventListener('deviceorientation',fbOri); fbOri=null; }
+  if(fbOri){ window.removeEventListener('deviceorientation',fbOri); window.removeEventListener('deviceorientationabsolute',fbOri); fbOri=null; }
   // 拼好畫面
   if(d.summoned){
     if(!state.extra[s.id+'_free']){                     // 第 1 頁：胖貓從徽章滾出來、左右晃
