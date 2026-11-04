@@ -288,7 +288,7 @@ const CONFIG = {
   openLetterColors: { '[麟光捷運站]': 'var(--brown)' },   // 麟光＝文湖線咖啡色
   openPassword: 'ILOVEMOMO',                  // 開頭密碼（大小寫不分、忽略空白）
   endLetter: '親愛的莉莉：\n\n恭喜妳轉職成三十歲的輕熟女了，不論妳過去一年經歷了什麼，遇到什麼討厭的人事物，接下來都將開啟新的人生階段：有我相伴的三十歲，我會陪妳踩過一切不順遂，牽著妳不斷前行，持續創造美好的回憶，生日快樂！\n\n墨墨',      // 生日快樂合照之後的信；按「領取通關證明」才到最後一頁
-  testMode: true,           // 測試模式：控制者介面常開＋底部上一頁／下一頁。正式玩前改 false
+  testMode: false,          // 測試模式：控制者介面常開＋底部上一頁／下一頁。正式版 false（控制者介面要備援密碼或頁尾連點 5 下才開、可關閉）；網址加 ?test 可暫時打開
   npcPin: '0501',            // 備援密碼＝控制者介面密碼（每關「機器壞了？」輸入，或頁尾連點 5 下）
   lockerNumber: '30',        // 麟光站置物櫃號碼，開局放禮物後填
   // 五碼＝起點麟光 + 四個解謎站（科技大樓、大安、大安森林公園、忠孝新生）
@@ -519,6 +519,7 @@ const CONFIG = {
       hints:['先找最難的顏色。','往出口走，外面顏色更多。','問列車長。'] },
   },
 };
+if(location.search.includes('test')) CONFIG.testMode=true;   // 測試腳本與自己試玩用：?test 打開測試模式
 /* ========================================================= */
 /* 套用備案關卡（設定檔 useAlt，或網址 ?alt=s3:rainbow 臨時覆蓋） */
 (function applyAlt(){
@@ -618,7 +619,7 @@ function updateBar(){ const b=document.getElementById('candlebar'); if(!b || typ
   b.innerHTML=Array.from({length:MID},(_,i)=>candleHTML(i<lit?'lit':'')).join('');
   const cb=document.getElementById('codebar'); if(cb) cb.innerHTML=CODE_ORDER.map(k=>{ const v=state.codes[k]; return `<span class="${v!=null?'got':''}">${v!=null?v:'?'}</span>`; }).join(''); }
 const CODE_ORDER=CONFIG.codeOrder;
-function reset(){ try{ localStorage.removeItem('mrt-state'); }catch(e){} location.replace(location.pathname); }
+function reset(){ try{ localStorage.removeItem('mrt-state'); }catch(e){} location.replace(location.pathname+(location.search.includes('test')?'?test':'')); }   // 全部重來；測試模式維持
 
 /* 時鐘 */
 setInterval(()=>{
@@ -1127,8 +1128,8 @@ function render(){
   if(gameCleanup){ gameCleanup(); gameCleanup=null; }
   if(state.done[s.id] && s.type!=='final' && !((s.type==='game'||s.type==='firebadge'||s.type==='photo_task') && !state.extra[s.id+'_left']) && !s.finalPhoto){ state.stage=Math.min(idx+1, CONFIG.stages.length-1); save(); return render(); }
   const r = { photo_task:renderPhotoTask, firebadge:renderFireBadge, game:renderGame, library:renderLibrary, ticket_puzzle:renderTicketPuzzle, spot:renderSpot, gps_qr:renderGpsQr, ar:renderAR, compass_color:renderCompassColor, food:renderFood, sound_puzzle:renderSoundPuzzle, rainbow:renderRainbow, director:renderDirector, final:renderFinal }[s.type];
-  r(s, idx);
-  window.scrollTo(0,0);
+  const y=window.scrollY; r(s, idx);
+  window.scrollTo(0, Math.min(y, Math.max(0, document.documentElement.scrollHeight-window.innerHeight)));   // 按按鈕換頁後維持原本的捲動位置（Ming）；新頁比較短就停在最底
 }
 
 /* 最一開始：一封信，輸入密碼才進歡迎頁 */
