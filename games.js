@@ -617,7 +617,7 @@ function puzzle(el, cfg, onWin){
   if(order.every((v,i)=>v===i)) [order[0],order[1]]=[order[1],order[0]];
   const locked=()=>order.map((t,i)=>lockOK && t===i);
   el.innerHTML='';
-  const w=h(`<div class="mg-wrap"><div class="mg-hud"><span class="tag">${lockOK?'拼對的格子會鎖住':''}</span><span class="tag" id="mgleft"></span></div><div class="grid" style="display:grid;grid-template-columns:repeat(${n},1fr);gap:2px;aspect-ratio:1;background:#000;border:4px solid #000"></div></div>`);
+  const w=h(`<div class="mg-wrap"><div class="mg-hud"><span class="tag">${lockOK?'拼對的格子會鎖住。':''}</span><span class="tag" id="mgleft"></span></div><div class="grid" style="display:grid;grid-template-columns:repeat(${n},1fr);gap:2px;aspect-ratio:1;background:#000;border:4px solid #000"></div></div>`);
   el.appendChild(w); const g=w.querySelector('.grid'); const pct=100/(n-1); g.parentElement.style.position='relative';
   const finish=()=>{ done=true; g.style.gap='0'; draw(); banner(g.parentElement,'拼好了！'); setTimeout(()=>{ const b=g.parentElement.querySelector('.mg-banner'); if(b) b.remove(); onWin(); },1400); };   // 拼好：去分隔線與鎖定框、字幕 1.4 秒後收掉，讓她看整張圖
   window.__MG_WIN=()=>{ if(done) return; order=[...Array(n*n).keys()]; finish(); };

@@ -5,13 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>生日列車</title>
+<title>三十而莉</title>
 <meta name="theme-color" content="#1d1f3b">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+<meta name="description" content="莉莉的 30 歲生日列車，一起出發吧！">
+<meta property="og:title" content="三十而莉">
+<meta property="og:description" content="莉莉的 30 歲生日列車，一起出發吧！">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ming-c-tw.github.io/birthday-train/">
+<meta property="og:image" content="https://ming-c-tw.github.io/birthday-train/icons/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <!-- NES.css：8-bit 介面元件（MIT） -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nes.css/2.3.0/css/nes.min.css" integrity="sha384-O6AjLjfUmUlVtjVwX4WKPHE+6hSARLX8hRW1n+5w6b8dY0ED4fylO/udKa4UraEf" crossorigin="anonymous">
 <!-- 縫合像素字體 12px 繁中版（OFL） -->
@@ -87,6 +96,13 @@
   .diffwrap img,.diffwrap svg{display:block;width:100%;height:auto}
   .diffwrap img{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   .diffwrap.zv{touch-action:none}
+  /* 灰藍按鈕（忠孝復興「偵查」，Ming 指定；跟眼睛準星同色系） */
+  .nes-btn.is-slate{color:#fff;background-color:#6b84a0}
+  .nes-btn.is-slate::after{box-shadow:inset -4px -4px #4a5f78}
+  .nes-btn.is-slate:hover{color:#fff;background-color:#5f7793}
+  .nes-btn.is-slate:hover::after{box-shadow:inset -6px -6px #4a5f78}
+  .nes-btn.is-slate:focus{box-shadow:0 0 0 6px rgba(107,132,160,.3)}
+  .nes-btn.is-slate:active:not(.is-disabled)::after{box-shadow:inset 4px 4px #4a5f78}
   .zv .zi{position:relative;transform-origin:0 0;will-change:transform}
   .zv .xh{position:absolute;width:44px;height:44px;pointer-events:none;transform-origin:50% 50%;
     filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 1px rgba(0,0,0,.45))}   /* 白邊＋淡陰影：在粉紅機台上也看得清楚 */
@@ -162,7 +178,7 @@
   .po-ring{position:absolute;left:50%;top:50%;width:184px;height:184px;margin:-92px 0 0 -92px;animation:orbit 3.2s steps(48) infinite;z-index:2;pointer-events:none}
   .po-hair{position:absolute;left:50%;top:0;transform:translate(-50%,-50%) rotate(45deg)}   /* 貓毛順著繞行方向（順時針，頂端往右） */
   @keyframes orbit{to{transform:rotate(360deg)}}
-  @keyframes hairglow{from{filter:drop-shadow(0 0 4px #ff9a2e) drop-shadow(0 0 2px #ffb866)}to{filter:drop-shadow(0 0 14px #ff8a00) drop-shadow(0 0 6px #ffb866)}}   /* 大圖（徽章、胖貓、大蠟燭、大地標、書櫃、大數字）上下一律留 30 */
+  @keyframes hairglow{from{filter:drop-shadow(0 0 2px #ffd36b)}to{filter:drop-shadow(0 0 6px #ffb53a) drop-shadow(0 0 2px #fff6d8)}}   /* 金色細光暈 */
   .fb-free{position:relative;margin:30px 0}
   .fb-free .fb-cat{display:flex;justify-content:center;margin-top:6px;animation:catout 1.1s steps(7) both, catsway 1.4s steps(6) 1.1s infinite alternate}
   @keyframes catout{from{transform:translateY(-120px) scale(.2) rotate(-540deg);opacity:0}30%{opacity:1}to{transform:translateY(0) scale(1) rotate(0)}}   /* 從徽章裡滾出來 */
@@ -171,27 +187,42 @@
   .fire-sprite{width:140px;height:140px;display:block;margin:6px auto;animation:fsbob .5s steps(2) infinite alternate}
   @keyframes fsbob{from{transform:scale(1,1)}to{transform:scale(1.03,0.96)}}   /* 胖貓呼吸 */
   /* ── 次元惡魔：整頁亂碼／壞掉（body.glitch）＋打魔王場地 ── */
-  body.glitch{animation:gl-shake .18s steps(2) infinite}
   body.glitch::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;background:repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 2px,transparent 2px 4px),linear-gradient(90deg,rgba(255,42,109,.16),transparent 30%,transparent 70%,rgba(5,217,232,.16));mix-blend-mode:screen;animation:gl-scan 1.1s steps(6) infinite}
   body.glitch::after{content:'';position:fixed;left:0;right:0;height:14px;background:rgba(255,42,109,.38);pointer-events:none;z-index:999;animation:gl-bar .7s steps(5) infinite}
   body.glitch h1,body.glitch .ticket .station .name,body.glitch .ticket .sub{text-shadow:2px 0 #ff2a6d,-2px 0 #05d9e8}
-  body.glitch .devil{animation:devilbob .9s steps(2) infinite alternate, gl-slice .45s steps(3) infinite}
+  body.glitch main *:not(svg):not(svg *):not(.noglitch){text-shadow:var(--gx,2px) 0 rgba(255,42,109,.8),calc(var(--gx,2px) * -1) 0 rgba(5,217,232,.8)}   /* 全頁 RGB 重影 */
+  .noglitch{position:relative;z-index:1000;text-shadow:none!important}   /* 召喚胖貓那行：不受雜訊影響 */
+  .gl-layer{position:fixed;inset:0;pointer-events:none;z-index:998;overflow:hidden}
+  .gl-layer i{position:absolute;display:block;mix-blend-mode:screen}
   @keyframes gl-shake{0%{transform:translate(0,0)}25%{transform:translate(-3px,1px)}50%{transform:translate(2px,-2px)}75%{transform:translate(-1px,2px)}100%{transform:translate(3px,0)}}
   @keyframes gl-scan{to{background-position:0 40px,0 0}}
   @keyframes gl-bar{0%{top:10%}30%{top:62%}60%{top:35%}100%{top:85%}}
   @keyframes gl-slice{0%{clip-path:inset(0)}33%{clip-path:inset(10% -4px 55% 4px)}66%{clip-path:inset(60% 4px 0 -4px)}100%{clip-path:inset(0)}}
-  .arena{position:relative;height:340px;margin:14px 0 0;border:4px solid #000;background:#140a22;box-shadow:var(--px) var(--px) 0 #000;overflow:hidden}
-  .devil{position:absolute;left:calc(50% - 56px);top:14px;width:112px;animation:devilbob .9s steps(2) infinite alternate}
-  .devil.hit{animation:devilhit .16s steps(2) 1;filter:brightness(2.2) saturate(0)}
+  .arena{position:relative;z-index:1000;height:340px;margin:14px 0 0;border:4px solid #000;background:#140a22;box-shadow:var(--px) var(--px) 0 #000;overflow:hidden}   /* 疊在全頁雜訊上面：惡魔、胖貓不受影響 */
+  .arena-bg{position:absolute;inset:0;background:#140a22}
+  body.glitch .arena-bg{background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 2px,transparent 2px 4px),linear-gradient(90deg,rgba(255,42,109,.25),transparent 35%,transparent 65%,rgba(5,217,232,.25)),#140a22}
+  .devil{position:absolute;right:16px;top:14px;width:112px;z-index:2;animation:devilbob .9s steps(2) infinite alternate}
+  .devil svg{display:block}
+  .devil .df2{position:absolute;left:0;top:0;visibility:hidden;animation:devflip .5s steps(1) infinite}
+  .devil .df1{animation:devflip .5s steps(1) infinite reverse}
+  .devil .dfh{position:absolute;left:0;top:0;visibility:hidden}
+  .devil.hit .df1,.devil.hit .df2{visibility:hidden!important;animation:none}
+  .devil.hit .dfh{visibility:visible;animation:hitflash .42s steps(1) 1}   /* 被揍時換成被揍圖，中間閃白兩下 */
+  @keyframes hitflash{0%{filter:brightness(3) saturate(0)}20%{filter:none}40%{filter:brightness(3) saturate(0)}60%{filter:none}}
+  @keyframes devflip{0%{visibility:hidden}50%{visibility:visible}}   /* 兩張輪替 */
+  .devil.hit{animation:devilhit .16s steps(2) 1}
   .devil.die{animation:devildie 1.2s steps(8) forwards}
   @keyframes devilbob{from{transform:translateY(0)}to{transform:translateY(-8px)}}
   @keyframes devilhit{0%{transform:translate(-10px,4px) rotate(-8deg)}100%{transform:translate(8px,-2px) rotate(6deg)}}
   @keyframes devildie{0%{opacity:1;transform:rotate(0) scale(1)}25%{opacity:.2;transform:translateY(10px) rotate(20deg)}50%{opacity:1;transform:translateY(40px) rotate(-30deg) scale(.8)}75%{opacity:.2;transform:translateY(120px) rotate(60deg) scale(.5)}100%{opacity:0;transform:translateY(240px) rotate(180deg) scale(.1)}}
-  .cat{position:absolute;left:calc(50% - 75px);bottom:8px;width:150px}
+  .cat{position:absolute;left:8px;bottom:8px;width:150px;z-index:3}
   .cat.rollin{animation:catout 1.1s steps(7) both}
-  .cat.punch{transform:translateY(-10px)}
-  .fist{position:absolute;right:10px;top:50%;margin:-32px 0 0;width:64px;height:64px;padding:0;display:flex;align-items:center;justify-content:center}
-  .fist:active svg{transform:translate(-3px,-3px)}
+  .fist{position:absolute;right:12px;bottom:12px;z-index:4;width:84px;height:84px;padding:0;border:0;background:none;cursor:pointer;touch-action:manipulation}   /* 圓形拳頭鈕（整顆是像素圖） */
+  .sunset-btn.nes-btn,.sunset-btn.nes-btn:hover{color:#fff;text-shadow:2px 2px 0 #2b1b5e,-1px -1px 0 #2b1b5e;background-color:#e05a8e;background-image:linear-gradient(180deg,#2b1b5e 0% 10%,#4a2a8f 10% 20%,#7b3fb0 20% 30%,#b04aa5 30% 40%,#e05a8e 40% 50%,#ff6f7d 50% 60%,#ff8a5c 60% 70%,#ffad66 70% 80%,#ffd08a 80% 90%,#ffe6b3 90% 100%)}   /* 領取通關證明：拍貼的夕陽漸層（上深紫→下淺橘） */
+  .sunset-btn.nes-btn::after{box-shadow:inset -4px -4px rgba(43,27,94,.45)}
+  .fist:focus,.fist:focus-visible{outline:none}
+  .fist svg{display:block;filter:drop-shadow(4px 4px 0 #000)}
+  .fist:active svg{transform:translate(3px,3px);filter:drop-shadow(1px 1px 0 #000) brightness(.9)}
   .throwbox{margin-top:14px;text-align:center}
   .tb-badge{width:56px;margin:0 auto;touch-action:none;cursor:grab;animation:fbfloat 1.2s steps(6) infinite alternate}
   .tb-badge.drag{animation:none}
@@ -253,7 +284,7 @@ const STRIP_TITLE_PNG='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB2QAAAGrCAY
 const CONFIG = {
   playerName: '莉莉',
   openLetterTitle: '邀請函',                   // 開頭的信：站名位置顯示這個，信裡不再重複
-  openLetter: '恭喜妳，符合搭乘 [三十而莉 ． 生日列車] 的條件，若有乘車意願，請於當日認真打扮，持此邀請函前往集合地點 [麟光捷運站] 向 列車長-墨墨 索取密碼，開啟只屬於妳的奇幻旅程，祝妳一路順風。',     // 最一開始的信；輸入密碼才開始；[ ] 裡的字會換色（預設紅，下面可指定）
+  openLetter: '恭喜妳，符合搭乘[三十而莉．生日列車]的條件，若有乘車意願，請於當日認真打扮，持此邀請函前往集合地點[麟光捷運站]向列車長-墨墨索取密碼，開啟只屬於妳的奇幻旅程，祝妳一路順風。',     // 最一開始的信；輸入密碼才開始；[ ] 裡的字會換色（預設粉紅，下面可指定）
   openLetterColors: { '[麟光捷運站]': 'var(--brown)' },   // 麟光＝文湖線咖啡色
   openPassword: 'ILOVEMOMO',                  // 開頭密碼（大小寫不分、忽略空白）
   endLetter: '親愛的莉莉：\n\n恭喜妳轉職成三十歲的輕熟女了，不論妳過去一年經歷了什麼，遇到什麼討厭的人事物，接下來都將開啟新的人生階段：有我相伴的三十歲，我會陪妳踩過一切不順遂，牽著妳不斷前行，持續創造美好的回憶，生日快樂！\n\n墨墨',      // 生日快樂合照之後的信；按「領取通關證明」才到最後一頁
@@ -273,32 +304,37 @@ const CONFIG = {
 
   stages: [
     { id:'s0', name:'麟光', code:'BR03', line:'brown', type:'ticket_puzzle',
-      goStory:'妳撿到一根貓毛，上面帶有魔力，似乎想帶妳去一個地方，與此同時，列車長交給妳一個只有妳能做到的秘密任務', goVerb:'請跟隨貓毛前往', goHair:true,   // 出發頁：故事＋發光貓毛（Ming）
+      litStory:'合照很可愛，列車長很滿意，用魔力幫妳點燃了一根蠟燭，但魔力消耗巨大，妳接下來要用其他方式點燃了。',   // 點亮第 1 根蠟燭頁上方的故事
+      goStory:'妳撿到一根貓毛，上面帶有魔力，似乎想帶妳去一個地方，與此同時，列車長交給妳一個秘密任務。', goVerb:'請跟隨貓毛前往', goHair:true,   // 出發頁：故事＋發光貓毛（Ming）
       sub:'起點 · 列車出發',
-      ticketText:'啊！妳沒有車票，請做一件讓列車長舒服的事來換取車票 {devil}',
+      ticketText:'啊！妳沒有車票，請做一件讓列車長舒服的事來換取車票。{devil}',
       goText:'請前往 科技大樓。',
       departTheme:'出發！',
       noPuzzle:true },
 
     { id:'g1', name:'麟光 >> 科技大樓', code:'移動中', line:'brown', type:'game', game:'volley', transit:true,
+      arriveHair:true,   // 抵達頁：貓毛繞地標＋「跟隨貓毛前往」
       sub:'秘密任務 1 · 排球對決',
       intro:'上車坐好。跟列車長打一場排球。' },
 
     { id:'s1', name:'科技大樓', code:'BR05', line:'brown', type:'library',
+      litStory:'將密碼給小精靈後，小精靈幫妳點燃了一根蠟燭，並告訴妳，原來胖貓被封印在大安森林公園，胖貓可以幫妳點燃蠟燭。',   // 點亮第 2 根蠟燭頁上方的故事
+      goLines:['請前往 <span class="big">大安森林公園站</span>','解救胖貓','並在路上進行列車長給妳的第二個秘密任務'],   // 目的地頁三行（Ming）
       sub:'圖書館 · 一本書',
-      intro:'跟隨貓毛從 2 號出口出站走到台北市立圖書館總館。',
+      intro:'跟隨貓毛從 2 號出口出站，前往台北市立圖書館總館。',
       // 書名＝莉莉 的 相 片；相＝木＋目（木頭做的眼睛），片＝披薩沒有欺（Ming 2026-11-03 定）
       riddle:'找一本書，書名：\n<b>XX 的 YZ</b>\n\nXX ＝ 墨墨最喜歡誰？\nY ＝ {tree} {eye}\nZ ＝ 披薩沒有欺',
       riddleAnswer:'莉莉的相片',
       // 北市圖館藏查詢 2026-11-03：總館 1 本（C01 總館／一般書庫區，可外借）；當天早上再查一次在不在架上
       book:{ title:'莉莉的相片', author:'佩姬.唐恩', call:'873.57 7760', isbn:'9789869520164', where:'總館 一般書庫區' },
       bookAnswer:'164',        // 書背 ISBN 末 3 碼（Ming 2026-11-04：要明講是 ISBN，館藏條碼會混淆）
-      callDigits:'87357',      // 索書號 ???.?? 的 5 位數字，用幾A幾B（終極密碼）猜
-      callTail:'7760',
+      callDigits:'873',        // 索書號前 3 碼，用幾A幾B（終極密碼）猜（Ming：只猜前三個數字）
+      callTail:'.57 7760',     // 題目上直接給的後半
       hints:[],
       nextText:'請前往 <span class="big">大安站</span>' },
 
     { id:'g2', name:'科技大樓 >> 大安森林公園', code:'移動中', line:'red', transit:true, type:'game', game:'song',
+      arriveStory:'妳在前往的路途上，遇到好心的老太太，她告訴妳，想解除胖貓的封印必須要有徽章。但解封的徽章碎成兩半，被藏在兩個地方。',   // 抵達頁上方的敘述（貓毛已失去魔力）
       sub:'秘密任務 2 · 莉莉之歌',
       intro:'這 4 句歌詞裡都藏著莉莉。聽一聽，把歌名填進來。',
       // 歌詞是莉莉諧音版；yt＝YouTube 影片 id，start／end＝播放起訖秒數（估的，試聽後校正）
@@ -312,22 +348,27 @@ const CONFIG = {
 
     { id:'s3', name:'大安森林公園', code:'R06', line:'red', type:'firebadge',
       sub:'封印之地 · 拯救胖貓',
-      story:'胖貓被封印在這一站了。解封的徽章碎成兩半，藏在這一站的兩處。用手機相機找到藏在異次元的徽章，合成後就能解開胖貓的封印。',
+      goStory:'列車長肚子餓了，請前往妳最熟悉的地方，幫助他填飽肚子，並完成第三個秘密任務。',   // 目的地頁（往東門）上方的敘述
+      litStory:'胖貓幫妳點燃一根蠟燭，並告訴妳，危急時刻丟出徽章，會有好事發生，接著就去睡覺了。',   // 點亮第 3 根蠟燭頁上方的故事
+      story:'抵達胖貓的封印之地。用異次元觀測器找到藏在異次元的徽章，合成後就能解開胖貓的封印。',
       clue:'11月盛開的美麗',
       // 輪盤上的兩個方位（度，0＝北）；〈四季〉在穿堂層北側牆面、〈大安之花〉在車站西側空橋旁廣場，現勘校正
       mind:'img/targets_all.mind',   // 一個目標檔：索引 0–1＝〈四季〉牆、2–4＝〈大安之花〉
       targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mindIdx:[0,1]}, {key:'flower', icon:'✿', name:'花', heading:222, mindIdx:[2,3,4], color:{pink:0.02, red:0.004, blueMax:0.08}} ],   // 花：影像＋顏色同時跑，哪個先命中算哪個；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
       // 正式版用 MindAR 辨識：現勘拍〈四季〉冬天段、〈大安之花〉正面當目標圖；草版先對準 3 秒就出現
-      hints:['地點：一半在站內、一半在站外','左半：藏在牆上的季節','右半：藏在一朵花'],
+      hints:['地點：一半在站內、一半在站外。','左半：藏在牆上的季節。','右半：藏在一朵大花內。'],
       nextText:'' },
 
     { id:'g3', name:'大安森林公園 >> 東門', code:'移動中', line:'red', transit:true, type:'game', game:'memory',
+      arriveStory:'列車長的肚子咕嚕咕嚕叫。',   // 抵達頁（往東門）地標上方的敘述
       sub:'秘密任務 3 · 記憶莉考驗',
       intro:'翻開兩張一樣的牌。翻錯會蓋回去。',
       icons:['man','lily','ball','wine','cat','donut'],   // 像素圖示：男主角、莉莉、排球、酒杯、橘貓、甜甜圈（6 對）
       nextText:'' },
 
     { id:'s4', name:'東門', code:'R07 / O06', line:'red', type:'photo_task',
+      goStory:'列車長說：「我知道附近有個人能幫妳點燃蠟燭，邊移動邊完成第四個秘密任務吧。」',   // 目的地頁（往忠孝新生）上方的敘述
+      litStory:'吃飽後列車長魔力恢復了一部分，再次幫妳點燃了一根蠟燭。',   // 點亮第 4 根蠟燭頁上方的故事
       sub:'莉莉的家 · 莉害的美食',
       intro:'挑一個妳覺得好吃的食物，帶列車長去吃。',
       preStep:{ button:'列車長滿意', icon:'food' },   // 按了才進合照；icon 畫在說明下面
@@ -339,8 +380,10 @@ const CONFIG = {
       nextText:'' },
 
     { id:'s5d', name:'忠孝新生', code:'O07 / BL14', line:'orange', type:'director',
+      goStory:'此時列車長也給妳第五個秘密任務，難道要集齊 5 個秘密數字了嗎？',   // 目的地頁（往忠孝復興）上方的敘述
+      litStory:'IG 總編替妳點燃蠟燭了！同時他告訴妳，附近出現一隻邪惡的惡魔，似乎打著不好的主意，前往忠孝復興調查。',   // 點亮第 5 根蠟燭頁上方的故事
       sub:'天地攝影棚 · 好美莉',
-      intro:'在忠孝新生站附近找一個漂亮的點，這一關妳是模特兼動作指導，列車長是攝影師，他只能照妳的話做：拍出一張可以發 IG 的照片就過關。',
+      intro:'在忠孝新生站遇到 IG 總編了！這一關妳是模特兼動作指導，總編是攝影師，他只能照妳的話做：拍出一張總編滿意並且可以發 IG 的照片，總編會替妳點燃蠟燭。',
       styles:[
         {n:'雜誌封面', tip:'人放在三分線上，留一大片空白給「標題」', filter:'contrast(1.1) saturate(1.1)'},
         {n:'電影感', tip:'橫著拍，人小一點，前景要有東西擋一下', filter:'contrast(1.15) saturate(.85) sepia(.15)'},
@@ -351,13 +394,16 @@ const CONFIG = {
       directions:['說出要站的位置','指定相機高度（蹲／平視／舉高）','說「等一下」等背景的人走掉','喊「三、二、一」才能按'],
       // cardText:'朱日快樂',         // 備案：設了就會把定案照壓字成生日卡
       cardSub:'生日列車 · 墨墨環狀線',  // 小字；想放日期就改這裡
-      hints:['抬頭看天花板和光從哪來','紅磚牆、鐵門、玻璃反射都是好背景','讓列車長趴下來拍'] },
+      hints:['抬頭看天花板和光從哪來。','紅磚牆、鐵門、玻璃反射都是好背景。','讓列車長趴下來拍。'] },
 
     { id:'m1', name:'忠孝新生 >> 忠孝復興', code:'移動中', line:'blue', type:'photo_task', transit:true, noCandle:true,
+      arriveStory:'空間已經開始不穩定了，還被列車長拖了一下台錢，趕緊前往忠孝復興！',   // 抵達頁（往忠孝復興）地標上方的敘述
+      noCandleText:'列車長說：「只是拍爽的，其實拿不到任何東西，ㄏㄏ」', goBtn:'ㄏㄏ',   // 拍完後的黑字＋按鈕字（Ming）
       sub:'路途中 · 金牌特務',
-      theme:'出任務！' },
+      theme:'秘密任務！' },
 
-    { id:'s6', name:'忠孝復興', code:'BL15 / BR10', line:'blue', type:'spot', bossHits:30,   // 全部看破 → 次元惡魔出現 → 丟徽章召喚胖貓 → 按拳頭 30 下打敗（不告訴玩家幾下）
+    { id:'s6', name:'忠孝復興', code:'BL15 / BR10', line:'blue', type:'spot', bossHits:30, litStory:'次元惡魔消散的魔力點燃了蠟燭，胖貓揍完惡魔心滿意足的回去睡覺了。',
+      goStory:'六根蠟燭都點燃了，燭火都指向同個方向，是麟光！回到麟光並執行第 5 個秘密任務，列車長這次不會騙人了，應該吧。',   // 目的地頁（回麟光）上方的敘述   // 全部看破 → 次元惡魔出現 → 丟徽章召喚胖貓 → 按拳頭 30 下打敗（不告訴玩家幾下）
       sub:'次元入侵 · 好眼莉',
       intro:'次元惡魔想用虛假的空間替換現實，請依序找到惡魔想替換的地點，並看破假空間的破綻，阻止惡魔！',
       // 一張一張來：先看圖 →「已找到地點 N」→ 開始找哪裡不一樣＋答題，答對才給下一張
@@ -400,6 +446,7 @@ const CONFIG = {
       ], },
 
     { id:'g5', name:'忠孝復興 >> 麟光', code:'移動中', line:'brown', type:'game', game:'puzzle', transit:true,
+      arriveStory:'隨著麟光越來越近，蠟燭的魔力越來越強了。',   // 抵達頁（回麟光）地標上方的敘述
       sub:'秘密任務 5 · 莉莉皆辛苦',
       intro:'點兩個交換位置，完成拼圖。',
       grid:8, image:'img/s0_puzzle_pixel.png' },
@@ -407,8 +454,8 @@ const CONFIG = {
     { id:'s7', name:'麟光', code:'BR03', line:'brown', type:'final',
       sub:'三十而莉',
       intro:'5 碼都在妳手上了。轉開密碼，蠟燭會亮起來；許一個願望說給列車長聽，然後對著手機吹。',
-      hints:['5 碼的順序＝妳拿到的順序','第 1 碼是在這裡拿到的','再吹用力一點'] },
-    { id:'s9', name:'麟光', code:'BR03', line:'brown', type:'photo_task', noCandle:true, finalPhoto:true,
+      hints:['5 碼的順序＝妳拿到的順序。','第 1 碼是在這裡拿到的。','再吹用力一點。'] },
+    { id:'s9', name:'麟光', code:'BR03', line:'brown', type:'photo_task', noCandle:true, finalPhoto:true, photoPrompt:'最後的秘密任務，請拍一張合照，合照主題：',
       sub:'生日快樂！',
       theme:'生日快樂！' },
   ],
@@ -416,7 +463,7 @@ const CONFIG = {
   // 備案關卡：要換哪一站就寫 useAlt:{ s3:'rainbow' }；站名、代碼、信都沿用原站，碼沿用 digits
   // 網址加 ?alt=s3:rainbow 可以臨時試，不會存起來
   // 拍貼機相片：依序收這幾關的合照，結尾組成一條（缺的跳過）
-  stripOrder: ['s0','s4','m1','s9'],   // 四格拍貼：出發！／好好吃！／出任務！／生日快樂！
+  stripOrder: ['s0','s4','m1','s9'],   // 四格拍貼：出發！／好好吃！／秘密任務！／生日快樂！
   stripTitle: '三十而莉',
   stripTitleImg: STRIP_TITLE_PNG,   // 拍貼標題圖（GPT 畫的「三十而莉」，原檔 img/strip_title.png）；內嵌才不會讓畫布被汙染無法匯出；設 '' 就用下面的程式像素字
   stripTitleStyle: { gap:2, chars:{ '三':{boldY:true}, '莉':{size:14} } },   // 拍貼標題像素字：字距（格）、個別字加粗／放大
@@ -431,7 +478,7 @@ const CONFIG = {
       intro:'站內有一面公共藝術說明牌。列車長會比手畫腳告訴妳在哪層哪面牆；找到後用相機對準牌子，數字會浮出來。再跟他拿「取第幾位」的卡。',
       arString:'4 8 1 5 2',   // AR 浮出的數字串（示意，正式版用 MindAR 疊圖）；NPC 卡寫「取第 3 位」
       answer:'1',             // 過關答案（實境關不給密碼數字，只點蠟燭）
-      hints:['不在月台層','轉換層電扶梯前','南側牆面'],
+      hints:['不在月台層。','轉換層電扶梯前。','南側牆面。'],
       letter:'第三封信\n\n我常在轉乘的路上想妳，\n然後就坐過站。' },
     sound_puzzle: { type:'sound_puzzle',
       sub:'聽聲辨站＋拼圖',
@@ -439,7 +486,7 @@ const CONFIG = {
       soundCorrect:1,         // 0/1/2 哪一段是對的（示意音）
       puzzleNumber:'1914',
       answer:'2',             // 過關答案（1+9+1+4+7 取個位數）
-      hints:['橘線的到站音比較短','指標牌在出口 1 方向','四個數字相加之後再加 7'],
+      hints:['橘線的到站音比較短。','指標牌在出口 1 方向。','四個數字相加之後再加 7。'],
       letter:'第六封信\n\n我們一起拼過很多事，\n沒有一次比今天簡單，\n也沒有一次比今天重要。' },
     ice: { type:'food',
       sub:'吃冰 · 生日蛋糕',
@@ -456,20 +503,20 @@ const CONFIG = {
       headingTolerance:18,
       targetHue:200,          // 目標顏色色相 0–360（示意：藍）
       hueTolerance:30,
-      hints:['先找到羅盤變綠的方向','作品在下沉庭園那一側','顏色在作品的上半部'],
+      hints:['先找到羅盤變綠的方向。','作品在下沉庭園那一側。','顏色在作品的上半部。'],
       letter:'第四封信\n\n妳是我四季裡\n唯一不換的那一季。' },
     // 小遊戲（2026-11-03 Ming：先從主關拿掉，之後穿插在搭車路段）
     spot: { type:'spot', sub:'找不同',
       intro:'列車長手上的照片和眼前的車站不太一樣。找出照片被動過的地方，點照片上那些位置。',
       image:'', spots:[ {x:22,y:38}, {x:63,y:30}, {x:78,y:72} ],
-      hints:['看看標誌和文字','有一個東西顏色不對','右下角再看一次'] },
+      hints:['看看標誌和文字。','有一個東西顏色不對。','右下角再看一次。'] },
     rainbow: { type:'rainbow', sub:'彩虹獵人 · 拍照取色',
       intro:'列車長抽出 5 種顏色。8 分鐘內，在站內和出口找到 5 樣這些顏色的東西拍下來，彩虹集滿就過關。卡住可以跟列車長買提示，但他會出一個小任務。',
       palette:[ {n:'紅',h:0}, {n:'橙',h:30}, {n:'黃',h:55}, {n:'綠',h:120}, {n:'藍',h:210}, {n:'紫',h:275}, {n:'粉',h:335} ],
       pick:5, seconds:480, hueTolerance:26,
       npcTasks:['原地轉三圈再說一次我的全名','學一種動物叫三秒','用唱的說出妳現在在哪一站','跟列車長擊掌十下不能笑場'],
       tips:['招牌和廣告是顏色最多的地方','出口的指標牌有藍有綠','妳自己身上穿的不算'],
-      hints:['先找最難的顏色','往出口走，外面顏色更多','問列車長'] },
+      hints:['先找最難的顏色。','往出口走，外面顏色更多。','問列車長。'] },
   },
 };
 /* ========================================================= */
@@ -489,6 +536,29 @@ const CONFIG = {
 const LINE = { brown:'var(--brown)', red:'var(--red)', orange:'var(--orange)', blue:'var(--blue)', green:'var(--green)' };
 const $ = (s, el=document) => el.querySelector(s);
 const main = $('#main');
+/* 預先載入：走到 preloadFrom 那一關以後，背景下載後面關卡的大圖（忠孝復興 5 張＋圖示＋四幅畫），到現場就不用等 */
+const PRELOAD_KEEP=[]; let preloadDone=false;
+function preloadAhead(){
+  if(preloadDone) return; const from=CONFIG.stages.findIndex(x=>x.id==='s4'); if(state.stage<from) return;
+  preloadDone=true; const urls=new Set();
+  CONFIG.stages.forEach(st=>(st.photos||[]).forEach(p=>{ if(p.image) urls.add(p.image); (p.qs||[]).forEach(q=>{ (q.choices||[]).forEach(c=>urls.add(c.img)); (q.seq||[]).forEach(it=>urls.add(it.img)); }); }));
+  const list=[...urls]; let i=0;
+  const next=()=>{ if(i>=list.length) return; const im=new Image(); im.decoding='async'; im.onload=im.onerror=()=>setTimeout(next,50); im.src=list[i++]; PRELOAD_KEEP.push(im); };   // 一張一張來，不搶目前頁面的頻寬
+  setTimeout(()=>{ if(window.requestIdleCallback) requestIdleCallback(next,{timeout:3000}); else next(); }, 1500);   // 先讓目前頁面載完再開始
+}
+/* 敘述文字裡的捷運站名一律上該站路線色（Ming）；頁首站名列、按鈕、輸入框不動 */
+const STATION_COLOR = [['大安森林公園','red'],['麟光捷運站','brown'],['科技大樓','brown'],['忠孝新生','orange'],['忠孝復興','blue'],['東門','red'],['麟光','brown']];
+const STATION_RE = new RegExp('(?:'+STATION_COLOR.map(x=>x[0]).join('|')+')站?','g');   // 後面接「站」也一起上色
+function colorStations(root){
+  const skip='button,.nes-btn,.station,input,textarea,svg,.mrt,h1,label,.npc,script,style';
+  const w=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode:n=>{ STATION_RE.lastIndex=0; return (n.parentElement && !n.parentElement.closest(skip) && STATION_RE.test(n.nodeValue)) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT; } });
+  const nodes=[]; while(w.nextNode()) nodes.push(w.currentNode);
+  nodes.forEach(n=>{ const f=document.createDocumentFragment(); let last=0; const t=n.nodeValue; STATION_RE.lastIndex=0; let m;
+    while((m=STATION_RE.exec(t))){ f.appendChild(document.createTextNode(t.slice(last,m.index)));
+      const sp=document.createElement('span'); sp.className='mrt'; sp.style.color=LINE[STATION_COLOR.find(x=>m[0].startsWith(x[0]))[1]]; sp.textContent=m[0]; f.appendChild(sp); last=m.index+m[0].length; }
+    f.appendChild(document.createTextNode(t.slice(last))); n.replaceWith(f); });
+}
+new MutationObserver(()=>colorStations(main)).observe(main,{childList:true,subtree:true});
 
 const state = load();
 function load(){
@@ -516,6 +586,7 @@ function pageNext(){
   const go=document.getElementById('go'); if(go){ go.click(); return; }          // 開場
   if(document.getElementById('fc') && !document.getElementById('gocode')){ renderSmoke(); setTimeout(recordPage,0); return; }   // 吹蠟燭 → 煙霧櫃號（跳過願望鈕）
   const gc=document.getElementById('gocode'); if(gc){ gc.click(); return; }
+  const ol=document.getElementById('openletter')||document.getElementById('cert'); if(ol){ ol.click(); return; }   // 獲得一封信 → 看信 → 領取通關證明
   const s=CONFIG.stages[state.stage]; if(!s || state.done[s.id]) return;
   const step=(k,v)=>{ state.extra[k]=v; save(); render(); };
   if(s.type==='ticket_puzzle'){                                                  // 車票 → 合照 → 前往 → 拼圖 → 拼好 → 過關
@@ -772,11 +843,11 @@ const EYE = pxIcon([
 
 // ── GPT 像素圖（Ming 2026-11-04，_參考圖/GPT像素圖/*.png，32px 一格、純色、已去背）──
 const CAT_PAL={K:'#603713',O:'#ebc99e',L:'#f7deb9',W:'#fff3dc',P:'#f5a2af',X:'#ffffff'};   // 胖貓系列共用色
-const DEVIL_PAL={K:'#251726',D:'#3a133d',V:'#a858c5',L:'#e3b4ed',P:'#ef8daa',W:'#fff3dc'};
+const DEVIL_PAL={K:'#251726',D:'#3a133d',V:'#a858c5',L:'#e3b4ed',P:'#ef8daa',W:'#fff3dc',R:'#d94b68'};
 function spriteSVG(rows, pal, cssW, attrs){ let out=''; rows.forEach((r,y)=>[...r].forEach((c,x)=>{ if(c!=='.' && pal[c]) out+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${pal[c]}"/>`; }));
   const h=/px$/.test(cssW)?Math.round(parseFloat(cssW)*rows.length/rows[0].length)+'px':'auto';   // 高度直接算好，不同瀏覽器才不會多留空
   return `<svg viewBox="0 0 ${rows[0].length} ${rows.length}" shape-rendering="crispEdges" style="width:${cssW};height:${h};display:block" ${attrs||''}>${out}</svg>`; }
-const BADGE_ROWS=['..............KKKKKK..............', '...........KKKWWWWWWKKK...........', '........KKKWWWWWWWWWWWWKKK........', '.......KWWWWWWWWWWWWWWWWWWK.......', '......KWWWWWWWWWWWWWWWWWWWWK......', '....KKWWWWWWWWWWWWWWWWWWWWWWKK....', '...KWWWWKKKKWWWWWWWWWWKKKKWWWWK...', '...KWWWKKLLKKWWWWWWWWKKLLKKWWWK...', '..KWWWWKKLLLKKWWWWWWKKLLLKKWWWWK..', '..KWWWKLLPPLLKKKKKKKKLLPPLLKWWWK..', '.KWWWWKLLPPPLLOOLLOOLLPPPLLKWWWWK.', '.KWWWWKLLPLLLLOOLLOOLLLLPLLKWWWWK.', '.KWWWWKKLLLLLLOOLLOOLLLLPLKKWWWWK.', 'KWWWWKKOOLLLLLOOLLOOLLLLLOOKWWWWWK', 'KWWWWKLLLLLLLLLOLLOLLLLLLLLLKWWWWK', 'KWWWWKLLLLLLLLLLLLLLLLLLLLLLKWWWWK', 'KWWWKLLLLLLKKKLLLLLLKKKLLLLLLKWWWK', 'KWWWKOOLLLLXKKLLLLLLXKKLLLLOOKWWWK', 'KWWKOOOOOLLKKKLLLLLLKKKLLOOOOOKWWK', 'KWWKOOOOOLLLLLXLPPPXLLLLLOOOOOKWWK', 'KWWKLLLLLLLLLXXXPPPXXLLLLLLLLLKWWK', '.KWKLOOOLLLLXXXXXPXXXXLLLLOOOLKWK.', '.KWWKOOLLLXXXXXXXKXXXXXXLLLOOKWWK.', '.KWWKLLLLXXXXXKKKXKKXXXXXLLLLKWWK.', '..KWKLLLXXXXXXXXXXXXXXXXXXLLLKWK..', '..KWWKLLXXXXXXXXXXXXXXXXXXLLKWWK..', '...KWWKKXXXXXXXXXXXXXXXXXXKKWWK...', '...KWWWKKXXXXXXXXXXXXXXXXKKWWWK...', '....KWWWWKKKXXXXXXXXXXKKKWWWWK....', '.....KKWWWWWKKKKKKKKKKWWWWWKK.....', '......KKWWWWWWWWWWWWWWWWWWK.......', '........KKKWWWWWWWWWWWWKKK........', '...........KKKWWWWWWKKK...........', '..............KKKKKK..............'];   // 胖貓徽章 34×34
+const BADGE_ROWS=['...............KKKKKKKK...............', '............KKKKKKKKKKKKKK............', '..........KKKKKKWWWWWWKKKKKK..........', '........KKKKKWWWWWWWWWWWWKKKKK........', '.......KKKKWWWWWWWWWWWWWWWWKKKK.......', '......KKKWWWWWWWWWWWWWWWWWWWWKKK......', '.....KKKWWWWWWWWWWWWWWWWWWWWWWKKK.....', '....KKKWWWWWWWWWWWWWWWWWWWWWWWWKKK....', '...KKKWWWWKKKKWWWWWWWWWWKKKKWWWWKKK...', '...KKWWWWKKLLKKWWWWWWWWKKLLKKWWWWKK...', '..KKKWWWWKKLLLKKWWWWWWKKLLLKKWWWWKKK..', '..KKWWWWKLLPPLLKKKKKKKKLLPPLLKWWWWKK..', '.KKKWWWWKLLPPPLLOOLLOOLLPPPLLKWWWWKKK.', '.KKWWWWWKLLPLLLLOOLLOOLLLLPLLKWWWWWKK.', '.KKWWWWWKKLLLLLLOOLLOOLLLLPLKKWWWWWKK.', 'KKKWWWWKKOOLLLLLOOLLOOLLLLLOOKWWWWWKKK', 'KKWWWWWKLLLLLLLLLOLLOLLLLLLLLLKWWWWWKK', 'KKWWWWWKLLLLLLLLLLLLLLLLLLLLLLKWWWWWKK', 'KKWWWWKLLLLLLKKKLLLLLLKKKLLLLLLKWWWWKK', 'KKWWWWKOOLLLLXKKLLLLLLXKKLLLLOOKWWWWKK', 'KKWWWKOOOOOLLKKKLLLLLLKKKLLOOOOOKWWWKK', 'KKWWWKOOOOOLLLLLXLPPPXLLLLLOOOOOKWWWKK', 'KKKWWKLLLLLLLLLXXXPPPXXLLLLLLLLLKWWKKK', '.KKWWKLOOOLLLLXXXXXPXXXXLLLLOOOLKWWKK.', '.KKWWWKOOLLLXXXXXXXKXXXXXXLLLOOKWWWKK.', '.KKKWWKLLLLXXXXXKKKXKKXXXXXLLLLKWWKKK.', '..KKWWKLLLXXXXXXXXXXXXXXXXXXLLLKWWKK..', '..KKKWWKLLXXXXXXXXXXXXXXXXXXLLKWWKKK..', '...KKWWWKKXXXXXXXXXXXXXXXXXXKKWWWKK...', '...KKKWWWKKXXXXXXXXXXXXXXXXKKWWWKKK...', '....KKKWWWWKKKXXXXXXXXXXKKKWWWWKKK....', '.....KKKWWWWWWKKKKKKKKKKWWWWWWKKK.....', '......KKKWWWWWWWWWWWWWWWWWWWWKKK......', '.......KKKKWWWWWWWWWWWWWWWWKKKK.......', '........KKKKKWWWWWWWWWWWWKKKKK........', '..........KKKKKKWWWWWWKKKKKK..........', '............KKKKKKKKKKKKKK............', '...............KKKKKKKK...............'];   // Ming 2026-11-04：外框加粗成 2 格正圓（畫布 38×38，臉維持原尺寸置中）
 const BADGE_COL=CAT_PAL;
 function badgeSVG(part, cssW){                         // part: 'L' 左半、'R' 右半、其他＝整枚
   const W=BADGE_ROWS[0].length, H=BADGE_ROWS.length, half=W/2, x0=part==='R'?half:0, w=part==='L'||part==='R'?half:W; let out='';
@@ -787,9 +858,11 @@ const SPRITE_ROWS=['................KKKKKKKK..............', '.............KKKLL
 const SPRITE_SVG=spriteSVG(SPRITE_ROWS, CAT_PAL, '216px', 'class="fire-sprite" aria-label="胖貓"');
 const CAT_BACK_ROWS=['..................K......K....', '.................KLK....KLK...', '................KLLLK...KLLK..', '................KLLLLKKKLLLK..', '................KLLLOLLOLLLK..', '................KLLLOLLOLLLK..', '...............KLLLLOLLOLLLLK.', '...............KLLLLLLLLLLLLK.', '...........KKKKKLLLLLLLLLLLLK.', '.........KKOLLLKKLLLLLLLLLLKK.', '.......KKLLLLLLLLOOOOLLLLOK...', '.....KKLLLLLLLLLLLLLOOOLLOK...', '.....KLOOOOOOOOLLLLLLLLLLKKKK.', '....KOOOOOOOOOOOOOLLLLLLLKLLLK', '....KLLLLLLLLOOOOOOOOLLLLLLLLK', '...KLLLLLLLLLLLLLOOOOLLLLLLLKK', '...KLLLLLLLLLLLLLOOOOOLLLLLKK.', '...KOOOOOOOLLLLLLLLLLLLLLLKK..', '..KKOOOOOOOOOOLLLLLLLLLLLLK...', '..KLLLLLLLOOOOOLLLLLLLLLLLK...', '..KLLLLLLLLLLLLLLOOOOLLLLLK...', '..KLLLOOOOLLLLLLLLLLOOOLLLK...', '..KLOOOOLLLLLLLLLLLLLOOOLKK...', '..KLOOOLLLLLLLLLLLLLLOOLLK....', '.KKKOOLLLLLLLLLLLLLLLLLLKK....', 'KLLLLLLLLLLLLLLLLLLLLLLKK.....', 'KLLLLLLLLLLLLLLLLLLLLKKK......', '.KKKKKKKKKKKKKKKKKKKKK........'];   // 胖貓背影 30×28（打次元惡魔時背對玩家）
 const CAT_PUNCH_ROWS=['..................K......K........', '.................KLK....KLK.......', '................KLLLK...KLLK......', '................KLLLLKKKLLLK......', '................KLLLOLLOLLLK......', '................KLLLOLLOLLLK......', '...............KLLLLOLLOLLLLK.....', '...............KLLLLLLLLLLLLK.....', '...........KKKKKLLLLLLLLLLLLK.KKK.', '.........KKOLLLKKLLLLLLLLLLKK.KXLK', '.......KKLLLLLLLLOOOOLLLLOKKKKLLLK', '.....KKLLLLLLLLLLLLLOOOLLOKKLLLLK.', '.....KLOOOOOOOOLLLLLLLLLLLLLLLLK..', '....KOOOOOOOOOOOOOLLLLLLLLLLLLK...', '....KLLLLLLLLOOOOOOOOLLLLLLLLK....', '...KLLLLLLLLLLLLLOOOOLLLLLLLK.....', '...KLLLLLLLLLLLLLOOOOOLLLLLKK.....', '...KOOOOOOOLLLLLLLLLLLLLLLKK......', '..KKOOOOOOOOOOLLLLLLLLLLLLK.......', '..KLLLLLLLOOOOOLLLLLLLLLLLK.......', '..KLLLLLLLLLLLLLLOOOOLLLLLK.......', '..KLLLOOOOLLLLLLLLLLOOOLLLK.......', '..KLOOOOLLLLLLLLLLLLLOOOLKK.......', '..KLOOOLLLLLLLLLLLLLLOOLLK........', '.KKKOOLLLLLLLLLLLLLLLLLLKK........', 'KLLLLLLLLLLLLLLLLLLLLLLKK.........', 'KLLLLLLLLLLLLLLLLLLLLKKK..........', '.KKKKKKKKKKKKKKKKKKKKK............'];   // 胖貓出拳 34×28
-const DEVIL_ROWS=['..........DD....DD..........', '..........DD....DD..........', 'DDDDD....DWD....DWD....DDDDD', 'DVVVVD..DWWD....DWWD..DVVVVD', 'DVVVVDDDDWWDD..DDWWDDDDVVVVD', 'DVLLLVDDDWWWDDDDWWWDDDVLLLVD', 'DVLLLVVVDDWWDDVDWWDDVVVLLLVD', 'DVLLLLLVVDDDVVVVDDDVVLLLLLVD', 'DVLLLLLVVVVVVVVVVVVVVLLLLLD.', 'DDLLLLLVVVVVVVVVVDDDVLLLLD..', '.DDLLLLVVVVVVVVVDKDWDVLLLD..', '..DLLLVVVDDVVVVVDKKWDVVDD...', '..DDLLVVDKWDVVVVDKKKDVVD....', '...DDDVVDKWDDLLLDKKKDVD.....', '.....DVVDKKDDLDDLDDDVVD.....', '.....DDVDKKDLLDDLLLLVD......', '......DVVDDLLLLDDDDLD.DDD...', '.......DVLLLDDDDPDPDD.DLD...', '........DVLLLLLLDPPD..DVDDD.', '........DDDDLLLLLDDD.DVVVVD.', '......DDDDDDVLLLLDDD.DVVVVD.', '.....DDVVVVVVVLLLVVDDDVVVVD.', '....DDVVVVVVVLLLLVVVVDDVVD..', '....DDVVVDDVLLLLLLVVVVVVD...', '....DDDVVVDVLLLLLLVDVVVD....', '......DDVLDVLLLLLLVDDDD.....', '...DDD.DLLDVLLLLLLVD........', '...DVD.DDDVVLLLLLLVD........', '...DVVDDDVVVVVLLLVVD........', '...DDVVVDVVVVVLLLVVD........', '....DDDDDVVVDDDDDVVD........', '........DVVDD...DVVDDD......', '.......DLLLD....DLLLLD......', '.......DLLLD....DDLLLD......', '.......DDDDD....DDDDDD......'];   // 次元惡魔（紫色吉娃娃）28×35
-const FIST_ROWS=['............', '...KKKKK....', '..KWWWWWK...', '.KWWKWKWWK..', '.KWWWWWWWKK.', 'KWWKWKWKWWWK', 'KWWWWWWWWWWK', 'KWKWKWKWKWWK', 'KWWWWWWWWWK.', '.KWWWWWWWWK.', '..KKKKKKKK..', '............'];
-const FIST_SVG=spriteSVG(FIST_ROWS, {K:'#000',W:'#ffd9a8'}, '40px', 'aria-label="出拳"');
+const DEVIL_ROWS=['..........DD....DD..........', '..........DD....DD..........', 'DDDDD....DWD....DWD....DDDDD', 'DVVVVD..DWWD....DWWD..DVVVVD', 'DVVVVDDDDWWDD..DDWWDDDDVVVVD', 'DVLLLVDDDWWWDDDDWWWDDDVLLLVD', 'DVLLLVVVDDWWDDVDWWDDVVVLLLVD', 'DVLLLLLVVDDDVVVVDDDVVLLLLLVD', 'DVLLLLLVVVVVVVVVVVVVVLLLLLD.', 'DDLLLLLVVVVVVVVVVDDDVLLLLD..', '.DDLLLLVVVVVVVVVDKDWDVLLLD..', '..DLLLVVVDDVVVVVDKKWDVVDD...', '..DDLLVVDKWDVVVVDKKKDVVD....', '...DDDVVDKWDDLLLDKKKDVD.....', '.....DVVDKKDDLDDLDDDVVD.....', '.....DDVDKKDLLDDLLLLVD......', '......DVVDDLLLLDDDDLD..DDD..', '.......DVLLLDDDDPDPDD..DLD..', '........DVLLLLLLDPPD..DDVDD.', '........DDDDLLLLLDDD.DVVVVD.', '......DDDDDDVLLLLDDD.DVVVVD.', '.....DDVVVVVVVLLLVVDDDVVVVD.', '....DDVVVVVVVLLLLVVVVDDVVD..', '....DDVVVDDVLLLLLLVVVVVVD...', '....DDDVVVDVLLLLLLVDVVVD....', '......DDVLDVLLLLLLVDDDD.....', '...DDD.DLLDVLLLLLLVD........', '...DVD.DDDVVLLLLLLVD........', '...DVVDDDVVVVVLLLVVD........', '...DDVVVDVVVVVLLLVVD........', '....DDDDDVVVDDDDDVVD........', '........DVVDD...DVVDDD......', '.......DLLLD....DLLLLD......', '.......DLLLD....DDLLLD......', '.......DDDDD....DDDDDD......'];   // 次元惡魔（紫色吉娃娃）28×35
+const DEVIL_ROWS2=['..........DD....DD..........', '..........DD....DD..........', 'DDDDD....DWD....DWD....DDDDD', 'DVVVVD..DWWD....DWWD..DVVVVD', 'DVVVVDDDDWWDD..DDWWDDDDVVVVD', 'DVLLLVDDDWWWDDDDWWWDDDVLLLVD', 'DVLLLVVVDDWWDDVDWWDDVVVLLLVD', 'DVLLLLLVVDDDVVVVDDDVVLLLLLVD', 'DVLLLLLVVVVVVVVVVVVVVLLLLLD.', 'DDLLLLLVVVVVVVVVVDDDVLLLLD..', '.DDLLLLVVVVVVVVVDKDWDVLLLD..', '..DLLLVVVDDVVVVVDKKWDVVDD...', '..DDLLVVDKWDVVVVDKKKDVVD....', '...DDDVVDKWDDLLLDKKKDVD.....', '.....DVVDKKDDLDDLDDDVVDDDD..', '.....DDVDKKDLLDDLLLLVD.DLD..', '......DVVDDLLLLDDDDLD.DDVDD.', '.......DVLLLDDDDPDPDD.DVVVD.', '........DVLLLLLLDPPD..DVVVD.', '........DDDDLLLLLDDD..DVVVD.', '......DDDDDDVLLLLDDD.DDDVD..', '.....DDVVVVVVVLLLVVDDDVVD...', '....DDVVVVVVVLLLLVVVVVVD....', '....DDVVVDDVLLLLLLVVVVD.....', '....DDDVVVDVLLLLLLVDVD......', '......DDVLDVLLLLLLVDD.......', '...DDD.DLLDVLLLLLLVD........', '...DVD.DDDVVLLLLLLVD........', '...DVVDDDVVVVVLLLVVD........', '...DDVVVDVVVVVLLLVVD........', '....DDDDDVVVDDDDDVVD........', '........DVVDD...DVVDDD......', '.......DLLLD....DLLLLD......', '.......DLLLD....DDLLLD......', '.......DDDDD....DDDDDD......'];   // 次元惡魔第 2 張（比中指），跟第 1 張每 0.25 秒輪替
+const DEVIL_HIT_ROWS=['..........DD....DD..........', '..........DD....DD..........', 'DDDDD....DWD....DWD....DDDDD', 'DVVVVD..DWWD....DWWD..DVVVVD', 'DVVVVDDDDWWDD..DDWWDDDDVVVVD', 'DVLLLVDDDWWWDDDDWWWDDDVLLLVD', 'DVLLLVVVDDWWDDVDWWDDVVVLLLVD', 'DVLLLLLVVDDDVVVVDDDVVLLLLLVD', 'DVLLLLLDDDDVVVVVVDDDVLLLLLD.', 'DDLLLLLDRWWDDVVDDWWRDDLLLD..', '.DDLLLDDWRWWDVVDWWRRWDLLLD..', '..DLLLRRWWWWRDDWRWWWWDVDD...', '..DDLLDWWWKWWDDWWKWWRDVD....', '...DDDDWWRWWWDDWRWWWWDD.....', '.....DDWRWWRDLLDRWWRWDD.....', '.....DVDDWWDLDDLDWWDVD......', '......DLLDDLLDDDLDDLD.DDD...', '.......DLLVDDDWDDDDLD.DLD...', '........DVLDWDWDPPPD..DVDDD.', '........DLLLDDDDDPPD.DVVVVD.', '......DDDDDDVLLLDDDD.DVVVVD.', '.....DDVVVVVDVLLLDVDDDVVVVD.', '....DDVVVVVVVDLLDVVVVDDVVD..', '....DDVVVDDVLLLLLLVVVVVVD...', '....DDDVVVDVDLLDLLVDVVVD....', '......DDVLDDLLLLDLVDDDD.....', '...DDD.DLLDVLLLLLDVD........', '...DVD.DDDVVLLLLLLVD........', '...DVVDDDVVVVVLLLVVD........', '...DDVVVDVVVVVLLLVVD........', '....DDDDDVVVDDDDDVVD........', '........DVVDD...DVVDDD......', '.......DLLLD....DLLLLD......', '.......DLLLD....DDLLLD......', '.......DDDDD....DDDDDD......'];   // 次元惡魔被揍（次元惡魔_被揍.png）
+const FIST_ROWS=['............................', '.........RRRRRRRRRR.........', '.......RRCCCCBBBBBBRR.......', '......RCCCCCGGGGBBBBBR......', '.....RCCCCGGWWWWGGBBBBR.....', '....RCCCCGWWWWWWWWGBBBBR....', '...RCCCCGWWWWWWWWWGGBBBBR...', '..RCCCCGWWWWWWWWWWWWGBBBBR..', '..RCCCGWWWWGWWWWGWWWWGBBBR..', '.RCCCGWWWWGWWWWGWWWWGWGBBBR.', '.RCCCGWWWGWWWWGWWWWWGWGBBBR.', '.RCCBGWWWGWWWWGWWWWWGWGBBBR.', '.RCBBBGWWWGWWWGWWWWGWGGBBBR.', '.RBBBBBGWWWGWWGGGGGWWGBBBBR.', '.RBBBBBBGGGWGGWWWWWWWGBBBBR.', '.RBBBBBBGWWWWWWWWWWWGGBBBDR.', '.RBBBBBGTTWWWWWWWWWTGBBBDDR.', '.RBBBBGTTTTTWWWWWTTGGBBDDDR.', '.RBBBGGTTTTTTTTTTTGGBBDDDDR.', '..RBGGTTTTTTTTTTTGGBBDDDDR..', '..RGGTTTTTTTTTTTGGBBDDDDDR..', '...RTTTTTTTTTTTGGBBDDDDDR...', '....RTTTTTTTTTGGBBDDDDDR....', '.....RTTTTTTTGGBBDDDDDR.....', '......RTTTTTGGBBDDDDDR......', '.......RRTTGGBBDDDDRR.......', '.........RRRRRRRRRR.........', '............................'];   // 圓形貓拳鈕 28×28（Ming 自己點的版本；手臂用胖貓的淺橘）
+const FIST_SVG=spriteSVG(FIST_ROWS, {R:'#000',W:'#fff',G:'#7a6a5e',T:'#f7deb9',B:'#209cee',C:'#82ceff',D:'#006bb3'}, '84px', 'aria-label="出拳"');
 const icons = t => (t||'').replace(/\{devil\}/g, DEVIL).replace(/\{tree\}/g, TREE).replace(/\{eye\}/g, EYE);
 
 /* 共用 UI */
@@ -834,13 +907,15 @@ function npcBox(s, idx){
     <button class="nes-btn is-primary btn small" id="tbNext">下一頁 ▶</button>
     <button class="nes-btn is-error btn small" id="npcreset">全部重來</button>
   </div>${s.type==='game' && !state.extra[s.id+'_won']?'<button class="nes-btn is-warning btn small" id="npcwin" style="margin-top:8px;width:100%">小遊戲通關</button>':''}
+  ${s.type==='firebadge' && !(state.extra[s.id+'_fb']||{}).summoned?`<div class="row" style="margin-top:8px"><button class="nes-btn is-warning btn small" id="npcL" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('winter')?'disabled':''}>完成左半</button><button class="nes-btn is-warning btn small" id="npcR" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('flower')?'disabled':''}>完成右半</button></div>`:''}
+  ${s.type==='spot' && ['look','find'].includes((state.extra[s.id+'_quiz']||{step:'look'}).step)?'<button class="nes-btn is-warning btn small" id="npcphoto" style="margin-top:8px;width:100%">完成這張圖</button>':''}
   ${s.type==='firebadge'?'<p class="tag" id="ardbg" style="margin:8px 0 0">AR：未啟動</p>':''}
   ${answerNote(s)}<p class="tag" style="margin-top:8px">5 碼：${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}　櫃號：${CONFIG.lockerNumber}</p></div>`;
 }
 /* 控制者看的解答（依關卡型別）；要輸入的答案附「複製」鈕 */
 function answerNote(s){
   const items=[];                                   // {label, value, copy}
-  if(s.type==='library'){ items.push({label:'書名',value:s.riddleAnswer,copy:true},{label:'索書號 5 碼',value:s.callDigits,copy:true},{label:'ISBN 後 3 碼',value:s.bookAnswer,copy:true}); }
+  if(s.type==='library'){ items.push({label:'書名',value:s.riddleAnswer,copy:true},{label:`索書號前 ${s.callDigits.length} 碼`,value:s.callDigits,copy:true},{label:'ISBN 後 3 碼',value:s.bookAnswer,copy:true}); }
   else if(s.type==='firebadge'){ items.push({label:'線索',value:s.clue},{label:'過關',value:'掃牆上的〈四季〉＋戶外的〈大安之花〉'}); }
   else if(s.type==='spot'){ (s.photos||[{spots:s.spots}]).forEach((p,i)=>{
       if(p.spots){ items.push({label:`照片 ${i+1}`,value:`${p.spots.length} 處 ${p.spots.map(q=>`(${q.x},${q.y})`).join(' ')}`}); return; }
@@ -858,6 +933,12 @@ function bindNpc(s, idx){
   if(!state.npc) return;
   $('#npcpass').onclick=()=>pass(s);
   const nw=$('#npcwin'); if(nw) nw.onclick=()=>{ if(window.__MG_WIN) window.__MG_WIN(); };   // 走遊戲自己的通關畫面
+  // AR 關：控制者直接給左半／右半（兩半都有就跟真的掃到一樣，出現「解除封印」）
+  const fbGive=key=>{ stopCamera(); const k=s.id+'_fb', d=state.extra[k]||{got:[]}; if(!d.got.includes(key)) d.got.push(key); state.extra[k]=d; save(); render(); };
+  const nL=$('#npcL'); if(nL) nL.onclick=()=>fbGive('winter'); const nR=$('#npcR'); if(nR) nR.onclick=()=>fbGive('flower');
+  // 忠孝復興：控制者直接算這張圖看破（最後一張就進魔王戰前的「已看破全部虛假」）
+  const nph=$('#npcphoto'); if(nph) nph.onclick=()=>{ const k=s.id+'_quiz', d=state.extra[k]||{cur:0,step:'look'}; const n=(s.photos||[1]).length;
+    Object.assign(d,{step:d.cur>=n-1?'all':'ok', got:spotQs((s.photos||[s])[d.cur]).map((_,i)=>i), open:null, seqi:0}); state.extra[k]=d; save(); render(); };
   document.querySelectorAll('.npc .copy').forEach(b=>b.onclick=async()=>{ const v=b.dataset.copy; try{ await navigator.clipboard.writeText(v); }catch(e){ const t=document.createElement('textarea'); t.value=v; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); } b.textContent='已複製'; setTimeout(()=>b.textContent='複製',1200); });
   $('#tbBack').onclick=pageBack; $('#tbNext').onclick=pageNext;
   $('#npcredo').onclick=()=>{ stopCamera(); clearStage(s.id); state.stage=idx; save(); render(); };   // 這關重來：只清這一關，從頭開始
@@ -902,7 +983,7 @@ const litHTML=()=>`<div class="candles big hero" style="margin-bottom:24px">${ca
 function litStep(s, idx){                      // 回 true＝這次畫的是「成功點亮」頁；按下一步後 _go 記起來，下次 render 才給目的地
   if(state.extra[s.id+'_go']) return false;
   main.innerHTML = ticket(s, `${steps()}
-    ${ok(`成功點亮第 ${litCount()} 根蠟燭！`)}
+    ${s.litStory?`<p>${s.litStory}</p>`:''}${ok(`成功點亮第 ${litCount()} 根蠟燭！`)}
     ${litHTML()}
     <button class="nes-btn is-success btn" id="nextl">下一步</button>
     ${backupScanBox()}${npcBox(s,idx)}`);
@@ -912,7 +993,8 @@ function litStep(s, idx){                      // 回 true＝這次畫的是「�
 function arrivePage(s, idx){                   // 「已抵達 X」頁：大紅地標＋路線色按鈕
   const nx=CONFIG.stages[idx+1];
   main.innerHTML = ticket(s, `${steps()}
-    <div class="hero pin-orbit"><div class="po-pin">${PIN_BIG}</div><div class="po-ring"><div class="po-hair hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '44px', 'aria-label="發光的貓毛"')}</div></div></div>   <!-- 貓毛繞著地標轉（Ming） -->
+    ${s.arriveStory?`<p>${s.arriveStory}</p>`:''}${s.arriveHair?`<p class="center" style="font-size:20px;margin:16px 0 0">跟隨貓毛前往 <span class="big">${nx.name}</span></p>`:''}
+    ${s.arriveHair?`<div class="hero pin-orbit"><div class="po-pin">${PIN_BIG}</div><div class="po-ring"><div class="po-hair hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '44px', 'aria-label="發光的貓毛"')}</div></div></div>`:`<div class="hero" style="display:flex;justify-content:center">${PIN_BIG}</div>`}   <!-- 貓毛只在第一段（圖書館之後貓毛失去魔力） -->
     <button class="nes-btn is-arrive btn" id="next" style="--arrive:${LINE[nx.line]}">已抵達 ${nx.name}</button>
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#next').onclick=()=>{ state.extra[s.id+'_left']=true; state.stage=Math.min(idx+1,CONFIG.stages.length-1); save(); render(); };
@@ -920,9 +1002,9 @@ function arrivePage(s, idx){                   // 「已抵達 X」頁：大紅�
 }
 function goNextHTML(s, idx){
   const nx=CONFIG.stages[idx+1]; if(!nx) return '<button class="nes-btn is-primary btn" id="next" style="margin-top:14px">完成</button>';
-  if(!nx.transit) return `${s.nextText?`<p style="margin-top:14px;font-size:18px">${s.nextText}</p>`:''}<button class="nes-btn is-success btn" id="next">下一步</button>`;
+  if(!nx.transit) return `${s.nextText?`<p style="margin-top:14px;font-size:18px">${s.nextText}</p>`:''}<button class="nes-btn is-success btn" id="next">${s.goBtn||'下一步'}</button>`;
   const dest=CONFIG.stages.slice(idx+1).find(x=>!x.transit)||nx;
-  return `${s.goStory?`<p>${s.goStory}</p>`:''}<p class="center" style="font-size:20px;margin:16px 0">${s.nextText||`${s.goVerb||'請前往'} <span class="big">${dest.name}</span>`}<br>並在路上進行秘密任務</p>
+  return `${s.goStory?`<p>${s.goStory}</p>`:''}<p class="center" style="font-size:${s.goLines?16:20}px;margin:16px 0">${s.goLines?s.goLines.join('<br>'):`${s.nextText||`${s.goVerb||'請前往'} <span class="big">${dest.name}</span>`}<br>並在路上進行秘密任務`}</p>
     ${s.goHair?`<div class="hero hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '96px', 'class="mx" aria-label="發光的貓毛"')}</div>`:''}
     <button class="nes-btn is-primary btn" id="next">進行秘密任務</button>`;
 }
@@ -930,8 +1012,8 @@ function goNextHTML(s, idx){
 const FAIRY_ROWS=['...........................S....', '..........................SSS...', '...QPPPPP..............PPPPPQ...', '..QPPPPPPP.....LL.....PPPPPPPQ..', '.QQPPPPPPPPP..LFFL..PPPPPPPPPQQ.', '.QQPPPPPPPPPPLFFFFLPPPPPPPPPPQQ.', '..QPPPPPPPPPPLFFFFLPPPPPPPPPPQ..', '..QPPPPPPPPPPPLFFLPPPPPPPPPPPQ..', '..QPPPPPPPPPPP.LL.PPPPPPPPPPPQ..', '...QQPPPPPPPPPLFFLPPPPPPPPPQQ...', '.....QPPPPPPPPLFFLPPPPPPPPQ.....', '......QQQPPPPPLFFLPPPPPQQQ......', '.........QQPPPLFFLPPPQQ.........', '...........QPPLFFLPPQ...........', '..........QPPPLFFLPPPQ..........', '..U.....QPPPPPLFFLPPPPPQ........', '........QPPPPPLFFLPPPPPQ.....S..', '........QPPPPQ.LL.QPPPPQ........', '........QQQPQ..LL..QPQQQ........', '...........Q...LL...Q...........', '.....V.........LL...............', '.....V..........................', '....VVV..UU.........S...........', '.....V...UU.............S.......', '.....V.................SSS......', '.......EEEEE........EEEEE.......', '.....EEWWWWWEE.EE.EEWWWWWEE.....', '..CEEWWTWTTTWWEEEEWWTTWTTWWEEC..', '..CWWTTWWWWWTTWEEWTTWWWWWTTWWC..', '..CWTWWTTTTTWWWEEWWWWTTTTWWWWC..', '..CWWWTWWWWWWTWEEWTWWWWWWTWWWC..', '..CCCCWWWWWWWWWEEWWWWWWWWWCCCC..', '..CCCCCCCCCCCWWEEWWCCCCCCCCCCC..', '..CDDDCCCCCCCCCCCCRCCCCCCCDDDC..', '..D...DDDDDDDCCCCCRDDDDDDD...D..', '.............DDDDDR.............', '.................R.R............'];
 const FAIRY_PAL={C:'#b39ddb',D:'#8e72c4',E:'#ead9c8',T:'#d8cdee',R:'#e98fbf',W:'#fff9f0',F:'#f4f4f8',L:'#c9cfee',P:'#efc3de',Q:'#d98bc0',S:'#efc3de',V:'#b78fe0',U:'#dcc9f2'};
 // 一根發光的淺橘貓毛（麟光出發頁用）
-const HAIR_ROWS=['...........OL.', '..........OLL.', '.........OLL..', '........OLL...', '.......OLL....', '......OLL.....', '.....OLL......', '....OLL.......', '...OLL........', '..OLL.........', '.OLL..........', '.LL...........', 'LL............'];
-const HAIR_PAL={L:'#ffd9a3', O:'#f0a050'};   // 淺橘芯＋較深的橘邊，米色底上才看得到
+const HAIR_ROWS=['...........*..', '............L.', '...........L..', '..........OL..', '.........OL...', '........OL....', '.......OL.....', '......OL......', '.....OL.......', '....OL........', '...OL.........', '..L...........', '.L.........*..', '..............'];   // 直直一根、斜放、兩端收尖，旁邊兩顆亮點（Ming：不要 S 形、不要像熱狗）
+const HAIR_PAL={L:'#f5c98a', O:'#d98f45', '*':'#ffc93c'};   // 淺金橘芯＋橘邊＋金亮點（米色底上看得到）   // 淺米色芯＋淡橘邊＋白亮點   // 淺橘芯＋較深的橘邊，米色底上才看得到
 function giveDigit(id){ if(CONFIG.digits[id]!=null && state.codes[id]==null){ state.codes[id]=CONFIG.digits[id]; save(); } }
 /* 不顯示過關畫面，直接進下一站 */
 function lightFirst(s){ if(CONFIG.stages.indexOf(s)===0) state.extra[s.id+'_lit']=true; }   // 第一關跳過合照也要點亮蠟燭
@@ -1038,6 +1120,7 @@ function snapshot(v){ const c=document.createElement('canvas'); c.width=v.videoW
    ========================================================= */
 function render(){
   stopCamera(); stopGlitch(); document.body.classList.remove('noprog');
+  preloadAhead();
   setTimeout(recordPage,0);
   const idx=state.stage, s=CONFIG.stages[idx];
   if(!state.started && idx===0 && !state.done.s0){ return state.extra.openLetter ? renderWelcome() : renderOpenLetter(); }
@@ -1053,7 +1136,7 @@ function renderOpenLetter(){
   document.body.classList.add('noprog');   // 開頭的信不顯示蠟燭／密碼列（Ming）
   main.innerHTML = `<section class="ticket nes-container is-rounded" style="--line-color:var(--brown)">
     <div class="station"><span class="code" style="background:#000;box-shadow:var(--px) var(--px) 0 #9a9a9a">MOMO</span><span class="name">${CONFIG.openLetterTitle}</span></div>
-    <div class="letter nes-container is-rounded" style="font-size:17px">${CONFIG.openLetter.replace(/\[[^\]]+\]/g, m=>`<span style="color:${(CONFIG.openLetterColors||{})[m]||'var(--red)'}">${m}</span>`)}</div>
+    <div class="letter nes-container is-rounded" style="font-size:17px">${CONFIG.openLetter.replace(/\[[^\]]+\]/g, m=>`<span style="color:${(CONFIG.openLetterColors||{})[m]||'var(--pink)'}">${m}</span>`)}</div>
     <div class="hero">${spriteSVG(window.MG_SPRITES.MOMO_CAP, window.MG_SPRITES.MOMO_CAP_PAL, '112px', 'aria-label="列車長墨墨" class="mx"')}</div>
     <p class="tag" style="margin:0 0 6px">請輸入密碼：</p>
     <input class="nes-input" type="text" id="pw" autocomplete="off" autocapitalize="characters"><div id="res"></div>
@@ -1067,7 +1150,7 @@ function renderWelcome(){
     <p class="title">一日有效</p>
     <div class="station"><span class="code" style="background:#000;box-shadow:var(--px) var(--px) 0 #9a9a9a">MOMO</span><span class="name">${CONFIG.playerName}專屬</span></div>
     <p class="sub">生日列車 · 墨墨環狀線</p>
-    <p>${'歡迎搭乘 [三十而莉．生日列車]，三十歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，今天妳要成功點燃自己的生日蠟燭，並在旅途中獲得 5 個秘密數字，最終得到生日禮物的藏寶地點，如果卡關可以求助 列車長-墨墨，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--red)">${m}</span>`)}</p>
+    <p>${'歡迎搭乘[三十而莉．生日列車]，三十歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，今天妳要成功點燃 6 根魔力蠟燭，並在旅途中獲得 5 個秘密數字，最終得到生日禮物的藏寶地點，如果卡關可以求助列車長-墨墨，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--pink)">${m}</span>`)}</p>
     ${candles()}
     <button class="nes-btn is-primary btn" id="go" style="margin-top:10px">我準備好了！</button></section>`;
   $('#go').onclick=()=>{ state.started=Date.now(); save(); render(); };
@@ -1089,14 +1172,14 @@ function renderTicketPuzzle(s, idx){
       <p style="font-size:17px;margin:4px 0 2px">請拍一張合照，合照主題：</p>
       <p class="center" style="font-size:34px;margin:0 0 12px;color:var(--red)">${s.departTheme}</p>
       ${shot?`<img class="photo" src="${shot.url}" alt="" style="margin-bottom:14px">`:''}
-      <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="image/*" capture="environment" id="file" hidden></label>
+      <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="image/*" id="file" hidden></label>
       ${shot?'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:14px">下一步</button>':''}
       ${backupScanBox()}${npcBox(s,idx)}`);
     $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.departTheme, u); render(); }); rd.readAsDataURL(f); };
     const np=$('#nextp'); if(np) np.onclick=()=>{ state.extra[s.id+'_lit']=true; state.extra[k]={step:'lit'}; save(); render(); };
   } else if(d.step==='lit'){
     main.innerHTML = ticket(s, `${steps()}
-      ${ok('成功點亮第 1 根蠟燭！')}
+      ${s.litStory?`<p>${s.litStory}</p>`:''}${ok('成功點亮第 1 根蠟燭！')}
       ${litHTML()}
       <button class="nes-btn is-success btn" id="nextl">下一步</button>
       ${backupScanBox()}${npcBox(s,idx)}`);
@@ -1114,7 +1197,7 @@ function renderTicketPuzzle(s, idx){
     const n=s.grid||3;
     const solved=!!d.solved;
     main.innerHTML = ticket(s, `${steps()}
-      ${solved?ok(`拼好了！獲得數字 ${CONFIG.digits[s.id]}`):'<p class="tag">點兩格交換，拼回原圖</p>'}<div class="grid" id="grid" style="grid-template-columns:repeat(${n},1fr);${solved?'gap:0':''}"></div>
+      ${solved?ok(`拼好了！獲得數字 ${CONFIG.digits[s.id]}`):'<p class="tag">點兩格交換，拼回原圖。</p>'}<div class="grid" id="grid" style="grid-template-columns:repeat(${n},1fr);${solved?'gap:0':''}"></div>
       ${solved?`<button class="nes-btn is-arrive btn" id="lit" style="margin-top:12px;--arrive:${LINE[CONFIG.stages[idx+1].line]}">${PIN} 已抵達 ${CONFIG.stages[idx+1].name}</button>`:''}
       ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}
       ${state.npc&&!solved?'<button class="nes-btn is-warning btn small" id="simsolve" style="margin-top:8px">控制者：直接拼好</button>':''}`);
@@ -1162,7 +1245,7 @@ function renderSpotQuiz(s, idx){
   const qs=spotQs(ph).length?spotQs(ph):[{q:'',answers:[]}];          // 還沒設題目時給一格空白輸入，任何答案都算對
   const got=d.got||[];
   const qbox=x=>x.q?`<div class="letter nes-container is-rounded" style="font-size:17px">${x.q}</div>`:'';
-  const solved=()=>got.map(j=>`<div style="margin-top:14px">${qbox(qs[j])}${ok(qs[j].answers[0]||'答對了')}</div>`).join('');
+  const solved=()=>'';   // 答對的題目不再留在畫面上（Ming）：只在偵查結果位置顯示「正確！」
   // 一般題：輸入框＋確認；選圖題（choices）：一排圖示按鈕，點對的那個
   // 依序題（seq）：一題裡有好幾張圖，一張一張問，全部答對才算這處看破
   const openQ=j=>{ const x=qs[j]; if(x.seq){ const it=x.seq[d.seqi||0]; return `<div style="margin-top:14px">${qbox(x)}
@@ -1176,8 +1259,8 @@ function renderSpotQuiz(s, idx){
   let body='';
   if(d.step==='look') body=`<p class="tag">虛假空間 ${d.cur+1} / ${photos.length}</p>${view(false)}
     <button class="nes-btn is-primary btn" id="here" style="margin-top:14px">已找到地點 ${d.cur+1}</button>`;
-  else if(d.step==='find') body=`<p class="tag" style="display:flex;justify-content:space-between;gap:8px"><span>虛假空間 ${d.cur+1} / ${photos.length}</span><span>請開始找哪裡不一樣</span></p>${view(true)}
-    <button class="nes-btn is-primary btn" id="scan" style="margin-top:14px">偵查</button><div id="scanres"></div>
+  else if(d.step==='find') body=`<p class="tag" style="display:flex;justify-content:space-between;gap:8px"><span>虛假空間 ${d.cur+1} / ${photos.length}</span><span>請開始找哪裡不一樣。</span></p>${view(true)}
+    <button class="nes-btn is-slate btn" id="scan" style="margin-top:14px">偵查</button><div id="scanres"></div>
     <div id="solved">${solved()}</div><div id="qarea">${d.open!=null&&!got.includes(d.open)?openQ(d.open):''}</div>`;
   else if(d.step==='boss') return renderBoss(s, idx, d, k);
   else body=`<p class="tag">虛假空間 ${d.cur+1} / ${photos.length}</p>${view(false)}<div style="margin-top:14px">${ok('看破了！')}</div>
@@ -1191,7 +1274,7 @@ function renderSpotQuiz(s, idx){
   // 比對：全形轉半形、不分大小寫、忽略空白與標點
   const norm=t=>t.normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
   const bindAnswer=()=>{ if(d.open==null) return; const x=qs[d.open];
-    const done=()=>{ got.push(d.open); d.got=got; d.open=null; state.extra[k]=d; save(); $('#scanres').innerHTML='';   // 答對後清掉「找到破綻！」
+    const done=()=>{ got.push(d.open); d.got=got; d.open=null; state.extra[k]=d; save(); $('#scanres').innerHTML=ok('正確！');   // 答對：顯示「正確！」，題目框收掉
       if(got.length<qs.length){ $('#solved').innerHTML=solved(); $('#qarea').innerHTML=''; return; }   // 只換題目區，縮放與準星不動
       set({step:last?'all':'ok'}); };
     const wrong=()=>{ $('#res').innerHTML=bad('不對，再看仔細一點。'); };
@@ -1276,24 +1359,50 @@ function bindZoom(wrap, Z, tappable){
 }
 /* 忠孝復興最後：次元惡魔出現（整頁亂碼）→ 往上滑丟徽章召喚胖貓 → 按拳頭打，打滿 bossHits 下才過關 */
 let glitchTimer=null;
+const glMoved=new Set();   // 被錯位過的元素，結束時要還原
+const glR=(a,b)=>a+Math.random()*(b-a);
 function startGlitch(){ document.body.classList.add('glitch'); if(glitchTimer) return; const G='▚▞▛▜░▒▓█ÆØ¥§¿Ω∆ʘɸ҂☰☱☲#%&';
-  glitchTimer=setInterval(()=>{ document.querySelectorAll('#title,.ticket .sub,.ticket .station .name,.ticket .station .code').forEach(e=>{
-    if(!e.dataset.og) e.dataset.og=e.textContent; const og=e.dataset.og;
-    e.textContent=Math.random()<.35?og:[...og].map(c=>Math.random()<.45?G[Math.random()*G.length|0]:c).join(''); }); },110); }
+  let layer=document.querySelector('.gl-layer'); if(!layer){ layer=document.createElement('div'); layer.className='gl-layer'; layer.innerHTML='<i></i>'.repeat(7); document.body.appendChild(layer); }
+  glitchTimer=setInterval(()=>{
+    document.querySelectorAll('#title,.ticket .sub,.ticket .station .name,.ticket .station .code').forEach(e=>{
+      if(!e.dataset.og) e.dataset.og=e.textContent; const og=e.dataset.og;
+      e.textContent=Math.random()<.35?og:[...og].map(c=>Math.random()<.45?G[Math.random()*G.length|0]:c).join(''); });
+    // 物件到處錯位（像手機壞掉）：打魔王的場地本身不動，惡魔和胖貓才不受影響
+    const arena=document.getElementById('arena');
+    document.querySelectorAll('header, .rail, main > *, .ticket > *, .ticket > * > *, .ticket button').forEach(e=>{
+      if(arena && (e.contains(arena)||arena.contains(e))) return; if(e.classList.contains('noglitch')) return;
+      if(Math.random()<.28){ glMoved.add(e); const x=glR(-14,14)|0, y=glR(-6,6)|0, g=glR(2,6)|0;
+        e.style.transform=`translate(${x}px,${y}px)${Math.random()<.2?` skewX(${glR(-12,12)|0}deg)`:''}`;
+        e.style.clipPath=Math.random()<.35?`inset(${glR(0,45)|0}% 0 ${glR(0,45)|0}% 0)`:'';
+        e.style.filter=`drop-shadow(${g}px 0 rgba(255,42,109,.75)) drop-shadow(-${g}px 0 rgba(5,217,232,.75))`; }
+      else if(glMoved.has(e) && Math.random()<.6){ e.style.transform=e.style.clipPath=e.style.filter=''; } });
+    // 底圖錯位＋RGB 重影的偏移量
+    document.body.style.backgroundPosition=`${glR(-30,30)|0}px ${glR(-30,30)|0}px`;
+    document.body.style.setProperty('--gx', (Math.random()<.5?-1:1)*(glR(1,5)|0)+'px');
+    if(arena){ const bg=arena.querySelector('.arena-bg'); if(bg){ bg.style.transform=Math.random()<.4?`translate(${glR(-16,16)|0}px,${glR(-8,8)|0}px)`:''; bg.style.clipPath=Math.random()<.3?`inset(${glR(0,60)|0}% 0 ${glR(0,30)|0}% 0)`:''; } }
+    // 雜訊條：洋紅／青色／白色色塊亂跳
+    const C=['rgba(255,42,109,.45)','rgba(5,217,232,.45)','rgba(255,255,255,.35)','rgba(255,224,102,.35)','rgba(0,0,0,.6)'];
+    layer.querySelectorAll('i').forEach(b=>{ if(Math.random()<.45){ b.style.display='none'; return; }
+      b.style.display='block'; b.style.left=glR(-10,90)+'%'; b.style.top=glR(0,98)+'%'; b.style.width=glR(20,110)+'%'; b.style.height=(glR(2,22)|0)+'px'; b.style.background=C[Math.random()*C.length|0]; });
+  },110); }
 function stopGlitch(){ document.body.classList.remove('glitch'); if(glitchTimer){ clearInterval(glitchTimer); glitchTimer=null; }
-  document.querySelectorAll('[data-og]').forEach(e=>{ e.textContent=e.dataset.og; delete e.dataset.og; }); }
+  document.querySelectorAll('[data-og]').forEach(e=>{ e.textContent=e.dataset.og; delete e.dataset.og; });
+  glMoved.forEach(e=>{ e.style.transform=e.style.clipPath=e.style.filter=''; }); glMoved.clear();
+  document.body.style.backgroundPosition=''; document.body.style.removeProperty('--gx');
+  const bg=document.querySelector('.arena-bg'); if(bg){ bg.style.transform=bg.style.clipPath=''; }
+  const layer=document.querySelector('.gl-layer'); if(layer) layer.remove(); }
 function renderBoss(s, idx, d, k){
   const keep=()=>{ state.extra[k]=d; save(); };
   const fighting=d.boss==='fight', won=d.boss==='won';
   main.innerHTML = ticket(s, `${steps()}
-    <p class="center" style="font-size:20px;color:var(--red)">${won?'次元惡魔被打敗了！':'次元惡魔出現了！召喚胖貓擊敗他'}</p>
-    <div class="arena" id="arena">
-      <div class="devil" id="devil" ${won?'hidden':''}>${spriteSVG(DEVIL_ROWS, DEVIL_PAL, '112px', 'aria-label="次元惡魔"')}</div>
+    <p class="center noglitch" style="font-size:20px;color:var(--red)">${won?'次元惡魔被打敗了！':'次元惡魔出現了！召喚胖貓擊敗他。'}</p>
+    <div class="arena" id="arena"><div class="arena-bg"></div>
+      <div class="devil" id="devil" ${won?'hidden':''}><div class="df1">${spriteSVG(DEVIL_ROWS, DEVIL_PAL, '112px', 'aria-label="次元惡魔"')}</div><div class="df2">${spriteSVG(DEVIL_ROWS2, DEVIL_PAL, '112px', 'aria-hidden="true"')}</div><div class="dfh">${spriteSVG(DEVIL_HIT_ROWS, DEVIL_PAL, '112px', 'aria-hidden="true"')}</div></div>
       <div class="cat" id="cat" ${fighting||won?'':'hidden'}>${spriteSVG(CAT_BACK_ROWS, CAT_PAL, '150px', 'aria-label="胖貓"')}</div>
-      <button class="nes-btn is-primary fist" id="fist" ${fighting?'':'hidden'} aria-label="出拳">${FIST_SVG}</button>
+      <button class="fist" id="fist" ${fighting?'':'hidden'} aria-label="出拳">${FIST_SVG}</button>
     </div>
     ${won?`<button class="nes-btn is-success btn" id="nextboss" style="margin-top:14px">下一步</button>`
-      :fighting?'':`<div class="throwbox" id="throwbox"><div class="tb-badge" id="tbadge">${badgeSVG('','56px')}</div><p class="tag center" style="margin:6px 0 0">丟出徽章召喚胖貓</p></div>`}
+      :fighting?'':`<div class="throwbox" id="throwbox"><div class="tb-badge" id="tbadge">${badgeSVG('','56px')}</div><p class="tag center" style="margin:6px 0 0">丟出徽章召喚胖貓。</p></div>`}
     ${backupScanBox()}${npcBox(s,idx)}`);
   bindBackupScan(s); bindNpc(s,idx);
   if(!won) startGlitch();
@@ -1307,16 +1416,23 @@ function renderBoss(s, idx, d, k){
     const end=e=>{ if(y0==null) return; const dy=e.clientY-y0; y0=null; tb.classList.remove('drag'); tb.style.transform='';
       if(dy>-50) return;
       tb.classList.add('fly'); d.boss='fight'; keep();
-      setTimeout(()=>{ const box=$('#throwbox'); if(box) box.remove(); cat.hidden=false; cat.classList.add('rollin'); setTimeout(()=>{ fist.hidden=false; },1100); },500); };
+      setTimeout(()=>{ const box=$('#throwbox'); if(box) box.remove(); cat.hidden=false; cat.classList.add('rollin'); setTimeout(()=>{ cat.classList.remove('rollin'); fist.hidden=false; },1100); },500); };
     tb.addEventListener('pointerup',end); tb.addEventListener('pointercancel',end); }
   // 出拳：每按一下胖貓揮拳、惡魔被打到；打滿就倒
-  let busy=false;
+  let backT=0, hitT=0;
   fist.onclick=()=>{ if(d.boss!=='fight') return;
-    d.hits=(d.hits||0)+1; keep();
-    cat.innerHTML=punch; cat.classList.add('punch'); devil.classList.remove('hit'); void devil.offsetWidth; devil.classList.add('hit');
-    setTimeout(()=>{ if(d.boss==='fight'){ cat.innerHTML=back; cat.classList.remove('punch'); } devil.classList.remove('hit'); },160);
-    if(d.hits>=(s.bossHits||30)){ d.boss='won'; keep(); fist.hidden=true; devil.classList.remove('hit'); devil.classList.add('die'); stopGlitch();
-      setTimeout(()=>render(),1300); } };
+    d.hits=(d.hits||0)+1; keep(); const last=d.hits>=(s.bossHits||30);
+    cat.getAnimations().forEach(a=>a.cancel()); clearTimeout(backT); clearTimeout(hitT);
+    cat.innerHTML=punch;
+    // 拳頭在出拳圖的右上（第 31.5 欄、第 9.5 列）→ 算出要衝多遠才會打到惡魔本體
+    const cr=cat.querySelector('svg').getBoundingClientRect(), dr=devil.getBoundingClientRect();
+    const dx=(dr.left+dr.width*.49)-(cr.left+cr.width*31.5/34), dy=(dr.top+dr.height*.59)-(cr.top+cr.height*9.5/28);
+    cat.animate([{transform:'translate(0,0)'},{transform:`translate(${dx}px,${dy}px)`,offset:.4},{transform:`translate(${dx*.94}px,${dy*.94}px)`,offset:.62},{transform:'translate(0,0)'}],{duration:360,easing:'ease-out'});
+    hitT=setTimeout(()=>{ devil.classList.remove('hit'); void devil.offsetWidth; devil.classList.add('hit');
+      clearTimeout(devil._ht); devil._ht=setTimeout(()=>devil.classList.remove('hit'),420);
+      if(last){ d.boss='won'; keep(); fist.hidden=true; devil.classList.remove('hit'); devil.classList.add('die'); stopGlitch(); setTimeout(()=>render(),1300); } },145);
+    backT=setTimeout(()=>{ if(d.boss!=='won') cat.innerHTML=back; },360);
+    if(last) fist.disabled=true; };
 }
 function spotQs(p){ return p.qs || ((p.q||(p.answers||[]).length)?[{q:p.q||'',answers:p.answers||[]}]:[]); }
 function placeholderStation(){
@@ -1364,7 +1480,7 @@ function renderLibrary(s, idx){
   const gk=s.id+'_guess'; const guesses=state.extra[gk]||[];
   let body='';
   if(step==='go') body=`<p>${s.intro}</p><div class="center hero" style="margin-bottom:24px">${SHELF}</div><button class="nes-btn is-arrive btn" id="arr" style="--arrive:#209cee">${PIN} 已抵達圖書館</button>`;
-  else if(step==='sit') body=`<p>圖書館似乎有結界，貓毛找不到路了，但圖書館的小精靈給了妳兩道謎題，並告訴妳：只要解開謎題，妳能找到一本書，告訴我 ISBN 的最後三個數字，我會幫妳點亮蠟燭並跟妳說這三個數字的秘密</p>
+  else if(step==='sit') body=`<p>進入圖書館，貓毛的魔力消失了，掉落在地上一動也不動，但妳遇到了圖書小精靈，她給了妳兩道謎題，並告訴妳：「解開謎題，妳能找到一本書，給我 ISBN 的最後三個數字，我會幫妳點亮蠟燭並跟妳說一個秘密。」</p>
     <div class="hero">${spriteSVG(FAIRY_ROWS, FAIRY_PAL, '160px', 'class="mx" aria-label="圖書館的小精靈"')}</div>
     <button class="nes-btn is-primary btn" id="start">開始解謎</button>`;
   else if(step==='riddle') body=`<p class="tag">謎題 1 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">${icons(s.riddle)}</div>
@@ -1373,14 +1489,14 @@ function renderLibrary(s, idx){
   else if(step==='riddle_ok') body=`<p class="tag">謎題 1 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">${icons(s.riddle)}</div>
     <input class="nes-input" type="text" value="${s.riddleAnswer}" disabled style="letter-spacing:.1em">${ok(`沒錯，就是《${s.book.title}》`)}
     <button class="nes-btn is-success btn" id="next1" style="margin-top:8px">下一題</button>`;   // 答對不換頁：留在原頁、輸入框下接提示＋按鈕（Ming）
-  else if(step==='code') body=`<p class="tag">謎題 2 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">這本書的索書號是\n<b>???.?? ${s.callTail}</b>\n\n猜 5 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
-    <input class="nes-input" type="text" id="ans" inputmode="numeric" maxlength="5" placeholder="5 碼"><div id="res"></div>
+  else if(step==='code') body=`<p class="tag">謎題 2 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">這本書的索書號是\n<b>${'?'.repeat(s.callDigits.length)}${s.callTail}</b>\n\n猜 ${s.callDigits.length} 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
+    <input class="nes-input" type="text" id="ans" inputmode="numeric" maxlength="${s.callDigits.length}" placeholder="${s.callDigits.length} 碼"><div id="res"></div>
     <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>
-    ${guesses.length?`<div class="letter nes-container is-rounded" style="margin-top:14px;font-size:16px">${guesses.map(g=>`${g.v.slice(0,3)}.${g.v.slice(3)}　${g.a}A${g.b}B`).join('\n')}</div>`:''}`;
-  else if(step==='code_ok') body=`<p class="tag">謎題 2 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">這本書的索書號是\n<b>???.?? ${s.callTail}</b>\n\n猜 5 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
+    ${guesses.length?`<div class="letter nes-container is-rounded" style="margin-top:14px;font-size:16px">${guesses.map(g=>`${g.v}${s.callTail}　${g.a}A${g.b}B`).join('\n')}</div>`:''}`;
+  else if(step==='code_ok') body=`<p class="tag">謎題 2 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">這本書的索書號是\n<b>${'?'.repeat(s.callDigits.length)}${s.callTail}</b>\n\n猜 ${s.callDigits.length} 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
     <input class="nes-input" type="text" value="${s.callDigits}" disabled>${ok(`索書號 ${s.book.call}`)}
     <button class="nes-btn is-success btn" id="next2" style="margin-top:8px">去找書</button>`;   // 同上：答對留在原頁
-  else body=`<p>請根據索書號 <b>${s.book.call}</b> 找到《${s.book.title}》，獲得 <b>ISBN</b> 最後三碼</p>
+  else body=`<p>請根據索書號 <b>${s.book.call}</b> 找到《${s.book.title}》，獲得 <b>ISBN</b> 最後三碼。</p>
     <input class="nes-input" type="text" id="ans" inputmode="numeric" maxlength="3" placeholder="3 碼"><div id="res"></div>
     <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`;
   main.innerHTML = ticket(s, `${steps()}${body}${backupScanBox()}${npcBox(s,idx)}`);
@@ -1389,10 +1505,10 @@ function renderLibrary(s, idx){
   const n1=$('#next1'); if(n1) n1.onclick=()=>set('code');
   const n2=$('#next2'); if(n2) n2.onclick=()=>set('find');
   const norm=t=>t.replace(/[\s《》「」、.。]/g,'');
-  const ab=(g,ans)=>{ let a=0,b=0; const used=[]; for(let i=0;i<5;i++){ if(g[i]===ans[i]){ a++; used[i]=true; } } for(let i=0;i<5;i++){ if(g[i]===ans[i]) continue; for(let j=0;j<5;j++){ if(!used[j] && g[i]===ans[j] && g[j]!==ans[j]){ b++; used[j]=true; break; } } } return {a,b}; };
+  const ab=(g,ans)=>{ const L=ans.length; let a=0,b=0; const used=[]; for(let i=0;i<L;i++){ if(g[i]===ans[i]){ a++; used[i]=true; } } for(let i=0;i<L;i++){ if(g[i]===ans[i]) continue; for(let j=0;j<L;j++){ if(!used[j] && g[i]===ans[j] && g[j]!==ans[j]){ b++; used[j]=true; break; } } } return {a,b}; };
   const c=$('#chk'); if(c){ const go=()=>{ const v=$('#ans').value.trim();
     if(step==='riddle'){ if(norm(v)===norm(s.riddleAnswer)) set('riddle_ok'); else $('#res').innerHTML=bad('不是這個書名，再想想。'); }
-    else if(step==='code'){ if(!/^\d{5}$/.test(v)){ $('#res').innerHTML=bad('要 5 個數字。'); return; } const r=ab(v,s.callDigits); guesses.push({v,a:r.a,b:r.b}); state.extra[gk]=guesses; save(); if(v===s.callDigits) set('code_ok'); else render(); }
+    else if(step==='code'){ if(!new RegExp(`^\\d{${s.callDigits.length}}$`).test(v)){ $('#res').innerHTML=bad(`要 ${s.callDigits.length} 個數字。`); return; } const r=ab(v,s.callDigits); guesses.push({v,a:r.a,b:r.b}); state.extra[gk]=guesses; save(); if(v===s.callDigits) set('code_ok'); else render(); }
     else { if(v===s.bookAnswer) pass(s); else $('#res').innerHTML=bad('不是這本，再看一次書背的 ISBN。'); } };
     c.onclick=go; $('#ans').onkeydown=e=>{ if(e.key==='Enter') go(); }; }
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
@@ -1460,7 +1576,7 @@ function renderCompassColor(s, idx){
       const v=await openCamera($('#cam')); if(!v) return;
       o.textContent='拍下作品'; o.onclick=()=>{
         const c=snapshot(v); stopCamera(); c.className='photo'; $('#cam').innerHTML=''; $('#cam').appendChild(c);
-        $('#pick').innerHTML='<p class="tag">點照片上那塊顏色</p>';
+        $('#pick').innerHTML='<p class="tag">點照片上那塊顏色。</p>';
         c.onclick=(e)=>{
           const r=c.getBoundingClientRect(); const x=Math.floor((e.clientX-r.left)/r.width*c.width), y=Math.floor((e.clientY-r.top)/r.height*c.height);
           const d=c.getContext('2d').getImageData(Math.max(0,x-3),Math.max(0,y-3),7,7).data; let R=0,G=0,B=0,n=0; for(let i=0;i<d.length;i+=4){R+=d[i];G+=d[i+1];B+=d[i+2];n++;}
@@ -1482,7 +1598,7 @@ function renderFood(s, idx){
     <p>${s.intro}</p><p class="center" style="font-size:22px;margin:14px 0;color:var(--red)">${s.food}</p>
     <p>吃完拍一張合照，蠟燭就會亮。</p>
     ${shot?`<img class="photo" src="${shot}" alt="">`:''}
-    <label class="nes-btn is-primary btn" style="display:block;text-align:center;margin-top:8px">${CAMERA} 拍合照<input type="file" accept="image/*" capture="environment" id="file" hidden></label>
+    <label class="nes-btn is-primary btn" style="display:block;text-align:center;margin-top:8px">${CAMERA} 拍合照<input type="file" accept="image/*" id="file" hidden></label>
     ${shot?`<p style="margin-top:12px">${s.npcTask}</p><button class="nes-btn is-primary btn" id="done" style="margin-top:6px">做完了，拿信</button>`:''}
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ squareCrop(rd.result, 1000, u=>{ state.extra[s.id+'_photo']=u; if(s.stripTheme) savePhoto(s.id, s.stripTheme, u); save(); render(); }); }; rd.readAsDataURL(f); };
@@ -1503,8 +1619,8 @@ function renderSoundPuzzle(s, idx){
   main.innerHTML = ticket(s, `${steps()}
     <p>${s.intro}</p>
     ${!heard?`<p>哪一段是這一站的到站音？</p><div class="row" style="flex-direction:column">${[0,1,2].map(i=>`<button class="nes-btn btn audio-btn" data-i="${i}">▶ 第 ${i+1} 段</button>`).join('')}</div><div id="res"></div>`
-    : !img?`${ok('對，就是這一段。')}<p>把站內「華山 1914」指標牌拍下來。</p><label class="nes-btn is-primary btn" style="display:block;text-align:center">${CAMERA} 拍指標牌<input type="file" accept="image/*" capture="environment" id="file" hidden></label>`
-    : !solved?`<p class="tag">點兩格交換，拼回原圖</p><div class="grid" id="grid"></div>`
+    : !img?`${ok('對，就是這一段。')}<p>把站內「華山 1914」指標牌拍下來。</p><label class="nes-btn is-primary btn" style="display:block;text-align:center">${CAMERA} 拍指標牌<input type="file" accept="image/*" id="file" hidden></label>`
+    : !solved?`<p class="tag">點兩格交換，拼回原圖。</p><div class="grid" id="grid"></div>`
     : `${ok('拼好了。')}<p>牌子上的數字：<span class="big">${s.puzzleNumber}</span></p><p>照列車長運算卡上的規則算出一位數。</p><input class="nes-input" type="number" id="ans" inputmode="numeric" placeholder="一位數"><div id="res"></div><button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`}
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
   document.querySelectorAll('.audio-btn').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; playTone(i); b.onclick=()=>{ if(i===s.soundCorrect){ state.extra.s5_heard=true; save(); render(); } else { $('#res').innerHTML=bad('不是這一段。'); playTone(i); } }; b.textContent=`▶ 第 ${i+1} 段（再按一次選它）`; b.classList.add('is-primary'); });
@@ -1554,7 +1670,7 @@ function renderRainbow(s, idx){
     const v=await openCamera($('#cam')); if(!v) return;
     o.textContent='拍！'; o.onclick=()=>{
       const c=snapshot(v); stopCamera(); c.className='photo'; $('#cam').innerHTML=''; $('#cam').appendChild(c);
-      $('#pick').innerHTML='<p class="tag">點照片上那塊顏色</p>';
+      $('#pick').innerHTML='<p class="tag">點照片上那塊顏色。</p>';
       c.onclick=(e)=>{
         const r=c.getBoundingClientRect(); const x=Math.floor((e.clientX-r.left)/r.width*c.width), y=Math.floor((e.clientY-r.top)/r.height*c.height);
         const d=c.getContext('2d').getImageData(Math.max(0,x-3),Math.max(0,y-3),7,7).data; let R=0,G=0,B=0,n=0; for(let i=0;i<d.length;i+=4){R+=d[i];G+=d[i+1];B+=d[i+2];n++;}
@@ -1586,7 +1702,7 @@ function renderDirectorShoot(s, idx){            // 備案：原本的拍 3 張�
     ${stage==='shoot'?`<p>${s.intro}</p>
       <p class="tag">已拍 ${d.shots.length} / 3</p>
       <div class="row">${d.shots.map(u=>`<img src="${u}" style="width:30%;border:4px solid #000" alt="">`).join('')}</div>
-      <label class="nes-btn ${d.shots.length?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${d.shots.length?'再拍一張':'把手機交給列車長拍'}<input type="file" accept="image/*" capture="environment" id="file" hidden></label>
+      <label class="nes-btn ${d.shots.length?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${d.shots.length?'再拍一張':'把手機交給列車長拍'}<input type="file" accept="image/*" id="file" hidden></label>
       ${d.shots.length?'<button class="nes-btn is-primary btn" id="pickgo" style="margin-top:14px">選照片定案</button>':''}`
     : stage==='choose'?`<p>選 1 張最像妳要的。</p><div class="row">${d.shots.map((u,i)=>`<img data-i="${i}" class="pickshot" src="${u}" style="width:30%;border:4px solid #000;cursor:pointer" alt="">`).join('')}</div>`
     : `<img class="photo" id="final" src="${d.shots[d.chosen]}" style="filter:${d.filter>=0?s.styles[d.filter].filter:'none'}" alt="">
@@ -1626,12 +1742,12 @@ function renderDirectorShoot(s, idx){            // 備案：原本的拍 3 張�
 /* 拍主題合照：上傳 → 成功點亮蠟燭 → 已抵達下一站 */
 function renderPhotoTask(s, idx){
   const nx=CONFIG.stages[idx+1]; const shot=(state.extra.strip||{})[s.id];
-  if(state.done[s.id] && s.finalPhoto) return state.extra.endLetter ? renderFinish() : renderEndLetter();
+  if(state.done[s.id] && s.finalPhoto) return state.extra.endLetter ? renderFinish() : state.extra.letterOpen ? renderEndLetter() : renderLetterIntro();
   if(state.done[s.id]){
     if(!s.noCandle && litStep(s,idx)) return;
     if(s.noCandle && state.extra[s.id+'_arrive']) return arrivePage(s,idx);
     main.innerHTML = ticket(s, `${steps()}
-      ${s.noCandle?ok('這關只是拍爽的，其實拿不到密碼，ㄏㄏ')+`<div class="center hero" style="margin-bottom:24px">${MOMO_SMIRK}</div>`:''}
+      ${s.noCandle?`<p>${s.noCandleText||''}</p><div class="center hero" style="margin-bottom:24px">${MOMO_SMIRK}</div>`:''}
       ${goNextHTML(s,idx)}
       ${backupScanBox()}${npcBox(s,idx)}`);
     $('#next').onclick=()=>{ if(s.noCandle){ state.extra[s.id+'_arrive']=true; save(); return render(); } state.extra[s.id+'_left']=true; state.stage=Math.min(idx+1,CONFIG.stages.length-1); save(); render(); };
@@ -1648,10 +1764,10 @@ function renderPhotoTask(s, idx){
   }
   main.innerHTML = ticket(s, `${steps()}
     ${s.intro && !s.preStep?`<p>${s.intro}</p>`:''}
-    <p style="font-size:17px;margin:4px 0 2px">請拍一張合照，合照主題：</p>
+    <p style="font-size:17px;margin:4px 0 2px">${s.photoPrompt||'請拍一張合照，合照主題：'}</p>
     <p class="center" style="font-size:34px;margin:0 0 12px;color:var(--red)">${s.theme}</p>
     ${shot?`<img class="photo" src="${shot.url}" alt="" style="margin-bottom:14px">`:''}
-    <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="image/*" capture="environment" id="file" hidden></label>
+    <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="image/*" id="file" hidden></label>
     ${shot?'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:14px">下一步</button>':''}
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.theme, u); if(s.finalPhoto){ state.done[s.id]=true; save(); } render(); }); rd.readAsDataURL(f); };
@@ -1688,12 +1804,13 @@ function renderFireBadge(s, idx){
   const both=has('winter')&&has('flower');
   main.innerHTML = ticket(s, `${steps()}
     <p>${s.story}</p>
-    <div class="letter nes-container is-rounded center" style="font-size:18px">${s.clue}</div>
-    ${both?`<div class="fb-merge fb-tap hero" id="summon">${badgeSVG('',  '128px')}</div><p class="center" style="font-size:18px;margin:0 0 22px">點擊徽章解封</p>`
+    <div class="letter nes-container is-rounded" style="font-size:17px">${(s.hints||[]).join('\n')}</div>   <!-- 提示直接全部顯示（Ming），不再放謎語 clue -->
+    ${both?`<div class="fb-merge hero" style="animation:fbglow .5s steps(4) infinite alternate, fbfloat 1.2s steps(6) infinite alternate">${badgeSVG('',  '128px')}</div>
+      <button class="nes-btn is-primary btn" id="summon">解除封印</button>`   /* 兩半合起來 → 按「解除封印」才進解封動畫（Ming） */
     :`<div class="fb-slots"><div class="fb-slot L ${has('winter')?'got':''}">${has('winter')?badgeSVG('L','64px'):'?'}</div><div class="fb-slot R ${has('flower')?'got':''}">${has('flower')?badgeSVG('R','64px'):'?'}</div></div>
       <div class="frame" id="cam" style="margin-top:14px"></div>
-      <button class="nes-btn is-primary btn" id="scan" style="margin-top:14px">${CAMERA} 掃描徽章碎片</button>`}
-    ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
+      <button class="nes-btn is-primary btn" id="scan" style="margin-top:14px">開啟異次元觀測器</button>`}
+    ${backupScanBox()}${npcBox(s,idx)}`);
   const perm=$('#perm'); if(perm) perm.onclick=async()=>{
     try{ if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission==='function'){ const r=await DeviceOrientationEvent.requestPermission(); if(r!=='granted') throw new Error('沒有允許'); }
       // 兩種事件都聽：absolute（真羅盤）優先；3 秒內有 absolute 就忽略相對的。iOS 用 webkitCompassHeading
@@ -1781,7 +1898,7 @@ function renderFinal(s, idx){
 }
 function renderFinalOpen(s){
   main.innerHTML = ticket(s, `
-    <p>許下三個願望，並將前兩個說出來，第三個藏心裡。</p>
+    <p>蠟燭的魔力進化成許願之力了！許下三個願望，將前兩個說出來，第三個藏心裡。</p>
     <div class="candles mid" id="fc">${Array.from({length:MID},()=>candleHTML('lit')).join('')}</div>
     <progress class="nes-progress is-warning" id="mic" value="0" max="100"></progress>
     <button class="nes-btn is-primary btn" id="blow">吹熄蠟燭</button><button class="nes-btn is-success btn" id="wish" style="display:none">願望會實現！</button><div id="micmsg"></div>${npcBox(s,CONFIG.stages.indexOf(s))}
@@ -1807,11 +1924,11 @@ function renderFinalOpen(s){
 function renderSmoke(){
   const s=CONFIG.stages.find(x=>x.type==='final');
   main.innerHTML = ticket(s, `
-    <p>許下三個願望，並將前兩個說出來，第三個藏心裡。</p>
+    <p>蠟燭的魔力進化成許願之力了！許下三個願望，將前兩個說出來，第三個藏心裡。</p>
     <div class="candles mid" id="fc">${Array.from({length:MID},()=>candleHTML('out')).join('')}</div>
     <progress class="nes-progress is-warning" value="0" max="100" style="visibility:hidden"></progress>
-    <div class="smoke-wrap"><div class="smoke-num" id="smokenum">${CONFIG.lockerNumber}</div><p class="tag center smoke-late" style="margin:0">煙霧慢慢聚成了一個數字</p></div>
-    <button class="nes-btn is-primary btn smoke-late" id="gocode" style="margin-top:18px">是置物櫃的號碼！去開櫃</button>${npcBox(s,CONFIG.stages.indexOf(s))}`);
+    <div class="smoke-wrap"><div class="smoke-num" id="smokenum">${CONFIG.lockerNumber}</div><p class="tag center smoke-late" style="margin:0">煙霧慢慢聚成了一個數字。</p></div>
+    <button class="nes-btn is-primary btn smoke-late" id="gocode" style="margin-top:18px">這...這難道是藏寶的座標？<br>去置物櫃試試看</button>${npcBox(s,CONFIG.stages.indexOf(s))}`);
   $('#gocode').onclick=()=>{ state.extra.s7_blown=true; save(); render(); }; bindNpc(s,CONFIG.stages.indexOf(s));
 }
 function renderLocker(){
@@ -1820,22 +1937,35 @@ function renderLocker(){
   const s=CONFIG.stages.find(x=>x.type==='final'); const idx=CONFIG.stages.indexOf(s);
   main.innerHTML = `<section class="ticket nes-container is-rounded with-title" style="--line-color:var(--brown)">
     <p class="title">三十而莉</p>
-    <div class="station"><span class="code">BR03</span><span class="name">麟光</span></div>
-    <p class="center" style="margin:6px 0 4px">密碼 <span class="big">${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}</span></p>
-    ${CONFIG.codeMeaning?`<p class="center" style="margin:0 0 18px;font-size:22px;color:var(--red)">${CONFIG.codeMeaning}</p>`:''}
-    <p class="center" style="font-size:20px">${GIFT} 去 ${CONFIG.lockerNumber} 號櫃拿禮物。</p>
-    <button class="nes-btn is-primary btn" id="next" style="margin-top:14px">拿到禮物了</button>${npcBox(s,idx)}</section>`;
+    <div class="station"><span class="code">BR03</span><span class="name">麟光置物櫃</span></div>
+    <p class="center" style="font-size:20px;margin:6px 0 4px">${GIFT} 去${CONFIG.lockerNumber}號櫃找禮物！</p>
+    <p class="center" style="margin:0 0 4px">密碼 <span class="big">${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}</span></p>
+    ${CONFIG.codeMeaning?`<p class="center" style="margin:0 0 4px;font-size:22px;color:var(--red)">${CONFIG.codeMeaning}</p>`:''}
+    <button class="nes-btn is-success btn" id="next" style="margin-top:14px">拿到禮物了！</button>${npcBox(s,idx)}</section>`;
   $('#next').onclick=()=>{ state.done[s.id]=true; state.stage=idx+1; save(); render(); }; bindNpc(s,idx);
 }
 /* 生日快樂合照之後：一封信，按「領取通關證明」才到最後一頁 */
+const ENVELOPE_ROWS=['KKKKKKKKKKKKKKKKKKKKKKK', 'KKFFFFFFFFFFFFFFFFFFFKK', 'KWKFFFFFFFFFFFFFFFFFKWK', 'KWWKKFFFFFFFFFFFFFKKWWK', 'KWWWWKFFFFFFFFFFFKWWWWK', 'KWWWWWKFFFFFFFFFKWWWWWK', 'KWWWWWWKKRRFRRKKWWWWWWK', 'KWWWWWWWRHRRRRRWWWWWWWK', 'KWWWWWWWRRRRRRRWWWWWWWK', 'KWWWWWWWWRRRRRWWWWWWWWK', 'KWWWWWWWWWRRRWWWWWWWWWK', 'KWWWWWWWWWWRWWWWWWWWWWK', 'KWWWWWWWWWWWWWWWWWWWWWK', 'KSSSSSSSSSSSSSSSSSSSSSK', 'KKKKKKKKKKKKKKKKKKKKKKK'];   // 一封信（愛心封蠟）23×15
+/* 生日快樂合照之後：先看到「獲得了一封信」，按「打開這封信」才看信 */
+function renderLetterIntro(){
+  stopCamera();
+  const s=CONFIG.stages.find(x=>x.finalPhoto), idx=CONFIG.stages.indexOf(s);
+  main.innerHTML = `<section class="ticket nes-container is-rounded with-title" style="--line-color:var(--brown)">
+    <p class="title">生日快樂！</p>
+    <div class="station"><span class="code">BR03</span><span class="name">麟光</span></div>
+    <p>完成最後的秘密任務，獲得了一封信。</p>
+    <div style="display:flex;justify-content:center;margin:30px 0">${spriteSVG(ENVELOPE_ROWS, {K:'#000',W:'#fff8e8',S:'#e8d6b6',F:'#f0e2c6',R:'#e03131',H:'#ffaaaa'}, '184px', 'aria-label="一封信"')}</div>
+    <button class="nes-btn is-primary btn" id="openletter" style="margin-top:0">打開這封信</button>${npcBox(s,idx)}</section>`;
+  $('#openletter').onclick=()=>{ state.extra.letterOpen=true; save(); render(); }; bindNpc(s,idx);
+}
 function renderEndLetter(){
   stopCamera();
   const s=CONFIG.stages.find(x=>x.finalPhoto), idx=CONFIG.stages.indexOf(s);
   main.innerHTML = `<section class="ticket nes-container is-rounded with-title" style="--line-color:var(--brown)">
-    <p class="title">一封信</p>
+    <p class="title">生日快樂！</p>
     <div class="station"><span class="code">BR03</span><span class="name">麟光</span></div>
     <div class="letter nes-container is-rounded" style="font-size:17px">${CONFIG.endLetter}</div>
-    <button class="nes-btn is-primary btn" id="cert" style="margin-top:0">領取通關證明</button>${npcBox(s,idx)}</section>`;
+    <button class="nes-btn btn sunset-btn" id="cert" style="margin-top:0">領取通關證明</button>${npcBox(s,idx)}</section>`;
   $('#cert').onclick=()=>{ state.extra.endLetter=true; save(); render(); }; bindNpc(s,idx);
 }
 /* 最後：四格拍貼＋完成通關 */
