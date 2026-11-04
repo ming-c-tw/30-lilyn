@@ -393,7 +393,7 @@ const CONFIG = {
       ],
       directions:['說出要站的位置','指定相機高度（蹲／平視／舉高）','說「等一下」等背景的人走掉','喊「三、二、一」才能按'],
       // cardText:'朱日快樂',         // 備案：設了就會把定案照壓字成生日卡
-      cardSub:'生日列車 · 墨墨環狀線',  // 小字；想放日期就改這裡
+      cardSub:'三十而莉 · 生日列車',  // 小字；想放日期就改這裡
       hints:['抬頭看天花板和光從哪來。','紅磚牆、鐵門、玻璃反射都是好背景。','讓列車長趴下來拍。'] },
 
     { id:'m1', name:'忠孝新生 >> 忠孝復興', code:'移動中', line:'blue', type:'photo_task', transit:true, noCandle:true,
@@ -1150,7 +1150,7 @@ function renderWelcome(){
   main.innerHTML = `<section class="ticket nes-container is-rounded with-title" style="--line-color:var(--brown)">
     <p class="title">一日有效</p>
     <div class="station"><span class="code" style="background:#000;box-shadow:var(--px) var(--px) 0 #9a9a9a">MOMO</span><span class="name">${CONFIG.playerName}專屬</span></div>
-    <p class="sub">生日列車 · 墨墨環狀線</p>
+    <p class="sub">三十而莉 · 生日列車</p>
     <p>${'歡迎搭乘[三十而莉．生日列車]，三十歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，今天妳要成功點燃 6 根魔力蠟燭，並在旅途中獲得 5 個秘密數字，最終得到生日禮物的藏寶地點，如果卡關可以求助列車長-墨墨，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--pink)">${m}</span>`)}</p>
     ${candles()}
     <button class="nes-btn is-primary btn" id="go" style="margin-top:10px">我準備好了！</button></section>`;
