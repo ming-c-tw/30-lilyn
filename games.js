@@ -312,8 +312,11 @@ function song(el, cfg, onWin){
         if(en){ clearInterval(au._t); au._t=setInterval(()=>{ if(au.currentTime>=en){ au.pause(); clearInterval(au._t); } },100); }
       }
     };
-    const chk=()=>{ const v=norm(w.querySelector('#mgans').value); if(s.answers.some(a=>norm(a)===v)){ i++; draw(); } else { const r=w.querySelector('#mgres'); r.innerHTML='<p class="msg nes-text is-error">✕ 不是這首，再想想。</p>'; const inp=w.querySelector('#mgans'); inp.classList.remove('mg-shake'); void inp.offsetWidth; inp.classList.add('mg-shake'); } };
-    w.querySelector('#mgchk').onclick=chk; w.querySelector('#mgans').onkeydown=e=>{ if(e.key==='Enter') chk(); };
+    const chk=()=>{ if(w._ok) return; const v=norm(w.querySelector('#mgans').value); if(s.answers.some(a=>norm(a)===v)){   // 答對：先顯示「正確！」，按鈕變「下一題」才換題；最後一題答對直接進「全部答對」（Ming）
+        if(i===songs.length-1){ if(au) au.pause(); i++; return draw(); }
+        w._ok=true; const inp=w.querySelector('#mgans'); inp.readOnly=true; w.querySelector('#mgres').innerHTML='<p class="msg nes-text is-success">★ 正確！</p>';
+        const bt=w.querySelector('#mgchk'); bt.textContent='下一題'; bt.onclick=()=>{ if(au) au.pause(); i++; draw(); }; } else { const r=w.querySelector('#mgres'); r.innerHTML='<p class="msg nes-text is-error">✕ 不是這首，再想想。</p>'; const inp=w.querySelector('#mgans'); inp.classList.remove('mg-shake'); void inp.offsetWidth; inp.classList.add('mg-shake'); } };
+    w.querySelector('#mgchk').onclick=chk; w.querySelector('#mgans').onkeydown=e=>{ if(e.key==='Enter'){ if(w._ok) w.querySelector('#mgchk').click(); else chk(); } };
   };
   draw();
   return ()=>{ document.querySelectorAll('audio').forEach(a=>a.pause()); el.innerHTML=''; };

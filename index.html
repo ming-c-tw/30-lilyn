@@ -319,7 +319,7 @@ const CONFIG = {
 
     { id:'s1', name:'科技大樓', code:'BR05', line:'brown', type:'library',
       litStory:'將密碼給小精靈後，小精靈幫妳點燃了一根蠟燭，並告訴妳，原來胖貓被封印在大安森林公園，胖貓可以幫妳點燃蠟燭。',   // 點亮第 2 根蠟燭頁上方的故事
-      goLines:['請前往 <span class="big">大安森林公園站</span>','解救胖貓','並在路上進行列車長給妳的第二個秘密任務'],   // 目的地頁三行（Ming）
+      goStory:'出發！解救胖貓，與此同時列車長給了妳第二個秘密任務。',   // 目的地頁跟其他站同格式（Ming）
       sub:'圖書館 · 一本書',
       intro:'跟隨貓毛從 2 號出口出站，前往台北市立圖書館總館。',
       // 書名＝莉莉 的 相 片；相＝木＋目（木頭做的眼睛），片＝披薩沒有欺（Ming 2026-11-03 定）
@@ -330,8 +330,7 @@ const CONFIG = {
       bookAnswer:'164',        // 書背 ISBN 末 3 碼（Ming 2026-11-04：要明講是 ISBN，館藏條碼會混淆）
       callDigits:'873',        // 索書號前 3 碼，用幾A幾B（終極密碼）猜（Ming：只猜前三個數字）
       callTail:'.57 7760',     // 題目上直接給的後半
-      hints:[],
-      nextText:'請前往 <span class="big">大安站</span>' },
+      hints:[] },
 
     { id:'g2', name:'科技大樓 >> 大安森林公園', code:'移動中', line:'red', transit:true, type:'game', game:'song',
       arriveStory:'妳在前往的路途上，遇到好心的老太太，她告訴妳，想解除胖貓的封印必須要有徽章。但解封的徽章碎成兩半，被藏在兩個地方。',   // 抵達頁上方的敘述（貓毛已失去魔力）
@@ -965,6 +964,8 @@ function clearStage(id){
   if(state.extra.strip) delete state.extra.strip[id];
   const st=CONFIG.stages.find(x=>x.id===id); if(st && st.type==='director') delete state.extra.birthdayCard;
 }
+/* 上傳照片一律從相簿選：列出明確的圖片格式（不用 image/*），Android 會直接開相簿，不會跳出相機選項（Ming：開相機再關掉會卡住） */
+const PHOTO_ACCEPT='image/jpeg,image/png,image/webp,image/heic,image/heif';
 function savePhoto(key, theme, url){ state.extra.strip = state.extra.strip||{}; state.extra.strip[key]={theme,url}; save(); }
 function cardBlock(){
   const u=state.extra.birthdayCard; if(!u) return '';
@@ -1173,7 +1174,7 @@ function renderTicketPuzzle(s, idx){
       <p style="margin:4px 0 2px">請拍一張合照，合照主題：</p>
       <p class="center" style="font-size:34px;margin:0 0 12px;color:var(--red)">${s.departTheme}</p>
       ${shot?`<img class="photo" src="${shot.url}" alt="" style="margin-bottom:14px">`:''}
-      <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="image/*" id="file" hidden></label>
+      <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
       ${shot?'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:14px">下一步</button>':''}
       ${backupScanBox()}${npcBox(s,idx)}`);
     $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.departTheme, u); render(); }); rd.readAsDataURL(f); };
@@ -1599,7 +1600,7 @@ function renderFood(s, idx){
     <p>${s.intro}</p><p class="center" style="font-size:22px;margin:14px 0;color:var(--red)">${s.food}</p>
     <p>吃完拍一張合照，蠟燭就會亮。</p>
     ${shot?`<img class="photo" src="${shot}" alt="">`:''}
-    <label class="nes-btn is-primary btn" style="display:block;text-align:center;margin-top:8px">${CAMERA} 拍合照<input type="file" accept="image/*" id="file" hidden></label>
+    <label class="nes-btn is-primary btn" style="display:block;text-align:center;margin-top:8px">${CAMERA} 拍合照<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
     ${shot?`<p style="margin-top:12px">${s.npcTask}</p><button class="nes-btn is-primary btn" id="done" style="margin-top:6px">做完了，拿信</button>`:''}
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ squareCrop(rd.result, 1000, u=>{ state.extra[s.id+'_photo']=u; if(s.stripTheme) savePhoto(s.id, s.stripTheme, u); save(); render(); }); }; rd.readAsDataURL(f); };
@@ -1620,7 +1621,7 @@ function renderSoundPuzzle(s, idx){
   main.innerHTML = ticket(s, `${steps()}
     <p>${s.intro}</p>
     ${!heard?`<p>哪一段是這一站的到站音？</p><div class="row" style="flex-direction:column">${[0,1,2].map(i=>`<button class="nes-btn btn audio-btn" data-i="${i}">▶ 第 ${i+1} 段</button>`).join('')}</div><div id="res"></div>`
-    : !img?`${ok('對，就是這一段。')}<p>把站內「華山 1914」指標牌拍下來。</p><label class="nes-btn is-primary btn" style="display:block;text-align:center">${CAMERA} 拍指標牌<input type="file" accept="image/*" id="file" hidden></label>`
+    : !img?`${ok('對，就是這一段。')}<p>把站內「華山 1914」指標牌拍下來。</p><label class="nes-btn is-primary btn" style="display:block;text-align:center">${CAMERA} 拍指標牌<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>`
     : !solved?`<p class="tag">點兩格交換，拼回原圖。</p><div class="grid" id="grid"></div>`
     : `${ok('拼好了。')}<p>牌子上的數字：<span class="big">${s.puzzleNumber}</span></p><p>照列車長運算卡上的規則算出一位數。</p><input class="nes-input" type="number" id="ans" inputmode="numeric" placeholder="一位數"><div id="res"></div><button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`}
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
@@ -1703,7 +1704,7 @@ function renderDirectorShoot(s, idx){            // 備案：原本的拍 3 張�
     ${stage==='shoot'?`<p>${s.intro}</p>
       <p class="tag">已拍 ${d.shots.length} / 3</p>
       <div class="row">${d.shots.map(u=>`<img src="${u}" style="width:30%;border:4px solid #000" alt="">`).join('')}</div>
-      <label class="nes-btn ${d.shots.length?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${d.shots.length?'再拍一張':'把手機交給列車長拍'}<input type="file" accept="image/*" id="file" hidden></label>
+      <label class="nes-btn ${d.shots.length?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${d.shots.length?'再拍一張':'把手機交給列車長拍'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
       ${d.shots.length?'<button class="nes-btn is-primary btn" id="pickgo" style="margin-top:14px">選照片定案</button>':''}`
     : stage==='choose'?`<p>選 1 張最像妳要的。</p><div class="row">${d.shots.map((u,i)=>`<img data-i="${i}" class="pickshot" src="${u}" style="width:30%;border:4px solid #000;cursor:pointer" alt="">`).join('')}</div>`
     : `<img class="photo" id="final" src="${d.shots[d.chosen]}" style="filter:${d.filter>=0?s.styles[d.filter].filter:'none'}" alt="">
@@ -1768,7 +1769,7 @@ function renderPhotoTask(s, idx){
     <p style="margin:4px 0 2px">${s.photoPrompt||'請拍一張合照，合照主題：'}</p>
     <p class="center" style="font-size:34px;margin:0 0 12px;color:var(--red)">${s.theme}</p>
     ${shot?`<img class="photo" src="${shot.url}" alt="" style="margin-bottom:14px">`:''}
-    <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="image/*" id="file" hidden></label>
+    <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
     ${shot?'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:14px">下一步</button>':''}
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.theme, u); if(s.finalPhoto){ state.done[s.id]=true; save(); } render(); }); rd.readAsDataURL(f); };
@@ -1805,12 +1806,12 @@ function renderFireBadge(s, idx){
   const both=has('winter')&&has('flower');
   main.innerHTML = ticket(s, `${steps()}
     <p>${s.story}</p>
-    <div class="letter nes-container is-rounded" style="font-size:17px">${(s.hints||[]).join('\n')}</div>   <!-- 提示直接全部顯示（Ming），不再放謎語 clue -->
     ${both?`<div class="fb-merge hero" style="animation:fbglow .5s steps(4) infinite alternate, fbfloat 1.2s steps(6) infinite alternate">${badgeSVG('',  '128px')}</div>
       <button class="nes-btn is-primary btn" id="summon">解除封印</button>`   /* 兩半合起來 → 按「解除封印」才進解封動畫（Ming） */
     :`<div class="fb-slots"><div class="fb-slot L ${has('winter')?'got':''}">${has('winter')?badgeSVG('L','64px'):'?'}</div><div class="fb-slot R ${has('flower')?'got':''}">${has('flower')?badgeSVG('R','64px'):'?'}</div></div>
       <div class="frame" id="cam" style="margin-top:14px"></div>
       <button class="nes-btn is-primary btn" id="scan" style="margin-top:14px">開啟異次元觀測器</button>`}
+    <div class="letter nes-container is-rounded" style="font-size:17px;margin-top:14px">${(s.hints||[]).join('\n')}</div>   <!-- 提示直接全部顯示，放在按鈕下方（Ming） -->
     ${backupScanBox()}${npcBox(s,idx)}`);
   const perm=$('#perm'); if(perm) perm.onclick=async()=>{
     try{ if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission==='function'){ const r=await DeviceOrientationEvent.requestPermission(); if(r!=='granted') throw new Error('沒有允許'); }
