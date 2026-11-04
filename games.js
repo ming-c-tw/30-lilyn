@@ -76,7 +76,7 @@ function sprite(rows, pal){
 function flip(src){ const c=document.createElement('canvas'); c.width=src.width; c.height=src.height; const g=c.getContext('2d'); g.translate(src.width,0); g.scale(-1,1); g.drawImage(src,0,0); return c; }
 
 /* 莉莉：黑長髮平瀏海、黑色露肩上衣、窄裙、長靴（12×16） */
-const LILY_PAL={K:'#111',H:'#e63946',S:'#f6d2b5',E:'#222',R:'#e05a6b',D:'#1e1e1e',W:'#f6d2b5',B:'#000',P:'#f4a3c0',Y:'#fff',C:'#4cc9f0'};   // 2026-11-04 Ming 用像素編輯器重畫（含腮紅、帽子色）
+const LILY_PAL={K:'#111',H:'#e63946',S:'#f6d2b5',E:'#222',R:'#e05a6b',D:'#1e1e1e',W:'#f6d2b5',B:'#111',P:'#f4a3c0',Y:'#fff',C:'#4cc9f0'};   // 2026-11-04 Ming 用像素編輯器重畫（含腮紅、帽子色）
 const LILY=[
   '...KKKKKK...',
   '..KKKKKKKB..',
@@ -154,7 +154,7 @@ const LILY_FULL=[
   '.....BB.BB....'];   // 帽子版（Ming 2026-11-04 自己點；圖示、拍貼用）
 /* LILY_FULL：戴生日帽的全身版（拍貼、圖示用），14×24 */
 /* 墨墨：兩側推短、頭頂全黑微翹、平瀏海、細長眼、淡笑，小麥膚色、全黑（12×16） */
-const MOMO_PAL={K:'#111',H:'#3d3632',G:'#5a4a40',S:'#dcb48e',E:'#222',M:'#8a5a44',D:'#1e1e1e',B:'#000'};
+const MOMO_PAL={K:'#111',H:'#111',G:'#5a4a40',S:'#dcb48e',E:'#222',M:'#8a5a44',D:'#1e1e1e',B:'#111'};
 const MOMO=[
   '...BBBBBB...',
   '..BBBBBBBB..',
@@ -173,6 +173,27 @@ const MOMO=[
   '..BBB..BBB..',
   '.BBBB..BBBB.',
   '.BBBB..BBBB.'];   // 12×17（Ming 2026-11-04 定版）；畫的時候以腳底對齊
+/* 墨墨（車長帽版）：台鐵式白色大盤帽＋橘帶金線＋金徽＋黑帽簷（Ming 2026-11-04 照實物），給開頭邀請函用（16×22） */
+const MOMO_CAP_PAL={...MOMO_PAL, W:'#f4f4f4', A:'#b8b8b8', O:'#f39c2b', Y:'#f7b500', V:'#3d3d3d'};   // W 帽白、A 帽邊灰、O 橘帶、Y 金線／金徽、V 帽簷（比頭髮亮才分得出）
+const MOMO_CAP=['.....AAAAAA.....', '...AAWWWWWWAA...', '..AWWWWWWWWWWA..', '.AWWWWWWWWWWWWA.', '.AWWWWKYYKWWWWA.', '.AWWWWYYYYWWWWA.', '..OOOOOYYOOOOO..', '..OVVVVVVVVVVO..', '...GBVVVVVVBG...', '...GSBBBBBBSG...', '...SSSSSSSSSS...', '...MSEESSEESM...', '....SSSSSSSS....', '.....SSMMSS.....', '....BBBBBBBB....', '...BBBBBBBBBB...', '...BBBBBBBBBB...', '...BBBBBBBBBB...', '...SBBBBBBBBS...', '....BBB..BBB....', '...BBBB..BBBB...', '...BBBB..BBBB...'];   // Ming 2026-11-04 用編輯器調過
+const MOMO_JUMP=[
+  '...BBBBBB...',
+  '..BBBBBBBB..',
+  '.BBBBBBBBBB.',
+  '.GBBBBBBBBG.',
+  '.GSBBBBBBSG.',
+  '.SSSSSSSSSS.',
+  '.MSEESSEESM.',
+  'SSSSSSSSSS..',
+  'KK.SMMMMS...',
+  'KKBBBBBBBBKK',
+  'KBBBBBBBBBBK',
+  '...BBBBBB.KK',
+  '...BBBBBB.SS',
+  '.KBBBKKBB...',
+  '.KBBBKKBBBKK',
+  'KKK...KBBBBK',
+  'KKK.......KK'];   // 墨墨跳起來（排球用；Ming 2026-11-04 自己點；遊戲裡左右翻）
 /* 通勤怪（超級莉莉的敵人，12×12） */
 const GOON=[
   '....GGGG....',
@@ -191,10 +212,40 @@ const GOON_PAL={G:'#8b5a2b',W:'#fff',K:'#111',S:'#f2d3a0'};
 
 /* 翻翻牌像素圖示（16×16）：男主角、莉莉、排球、酒杯、橘貓、甜甜圈 */
 const ICON_ART={
-  man:{pal:{K:'#111',H:'#3d3632',G:'#5a4a40',S:'#c99a6e',E:'#222',M:'#8a5a44',D:'#1e1e1e'},rows:['....K.KKKK.K....','...KKKKKKKKKK...','..KKKKKKKKKKKK..','..KKKKKKKKKKKK..','..GKKKKKKKKKKG..','..GSKKSKKSKKSG..','..GSSSSSSSSSSG..','..SSEESSSSEESS..','..SSSSSSSSSSSS..','...SSSSMMSSSS...','....SSSSSSSS....','...DDDDDDDDDD...','..DDDDDDDDDDDD..','..SDDDDDDDDDDS..','...DDDDDDDDDD...','...DDDDDDDDDD...']},
-  lily:{pal:{K:'#111',S:'#f6d2b5',E:'#222',R:'#e05a6b',P:'#f4a3a8',D:'#1e1e1e',B:'#000'},rows:[
-    '....KKKKKKKK....','...KKKKKKKKKK...','..KKKKKKKKKKKK..','..KKSSSSSSSSKK..','..KKSESSSSESKK..','..KKSPSSSSPSKK..','..KKSSSRRSSSKK..','..KKKSSSSSSKKK..',
-    '..KKSSDDDDSSKK..','..KKDDDDDDDDKK..','..KKDDDDDDDDKK..','...KDDDDDDDDK...','....DDDDDDDD....','.....S....S.....','....BB....BB....','....BB....BB....']},
+  man:{pal:{K:'#111',H:'#111',G:'#5a4a40',S:'#dcb48e',E:'#222',M:'#8a5a44',D:'#1e1e1e'},rows:[
+    '....KKKKKKKK....',
+    '...KKKKKKKKKK...',
+    '..KKKKKKKKKKKK..',
+    '..KKKKKKKKKKKK..',
+    '..GKKKKKKKKKKG..',
+    '..GSKKKKKKKKSG..',
+    '..SSSSSSSSSSSS..',
+    '..SSEESSSSEESS..',
+    '..MSSSSSSSSSSM..',
+    '...SSSSMMSSSS...',
+    '....SSSSSSSS....',
+    '...KKKKKKKKKK...',
+    '..KKKKKKKKKKKK..',
+    '..SKKKKKKKKKKS..',
+    '...KKKKKKKKKK...',
+    '..KKKKK..KKKKK..']},
+  lily:{pal:{K:'#111',S:'#f6d2b5',E:'#222',R:'#e05a6b',P:'#f4a3a8',D:'#1e1e1e',B:'#111'},rows:[
+    '....KKKKKKKK....',
+    '...KKKKKKKKKK...',
+    '..KKKKKKKKKKKK..',
+    '..KKBSBBBBSBKK..',
+    '..KKSESSSSESKK..',
+    '..KKSPSSSSPSKK..',
+    '..KKSSSRRSSSKK..',
+    '..KKKSSSSSSKKK..',
+    '..KKSSDDDDSSKK..',
+    '..KKDDDDDDDDKK..',
+    '..KKDDDDDDDDKK..',
+    '...KDDDDDDDDK...',
+    '....SDDDDDDS....',
+    '.....S....S.....',
+    '....BB....BB....',
+    '....BB....BB....']},
   // 排球：照 Ming 給的黃藍漩渦球（6 片風車色塊，公式算出來的像素，不放商標）
   ball:{pal:{K:'#1b2a5e',Y:'#f5c400',B:'#1f3d9c'},rows:['................','.....KKKKKK.....','....KKBBBBKK....','...KBBBBBBYYK...','..KYYYYBBBYYYK..','.KKYYYYYBBYYYKK.','.KYYYYYYBBYYYYK.','.KYYBBBBBYYYYBK.','.KYBBBBBBYYYBBK.','.KBBBBYYBBBBBBK.','.KKBBBYYBBBBBKK.','..KBBBYYYBBBBK..','...KBBYYYYYYK...','....KKYYYYKK....','.....KKKKKK.....','................']},
   wine:{pal:{K:'#111',G:'#dfe8ef',R:'#a3123a',L:'#d6466a'},rows:[
@@ -208,16 +259,16 @@ const ICON_ART={
     '.KPPOKKKKKKOPPK.',
     '.KOOODODDODOOOK.',
     'KOOOOODOODOOOOOK',
-    'KOOOEEOOOOEEOOOK',
-    'KOOEWEEOOEWEEOOK',
-    'KOOEEEEOOEEEEOOK',
-    'KOOOEEOWWOEEOOOK',
-    'KDOOOWWNNWWOOODK',
-    '.KOOWWWWWWWWOOK.',
-    '.KOWWWMWWMWWWOK.',
-    '..KWWWWMMWWWWK..',
+    'KOOOOOOOOOOOOOOK',
+    'KDDOWEOOOOWEODDK',
+    'KDOOEEOOOOEEOODK',
+    'KOOOOOWWWOOOOOOK',
+    'KDOOOWNNNWWOOODK',
+    '.KOOWWWNWWWWOOK.',
+    '.KOWWMWMWMWWWOK.',
+    '..KWWMMMMMWWWK..',
     '...KKWWWWWWKK...',
-    '.....KKKKKK.....']},
+    '.....KKKKKK.....']},   // Ming 2026-11-04 自己點
   donut:{pal:{K:'#5a3a1a',T:'#e3a35c',P:'#f48fb1',H:'#ffc6dc',C:'#fff',Y:'#f7d51d',B:'#4fc3f7'},rows:[
     '................','.....KKKKKK.....','...KKPPPPPPKK...','..KPPHPPYPPPPK..','.KPPPPPPPPBPPPK.','.KPYPPKKKKPPHPK.','KPPPPK....KPPPPK','KPBPK......KPPYK',
     'KPPPK......KBPPK','KTPPPK....KPPPTK','.KTPPPKKKKPPPTK.','.KTTTPPYPPPTTTK.','..KTTTTTTTTTTK..','...KKTTTTTTKK...','.....KKKKKK.....','................']},
@@ -466,7 +517,7 @@ function volley(el, cfg, onWin){
   let started=false; const startBox=w.querySelector('#mgstart'); startBox.querySelector('button').onclick=()=>{ started=true; startBox.remove(); };   // 按開始才開打
   const cv=w.querySelector('canvas'), g=cv.getContext('2d'); g.imageSmoothingEnabled=false;
   const pad=makePad(w,[{id:'left',label:'◀',side:'L'},{id:'right',label:'▶',side:'L'},{id:'jump',label:'跳',side:'R'},{id:'hit',label:'殺',side:'R',red:true}],'hit');
-  const sL=sprite(LILY,LILY_PAL), sM=flip(sprite(MOMO,MOMO_PAL));
+  const sL=sprite(LILY,LILY_PAL), sLJ=sprite(LILY_RUN,LILY_PAL), sM=flip(sprite(MOMO,MOMO_PAL)), sMJ=flip(sprite(MOMO_JUMP,MOMO_PAL));   // 跟站姿一樣左右翻（Ming 確認這個方向才對）   // 跳起來時換圖
   const ballImg=sprite(ICON_ART.ball.rows, ICON_ART.ball.pal); let spin=0;
   let me, ai, ball, s1=0, s2=0, pause=60, serve=0, over=false, overText=null, noteText=null, raf, lastT=0, acc=0, hitCD=0, fault=null;
   const mercy=()=>s2>=TARGET-1;
@@ -540,7 +591,7 @@ function volley(el, cfg, onWin){
     g.fillStyle='#e76e8a'; g.fillRect(NETX-NETW/2-1,NETTOP-4,NETW+2,6);
     // 人物（12×16 放大 3 倍）
     const drawP=(img,p)=>{ g.drawImage(img, Math.round(p.x-18), Math.round(p.y-PR-6)-(img.height-16)*3, img.width*3, img.height*3); };   // 腳底對齊，墨墨比較高也不會被壓扁
-    drawP(sL,me); drawP(sM,ai);
+    const air=p=>p.y<GROUND-PR-1; drawP(air(me)?sLJ:sL,me); drawP(air(ai)?sMJ:sM,ai);
     // 影子與球
     g.fillStyle='rgba(0,0,0,.2)'; g.fillRect(Math.round(ball.x-BR),GROUND+2,BR*2,4);
     spin+=ball.vx*0.04;
@@ -579,5 +630,5 @@ function puzzle(el, cfg, onWin){
 }
 
 window.MiniGames={ song, memory, mario, volley, puzzle };
-window.MG_SPRITES={ LILY, LILY_PAL, LILY_RUN, LILY_MID, LILY_FULL, MOMO, MOMO_PAL, ICON_ART };   // 給 app.html 的拍貼畫人物用
+window.MG_SPRITES={ LILY, LILY_PAL, LILY_RUN, LILY_MID, LILY_FULL, MOMO, MOMO_JUMP, MOMO_PAL, MOMO_CAP, MOMO_CAP_PAL, ICON_ART };   // 給 app.html 的拍貼畫人物用
 })();

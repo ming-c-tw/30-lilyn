@@ -85,6 +85,11 @@
   .tag{font-size:13px;color:var(--muted)}
   .diffwrap{position:relative;width:100%;overflow:hidden;background:#ddd;touch-action:manipulation;border:4px solid #000;box-shadow:var(--px) var(--px) 0 #000}
   .diffwrap img,.diffwrap svg{display:block;width:100%;height:auto}
+  .diffwrap img{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+  .diffwrap.zv{touch-action:none}
+  .zv .zi{position:relative;transform-origin:0 0;will-change:transform}
+  .zv .xh{position:absolute;width:44px;height:44px;pointer-events:none;transform-origin:50% 50%;
+    filter:drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 1px rgba(0,0,0,.45))}   /* 白邊＋淡陰影：在粉紅機台上也看得清楚 */
   .mark{position:absolute;width:32px;height:32px;margin:-16px 0 0 -16px;border:4px solid var(--green);box-shadow:0 0 0 3px #fff;pointer-events:none}
   .mark.miss{border-color:var(--red);animation:pop .4s forwards}
   @keyframes pop{to{opacity:0;transform:scale(1.5)}}
@@ -128,6 +133,7 @@
   .steps i.now{background:var(--gold)}
   details summary{cursor:pointer;list-style:none}
   details summary::-webkit-details-marker{display:none}
+  body.noprog .candlebar,body.noprog .codebar{display:none}
   .candlebar{display:flex;justify-content:center;gap:6px;padding:4px 0 10px;margin:-4px 0 6px}
   .candlebar .candle{width:24px;height:60px;transform:scale(.62);transform-origin:50% 100%;margin:-22px -4px 0;opacity:1}
   .candlebar .candle:not(.lit) .stick{opacity:.4}
@@ -148,7 +154,15 @@
   .fb-merge{display:flex;justify-content:center;margin:10px 0;animation:fbglow 1s steps(4) infinite alternate}
   .fb-tap{cursor:pointer;animation:fbglow .5s steps(4) infinite alternate, fbfloat 1.2s steps(6) infinite alternate}
   @keyframes fbfloat{from{transform:translateY(-8px)}to{transform:translateY(8px)}}   /* 合成後的徽章發光＋上下浮動，點它解封 */
-  .hero{margin:30px 0}   /* 大圖（徽章、胖貓、大蠟燭、大地標、書櫃、大數字）上下一律留 30 */
+  .hero{margin:30px 0}
+  .hero>svg.mx{margin-left:auto;margin-right:auto}
+  .hair-glow svg{animation:hairglow .9s steps(3) infinite alternate}
+  .pin-orbit{position:relative;height:196px;display:flex;align-items:center;justify-content:center}   /* 軌道直徑 184，地標置中 */
+  .po-pin{position:relative;z-index:1}
+  .po-ring{position:absolute;left:50%;top:50%;width:184px;height:184px;margin:-92px 0 0 -92px;animation:orbit 3.2s steps(48) infinite;z-index:2;pointer-events:none}
+  .po-hair{position:absolute;left:50%;top:0;transform:translate(-50%,-50%) rotate(45deg)}   /* 貓毛順著繞行方向（順時針，頂端往右） */
+  @keyframes orbit{to{transform:rotate(360deg)}}
+  @keyframes hairglow{from{filter:drop-shadow(0 0 4px #ff9a2e) drop-shadow(0 0 2px #ffb866)}to{filter:drop-shadow(0 0 14px #ff8a00) drop-shadow(0 0 6px #ffb866)}}   /* 大圖（徽章、胖貓、大蠟燭、大地標、書櫃、大數字）上下一律留 30 */
   .fb-free{position:relative;margin:30px 0}
   .fb-free .fb-cat{display:flex;justify-content:center;margin-top:6px;animation:catout 1.1s steps(7) both, catsway 1.4s steps(6) 1.1s infinite alternate}
   @keyframes catout{from{transform:translateY(-120px) scale(.2) rotate(-540deg);opacity:0}30%{opacity:1}to{transform:translateY(0) scale(1) rotate(0)}}   /* 從徽章裡滾出來 */
@@ -156,6 +170,33 @@
   @keyframes fbglow{from{filter:drop-shadow(0 0 0 #ff7a00)}to{filter:drop-shadow(0 0 10px #ff7a00)}}
   .fire-sprite{width:140px;height:140px;display:block;margin:6px auto;animation:fsbob .5s steps(2) infinite alternate}
   @keyframes fsbob{from{transform:scale(1,1)}to{transform:scale(1.03,0.96)}}   /* 胖貓呼吸 */
+  /* ── 次元惡魔：整頁亂碼／壞掉（body.glitch）＋打魔王場地 ── */
+  body.glitch{animation:gl-shake .18s steps(2) infinite}
+  body.glitch::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:999;background:repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 2px,transparent 2px 4px),linear-gradient(90deg,rgba(255,42,109,.16),transparent 30%,transparent 70%,rgba(5,217,232,.16));mix-blend-mode:screen;animation:gl-scan 1.1s steps(6) infinite}
+  body.glitch::after{content:'';position:fixed;left:0;right:0;height:14px;background:rgba(255,42,109,.38);pointer-events:none;z-index:999;animation:gl-bar .7s steps(5) infinite}
+  body.glitch h1,body.glitch .ticket .station .name,body.glitch .ticket .sub{text-shadow:2px 0 #ff2a6d,-2px 0 #05d9e8}
+  body.glitch .devil{animation:devilbob .9s steps(2) infinite alternate, gl-slice .45s steps(3) infinite}
+  @keyframes gl-shake{0%{transform:translate(0,0)}25%{transform:translate(-3px,1px)}50%{transform:translate(2px,-2px)}75%{transform:translate(-1px,2px)}100%{transform:translate(3px,0)}}
+  @keyframes gl-scan{to{background-position:0 40px,0 0}}
+  @keyframes gl-bar{0%{top:10%}30%{top:62%}60%{top:35%}100%{top:85%}}
+  @keyframes gl-slice{0%{clip-path:inset(0)}33%{clip-path:inset(10% -4px 55% 4px)}66%{clip-path:inset(60% 4px 0 -4px)}100%{clip-path:inset(0)}}
+  .arena{position:relative;height:340px;margin:14px 0 0;border:4px solid #000;background:#140a22;box-shadow:var(--px) var(--px) 0 #000;overflow:hidden}
+  .devil{position:absolute;left:calc(50% - 56px);top:14px;width:112px;animation:devilbob .9s steps(2) infinite alternate}
+  .devil.hit{animation:devilhit .16s steps(2) 1;filter:brightness(2.2) saturate(0)}
+  .devil.die{animation:devildie 1.2s steps(8) forwards}
+  @keyframes devilbob{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+  @keyframes devilhit{0%{transform:translate(-10px,4px) rotate(-8deg)}100%{transform:translate(8px,-2px) rotate(6deg)}}
+  @keyframes devildie{0%{opacity:1;transform:rotate(0) scale(1)}25%{opacity:.2;transform:translateY(10px) rotate(20deg)}50%{opacity:1;transform:translateY(40px) rotate(-30deg) scale(.8)}75%{opacity:.2;transform:translateY(120px) rotate(60deg) scale(.5)}100%{opacity:0;transform:translateY(240px) rotate(180deg) scale(.1)}}
+  .cat{position:absolute;left:calc(50% - 75px);bottom:8px;width:150px}
+  .cat.rollin{animation:catout 1.1s steps(7) both}
+  .cat.punch{transform:translateY(-10px)}
+  .fist{position:absolute;right:10px;top:50%;margin:-32px 0 0;width:64px;height:64px;padding:0;display:flex;align-items:center;justify-content:center}
+  .fist:active svg{transform:translate(-3px,-3px)}
+  .throwbox{margin-top:14px;text-align:center}
+  .tb-badge{width:56px;margin:0 auto;touch-action:none;cursor:grab;animation:fbfloat 1.2s steps(6) infinite alternate}
+  .tb-badge.drag{animation:none}
+  .tb-badge.fly{animation:tbfly .55s steps(6) forwards}
+  @keyframes tbfly{to{transform:translateY(-360px) rotate(720deg) scale(.3);opacity:0}}
   .dial{width:200px;height:200px;margin:34px auto 8px;position:relative;border:4px solid #000;border-radius:50%;background:radial-gradient(circle,#fff 60%,#fdf6e3 61%);box-shadow:4px 4px 0 #9a9a9a}
   .dial .mk{position:absolute;left:50%;top:50%;width:0;height:0}
   .dial .mk span{position:absolute;left:-16px;top:-96px;width:32px;height:32px;border:3px solid #000;background:#ffe066;display:flex;align-items:center;justify-content:center;font-size:18px}
@@ -207,8 +248,15 @@
 /* =========================================================
    設定區：現勘後只改這裡
    ========================================================= */
+// 拍貼標題「三十而莉」像素字圖（img/strip_title.png 轉的內嵌資料；換圖時重新轉一次）
+const STRIP_TITLE_PNG='data:image/png;base64,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';
 const CONFIG = {
   playerName: '莉莉',
+  openLetterTitle: '邀請函',                   // 開頭的信：站名位置顯示這個，信裡不再重複
+  openLetter: '恭喜妳，符合搭乘 [三十而莉 ． 生日列車] 的條件，若有乘車意願，請於當日認真打扮，持此邀請函前往集合地點 [麟光捷運站] 向 列車長-墨墨 索取密碼，開啟只屬於妳的奇幻旅程，祝妳一路順風。',     // 最一開始的信；輸入密碼才開始；[ ] 裡的字會換色（預設紅，下面可指定）
+  openLetterColors: { '[麟光捷運站]': 'var(--brown)' },   // 麟光＝文湖線咖啡色
+  openPassword: 'ILOVEMOMO',                  // 開頭密碼（大小寫不分、忽略空白）
+  endLetter: '親愛的莉莉：\n\n恭喜妳轉職成三十歲的輕熟女了，不論妳過去一年經歷了什麼，遇到什麼討厭的人事物，接下來都將開啟新的人生階段：有我相伴的三十歲，我會陪妳踩過一切不順遂，牽著妳不斷前行，持續創造美好的回憶，生日快樂！\n\n墨墨',      // 生日快樂合照之後的信；按「領取通關證明」才到最後一頁
   testMode: true,           // 測試模式：控制者介面常開＋底部上一頁／下一頁。正式玩前改 false
   npcPin: '0501',            // 備援密碼＝控制者介面密碼（每關「機器壞了？」輸入，或頁尾連點 5 下）
   lockerNumber: '30',        // 麟光站置物櫃號碼，開局放禮物後填
@@ -225,8 +273,9 @@ const CONFIG = {
 
   stages: [
     { id:'s0', name:'麟光', code:'BR03', line:'brown', type:'ticket_puzzle',
+      goStory:'妳撿到一根貓毛，上面帶有魔力，似乎想帶妳去一個地方，與此同時，列車長交給妳一個只有妳能做到的秘密任務', goVerb:'請跟隨貓毛前往', goHair:true,   // 出發頁：故事＋發光貓毛（Ming）
       sub:'起點 · 列車出發',
-      ticketText:'啊！你沒有車票，請做一件讓列車長舒服的事來換取車票 {devil}',
+      ticketText:'啊！妳沒有車票，請做一件讓列車長舒服的事來換取車票 {devil}',
       goText:'請前往 科技大樓。',
       departTheme:'出發！',
       noPuzzle:true },
@@ -237,14 +286,14 @@ const CONFIG = {
 
     { id:'s1', name:'科技大樓', code:'BR05', line:'brown', type:'library',
       sub:'圖書館 · 一本書',
-      intro:'從 2 號出口出站走到台北市立圖書館總館。',
+      intro:'跟隨貓毛從 2 號出口出站走到台北市立圖書館總館。',
       // 書名＝莉莉 的 相 片；相＝木＋目（木頭做的眼睛），片＝披薩沒有欺（Ming 2026-11-03 定）
       riddle:'找一本書，書名：\n<b>XX 的 YZ</b>\n\nXX ＝ 墨墨最喜歡誰？\nY ＝ {tree} {eye}\nZ ＝ 披薩沒有欺',
       riddleAnswer:'莉莉的相片',
       // 北市圖館藏查詢 2026-11-03：總館 1 本（C01 總館／一般書庫區，可外借）；當天早上再查一次在不在架上
       book:{ title:'莉莉的相片', author:'佩姬.唐恩', call:'873.57 7760', isbn:'9789869520164', where:'總館 一般書庫區' },
       bookAnswer:'164',        // 書背 ISBN 末 3 碼（Ming 2026-11-04：要明講是 ISBN，館藏條碼會混淆）
-      callDigits:'87357',      // 索書號 OOO.OO 的 5 位數字，用幾A幾B（終極密碼）猜
+      callDigits:'87357',      // 索書號 ???.?? 的 5 位數字，用幾A幾B（終極密碼）猜
       callTail:'7760',
       hints:[],
       nextText:'請前往 <span class="big">大安站</span>' },
@@ -308,16 +357,47 @@ const CONFIG = {
       sub:'路途中 · 金牌特務',
       theme:'出任務！' },
 
-    { id:'s6', name:'忠孝復興', code:'BL15 / BR10', line:'blue', type:'spot',
-      sub:'東區東區 · 東區不要停',
-      intro:'這幾張照片都是在忠孝復興站拍的，但都被動過手腳。找到照片拍的位置，跟現場比對，把不一樣的地方全部點出來，才會給下一張。',
-      // 一張一張來：全部找到才給下一張，不告知有幾處。image 留空用示意圖；Ming 拍好實景後換成像素化＋改圖版，spots 填被改處的百分比座標
+    { id:'s6', name:'忠孝復興', code:'BL15 / BR10', line:'blue', type:'spot', bossHits:30,   // 全部看破 → 次元惡魔出現 → 丟徽章召喚胖貓 → 按拳頭 30 下打敗（不告訴玩家幾下）
+      sub:'次元入侵 · 好眼莉',
+      intro:'次元惡魔想用虛假的空間替換現實，請依序找到惡魔想替換的地點，並看破假空間的破綻，阻止惡魔！',
+      // 一張一張來：先看圖 →「已找到地點 N」→ 開始找哪裡不一樣＋答題，答對才給下一張
+      // image 留空用示意圖；qs＝這張的問題（同時列出、各自作答，全對才算看破）；answers＝可接受的答案（不分大小寫、忽略空白標點）
       photos:[
-        { image:'', spots:[ {x:22,y:38}, {x:63,y:30}, {x:78,y:72}, {x:47,y:62} ] },
-        { image:'', spots:[ {x:30,y:25}, {x:70,y:60}, {x:50,y:80} ] },
-        { image:'', spots:[ {x:18,y:70}, {x:55,y:35}, {x:82,y:28}, {x:40,y:55} ] },
-      ],
-      hints:['先找到照片是在站內哪裡拍的','看看招牌上的字和顏色','地板和牆角也要看'] },
+        { image:'img/s6_photo1.jpg', qs:[   // 售票處：哺集乳室 10m→100m、廁所符號換掉、MIKI PLAZA→MILK PLAZA
+          { q:'正確的距離是？', spot:[33,55,39,60.5],   // 哺集乳室牌子的 100m→
+            answers:['10m','10','10公尺','10米','十公尺','十米','10 m'] },
+          { q:'正確符號是？', spot:[42,48.5,49,60.5],   // 售票處的廁所符號
+            choices:[ {img:'img/s6_icon_男廁.png',label:'男廁'}, {img:'img/s6_icon_女廁.png',label:'女廁'}, {img:'img/s6_icon_男女.png',label:'男女'} ],
+            correct:2, answers:['男女'] },
+          { q:'正確的字是？', spot:[75.5,35.5,95.5,44],   // MILK PLAZA 招牌
+            answers:['MIKI','MIKI PLAZA','MIKIPLAZA'] } ] },
+        { image:'img/s6_photo2.jpg', qs:[   // 出口街景：4 號出口→3、SO NICE→SONIC
+          { q:'正確的出口是幾號？', spot:[72,48,81,65],   // 黃色出口牌
+            answers:['4','四','4號','四號','4號出口','四號出口'] },
+          { q:'正確的字是？', spot:[21,62,29,68.5],   // 一樓招牌
+            answers:['SO NICE','SONICE'] } ] },
+        { image:'img/s6_photo3.jpg', qs:[   // DOWNTOWN 街口（實景 _參考圖/LINE_ALBUM_2026114_261104_13.jpg）
+          { q:'正確的字是？', spot:[57,57,65,70], answers:['BORN TO BE SEXY','BORNTOBESEXY'] },          // 中間牆面：BORN TO SEX
+          { q:'正確的字是？', spot:{poly:[[3.3,2.7],[53.6,26.6],[53.6,35.6],[3.3,12.2]]}, answers:['DOWNTOWN','DOWN TOWN'] },                    // 左上大招牌：DOWN LOAD
+          { q:'正確的字是？', spot:[65.5,0,73.5,7.5], answers:['多彩多','多采多'] },                         // 中上招牌：養樂多
+          { q:'正確的店家是？', spot:[85,26,95.5,41], answers:['繼光香香雞','繼光','繼光香雞','J&G','JG'] } ] },   // 右邊圓招牌：光光相機
+        { image:'img/s6_photo4.jpg', qs:[   // 四幅畫順序被打亂（實景由左到右：夜晚街景、腳踏車、紅色廟宇、彩色條紋）
+          { q:'請問這是第幾幅？（由左到右）', found:'發現位置錯亂！',
+            spot:[[2.5,28.5,21,53],[29.5,29,47.5,53],[55,30,72,53],[80,30.5,97,53]],   // 四幅畫任一幅
+            seq:[   // 照定稿圖由左到右依序問；答案＝實景位置
+              {img:'img/s6_p4_畫1.jpg', answers:["2", "二", "第2幅", "第二幅", "第2", "第二", "2幅", "二幅"]},
+              {img:'img/s6_p4_畫2.jpg', answers:["3", "三", "第3幅", "第三幅", "第3", "第三", "3幅", "三幅"]},
+              {img:'img/s6_p4_畫3.jpg', answers:["4", "四", "第4幅", "第四幅", "第4", "第四", "4幅", "四幅"]},
+              {img:'img/s6_p4_畫4.jpg', answers:["1", "一", "第1幅", "第一幅", "第1", "第一", "1幅", "一幅"]} ],
+            answers:['2、3、4、1'] } ] },
+        { image:'img/s6_photo5.jpg', qs:[   // 凱基證券藍色機台 → 定稿：粉紅、durex＋杜蕾斯（左右兩處）、螢幕與標語也換了
+          // spot＝破綻範圍 [左,上,右,下]（照片的百分比）；準星落在範圍內按「偵查」才跳這題
+          { q:'實際上是什麼顏色？', spot:{mask:{w:200,h:113,b:'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAG4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf//8AAAAAAAAAAAAAAAAAAAAAAAAAAAB/////gAAAAAAAAAAAAAAAAAAAAAAAAAAf/////4AAAAAAAAAAAAAAAAAAAAAAAAB//z////+AAAAAAAAAAAAAAAAAAAAAAAP///8/////gAAAAAAAAAAAAAAAAAAAAB/8f//x/////4AAAAAAAAAAAAAAAAAAAB///P/AAf///8GAAAAAAAAAAAAAAAAAAD////4AAAH////VgAAAAAAAAAAAAAAAAf8//4AAAAAB////wYAAAAAAAAAAAAAAAP//+AAAAAAAAf///9mAAAAAAAAAAAAAAAP38AAAAAAAAAH////xgAAAAAAAAAAAAAAD/AAAAAAAAAAB/////4AAAAAAAAAAAAAAA/wAAAAAAAAAAf////+AAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAD/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP+AAAAAAAAAAAAAAAAAAAAAAAAAAAD///7/gAAAAAAAAAAAAAAAAAAAAAAAAAAB/////4AAAAAAAAAAAAAAApQAAAAAAAAAAfc9z/+AAAAAAAAAAAAAAAL0AAAAAAAAAAH3Nc//gAAAAAAAAAAAAAAD/AAAAAAAAAAB9TfP/4AAAAAAAAAAAAAAAtQAAAAAAAAAAf////8AAAAAAAAAAAAAAAP8AAAAAAAAAAH////+gAAAAAAAAAAAAAAD/AAAAAAAAAAB+7///4AAAAAAAAAAAAAAA/wAAAAAAAAAAfu5j/+AAAAAAAAAAAAAAAP8AAAAAAAAAAHxmZ//AAAAAAAAAAAAAAAD/AAAAAAAAAAB+7vf/gAAAAAAAAAAAAAAA/wAAAAAAAAAAf///3wAAAAAAAAAAAAAAAH8AAAAAAAAAAH///98AAAAAAAAAAAAAAAD/AAAAAAAAAAB////+AAAAAAAAAAAAAAAA/4AAAAAAAAAAf////iAAAAAAAAAAAAAAAJ/+AAAAAAAAAH////4AAAAAAAAAAAAAAADf//gAAAAAAAB////8AAAAAAAAAAAAAAAADf///wAAAAAAf///+CAAAAAAAAAAAAAAAAD/////gAAAAH////hgAAAAAAAAAAAAAAAAA/////+AAAB////4QAAAAAAAAAAAAAAAAAAH/////4AAf///kEAAAAAAAAAAAAAAAAAAAH//////+D///xIAAAAAAAAAAAAAAAAAAAAA//////5///YEAAAAAAAAAAAAAAAAAAAAAAf////////8HIAAAAAAAAAAAAAAAAAAAAAAH///////+BBAAAAAAAAAAAAAAAAAAAAAAAB///////mwAAAAAAAAAAAAAAAAAAAAAAAAAf////v3gAAAAAAAAAAAAAAAAAAAAAAAAAAH///7xoAgAAAAAAAAAAAAAAAAAAAAAAAAAB//6oQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP9gAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='}},   // 粉紅遮罩：s6_粉紅遮罩.py 產生（排除螢幕與 logo）
+            answers:['藍色','藍','藍的','天藍色','天藍','水藍色','水藍','淺藍色','淺藍','blue'] },
+          { q:'正確的廠商是？', spot:[{poly:[[7.3,38.8],[39.5,34.2],[39.5,67.0],[7.3,61.1]]},[39,41,52,49],[2.5,42,7.5,50]],   // 螢幕畫面、右 logo＋杜蕾斯、左 logo＋杜蕾斯
+            answers:['凱基證券','凱基','凱基證卷','KGI','KGI證券'] } ] },
+
+      ], },
 
     { id:'g5', name:'忠孝復興 >> 麟光', code:'移動中', line:'brown', type:'game', game:'puzzle', transit:true,
       sub:'秘密任務 5 · 莉莉皆辛苦',
@@ -337,7 +417,9 @@ const CONFIG = {
   // 網址加 ?alt=s3:rainbow 可以臨時試，不會存起來
   // 拍貼機相片：依序收這幾關的合照，結尾組成一條（缺的跳過）
   stripOrder: ['s0','s4','m1','s9'],   // 四格拍貼：出發！／好好吃！／出任務！／生日快樂！
-  stripTitle: '生日快樂',
+  stripTitle: '三十而莉',
+  stripTitleImg: STRIP_TITLE_PNG,   // 拍貼標題圖（GPT 畫的「三十而莉」，原檔 img/strip_title.png）；內嵌才不會讓畫布被汙染無法匯出；設 '' 就用下面的程式像素字
+  stripTitleStyle: { gap:2, chars:{ '三':{boldY:true}, '莉':{size:14} } },   // 拍貼標題像素字：字距（格）、個別字加粗／放大
   stripDate: '2026.11.26',   // 拍貼上的日期；留空就用當天
   stripTheme: { sunset:true, frame:'#2b1b5e', title:'#e9d5ff', shadow:'#4a2a8f', date:'#4a2a8f', noFrame:true },   // 拍貼配色（夕陽漸層，照片不加框）
 
@@ -529,29 +611,10 @@ const TREE = pxIcon([
   '.....BBBDBB.....',
   '....DDDDDDDD....'],
   {G:'#2f9e44',L:'#69db7c',B:'#8b5a2b',D:'#5c3a1a'}, 16, 16, '樹木', '1.8em');
-const PIN_ROWS = [
-  '.....WWWWWW.....',
-  '...WWWWWWWWWW...',
-  '..WWWWWWWWWWWW..',
-  '.WWWWWWWWWWWWWW.',
-  '.WWWWWW..WWWWWW.',
-  'WWWWWW....WWWWWW',
-  'WWWWW......WWWWW',
-  'WWWWW......WWWWW',
-  'WWWWWW....WWWWWW',
-  '.WWWWWW..WWWWWW.',
-  '.WWWWWWWWWWWWWW.',
-  '..WWWWWWWWWWWW..',
-  '...WWWWWWWWWW...',
-  '....WWWWWWWW....',
-  '.....WWWWWW.....',
-  '.....WWWWWW.....',
-  '......WWWW......',
-  '......WWWW......',
-  '.......WW.......',
-  '.......WW.......'];
+const PIN_ROWS = ['................', '.....WWWWWW.....', '...WWWWWWWWWW...', '..WWWWWWWWWWWW..', '.WWWWWWWWWWWWWW.', '.WWWWWW..WWWWWW.', 'WWWWWW....WWWWWW', 'WWWWW......WWWWW', 'WWWWW......WWWWW', 'WWWWWW....WWWWWW', '.WWWWWW..WWWWWW.', '.WWWWWWWWWWWWWW.', '..WWWWWWWWWWWW..', '...WWWWWWWWWW...', '....WWWWWWWW....', '.....WWWWWW.....', '......WWWW......', '.......WW.......', '................', '................'];   // 小地標（Ming 2026-11-04 自己點，跟大地標同一張）
 const PIN = pxIcon(PIN_ROWS, {W:'#fff'}, 16, 20, '地標', '1em');          // 按鈕用的白色小地標
-const PIN_BIG = pxIcon(PIN_ROWS, {W:'#e63946'}, 16, 20, '地標', '112px');  // 抵達頁的大紅地標
+const PIN_BIG_ROWS = ['................', '.....WWWWWW.....', '...WWWWWWWWWW...', '..WWWWWWWWWWWW..', '.WWWWWWWWWWWWWW.', '.WWWWWW..WWWWWW.', 'WWWWWW....WWWWWW', 'WWWWW......WWWWW', 'WWWWW......WWWWW', 'WWWWWW....WWWWWW', '.WWWWWW..WWWWWW.', '.WWWWWWWWWWWWWW.', '..WWWWWWWWWWWW..', '...WWWWWWWWWW...', '....WWWWWWWW....', '.....WWWWWW.....', '......WWWW......', '.......WW.......', '................', '................'];   // Ming 2026-11-04 自己點；上下保留空列（Ming：間距才不會太近）
+const PIN_BIG = pxIcon(PIN_BIG_ROWS, {W:'#e63946'}, 16, 20, '地標', '112px');  // 抵達頁的大紅地標
 const SHELF = pxIcon([
   '.......................LL.....LL',
   'RRRRRRRRRRRRRRRRRRRR...LL.....LL',
@@ -707,16 +770,26 @@ const EYE = pxIcon([
   '................'],
   {K:'#111',W:'#fff',S:'#4a6fa5'}, 16, 12, '眼睛', '1.8em');
 
-const BADGE_ROWS=['.....KKKKKK.....', '...KKGGGGGGKK...', '..KGBBBBBBBBGK..', '.KGBKBBBBBBKBGK.', '.KGKOKBBBBKOKGK.', 'KGBKOOKKKKOOKBGK', 'KGKOOOOOOOOOOKGK', 'KGKOWKKOOKKWOKGK', 'KGKWWWWPPWWWWKGK', 'KGKWWWWKKWWWWKGK', '.KGKWWWWWWWWKGK.', '.KGBKKWWWWKKBGK.', '..KGBBKKKKBBGK..', '...KKGGGGGGKK...', '.....KKKKKK.....', '................'];
-const BADGE_COL={K:'#5a3a20',G:'#f7b500',B:'#cfe8ff',O:'#f2b880',W:'#fffaf0',P:'#f4a3a8'};   // 胖貓徽章：淡橘白、閉眼
+// ── GPT 像素圖（Ming 2026-11-04，_參考圖/GPT像素圖/*.png，32px 一格、純色、已去背）──
+const CAT_PAL={K:'#603713',O:'#ebc99e',L:'#f7deb9',W:'#fff3dc',P:'#f5a2af',X:'#ffffff'};   // 胖貓系列共用色
+const DEVIL_PAL={K:'#251726',D:'#3a133d',V:'#a858c5',L:'#e3b4ed',P:'#ef8daa',W:'#fff3dc'};
+function spriteSVG(rows, pal, cssW, attrs){ let out=''; rows.forEach((r,y)=>[...r].forEach((c,x)=>{ if(c!=='.' && pal[c]) out+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${pal[c]}"/>`; }));
+  const h=/px$/.test(cssW)?Math.round(parseFloat(cssW)*rows.length/rows[0].length)+'px':'auto';   // 高度直接算好，不同瀏覽器才不會多留空
+  return `<svg viewBox="0 0 ${rows[0].length} ${rows.length}" shape-rendering="crispEdges" style="width:${cssW};height:${h};display:block" ${attrs||''}>${out}</svg>`; }
+const BADGE_ROWS=['..............KKKKKK..............', '...........KKKWWWWWWKKK...........', '........KKKWWWWWWWWWWWWKKK........', '.......KWWWWWWWWWWWWWWWWWWK.......', '......KWWWWWWWWWWWWWWWWWWWWK......', '....KKWWWWWWWWWWWWWWWWWWWWWWKK....', '...KWWWWKKKKWWWWWWWWWWKKKKWWWWK...', '...KWWWKKLLKKWWWWWWWWKKLLKKWWWK...', '..KWWWWKKLLLKKWWWWWWKKLLLKKWWWWK..', '..KWWWKLLPPLLKKKKKKKKLLPPLLKWWWK..', '.KWWWWKLLPPPLLOOLLOOLLPPPLLKWWWWK.', '.KWWWWKLLPLLLLOOLLOOLLLLPLLKWWWWK.', '.KWWWWKKLLLLLLOOLLOOLLLLPLKKWWWWK.', 'KWWWWKKOOLLLLLOOLLOOLLLLLOOKWWWWWK', 'KWWWWKLLLLLLLLLOLLOLLLLLLLLLKWWWWK', 'KWWWWKLLLLLLLLLLLLLLLLLLLLLLKWWWWK', 'KWWWKLLLLLLKKKLLLLLLKKKLLLLLLKWWWK', 'KWWWKOOLLLLXKKLLLLLLXKKLLLLOOKWWWK', 'KWWKOOOOOLLKKKLLLLLLKKKLLOOOOOKWWK', 'KWWKOOOOOLLLLLXLPPPXLLLLLOOOOOKWWK', 'KWWKLLLLLLLLLXXXPPPXXLLLLLLLLLKWWK', '.KWKLOOOLLLLXXXXXPXXXXLLLLOOOLKWK.', '.KWWKOOLLLXXXXXXXKXXXXXXLLLOOKWWK.', '.KWWKLLLLXXXXXKKKXKKXXXXXLLLLKWWK.', '..KWKLLLXXXXXXXXXXXXXXXXXXLLLKWK..', '..KWWKLLXXXXXXXXXXXXXXXXXXLLKWWK..', '...KWWKKXXXXXXXXXXXXXXXXXXKKWWK...', '...KWWWKKXXXXXXXXXXXXXXXXKKWWWK...', '....KWWWWKKKXXXXXXXXXXKKKWWWWK....', '.....KKWWWWWKKKKKKKKKKWWWWWKK.....', '......KKWWWWWWWWWWWWWWWWWWK.......', '........KKKWWWWWWWWWWWWKKK........', '...........KKKWWWWWWKKK...........', '..............KKKKKK..............'];   // 胖貓徽章 34×34
+const BADGE_COL=CAT_PAL;
 function badgeSVG(part, cssW){                         // part: 'L' 左半、'R' 右半、其他＝整枚
-  const x0=part==='R'?8:0, w=part==='L'||part==='R'?8:16; let out='';
+  const W=BADGE_ROWS[0].length, H=BADGE_ROWS.length, half=W/2, x0=part==='R'?half:0, w=part==='L'||part==='R'?half:W; let out='';
   BADGE_ROWS.forEach((r,y)=>[...r].forEach((c,x)=>{ if(c!=='.' && x>=x0 && x<x0+w) out+=`<rect x="${x-x0}" y="${y}" width="1" height="1" fill="${BADGE_COL[c]}"/>`; }));
-  return `<svg viewBox="0 0 ${w} 16" shape-rendering="crispEdges" style="width:${cssW||'64px'};height:auto;display:block" aria-label="胖貓徽章">${out}</svg>`;
+  return `<svg viewBox="0 0 ${w} ${H}" shape-rendering="crispEdges" style="width:${cssW||'64px'};height:auto;display:block" aria-label="胖貓徽章">${out}</svg>`;
 }
-// 胖貓：很胖、淡橘背白肚、閉眼睡覺、短短彎彎的麒麟尾（24×12）
-const SPRITE_ROWS=['..................K...K.', '.................KOK.KOK', '........KKKKKKK..KOOKOOK', '.....KKKOOOOOOOKKKOOOOOK', '...KKOOOOOOOOOOOOKWKKWWK', '..KOOOOOOOOOOOOOOWWWWPWK', 'KKOOOOOOOOOWWWWWWWWWWWK.', 'KOKOOOOOOOWWWWWWWWWWWK..', '.KKOOOOOWWWWWWWWWWWWK...', '..KOOOWWWWWWWWWWWWWK....', '..KWWKWWWKKKKKKWWWK.....', '..KKK.KKK......KKK......'];
-const SPRITE_SVG=(()=>{ const col={K:'#5a3a20',O:'#f2b880',W:'#fffaf0',P:'#f4a3a8'}; let out=''; SPRITE_ROWS.forEach((r,y)=>[...r].forEach((c,x)=>{ if(c!=='.') out+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${col[c]}"/>`; })); return `<svg viewBox="0 0 24 12" shape-rendering="crispEdges" class="fire-sprite" style="width:216px;height:108px" aria-label="胖貓">${out}</svg>`; })();
+const SPRITE_ROWS=['................KKKKKKKK..............', '.............KKKLLLOOLLLKKK...........', '..........KKKLOOOLLOOLLLLLLK..........', '........KKOOLLOOLLLLOLLLLLLLK.........', '.......KLLOOLLOLLLLLLLLKKKWLLK........', '.....KKLLLOOLLLLLLLLLLKLLLKLLK........', '.....KOOOLLLLLLLLWWWWKLLLLKLLLKK......', '....KLLOOLLLLLWWWWWWWKLLKKLLLKLLK.....', '...KLLLLLLLWWWWWWWWWWWKKWWLLKLPPKK....', '.KKKOLLLLLWWWWWWWWWWWWWWWWWKLLOOLLKKKK', 'KLLKOOLLLWWWWWWWWWWWWWWWWWKLLLOLLOLLLK', 'KLLKLLLLWWWWWWWWWWWWWWWWWWKLLLLLLOLPLK', '.KKLLLLWWWWWWWWWWWWWWWWWWLWWKKWWLLLLK.', '..KLLLLWWWWWWWWWWWWWWWWWWLWWWWWWKKLK..', '..KLLWWWWWWWWWWWWWWWWWWWLLWWWWPWWWWK..', '..KKKWWWWWWWWWWWWWWWWWWLLLLWWWWWWWK...', '..KLLLWWWWWWWWWWWWWWWWKKLLLLLWWWWK....', '.KLLLLKKWWWWWWWWWWWWWKLLLLLKKKKKK.....', '.KLLLKKLWWKWWWWWWWWWKLLLLKK...........', '..KKKLLLWKKKKKKKKKKKKLLLK.............', '....KLLLK............KKK..............', '.....KKK..............................'];   // 胖貓（趴著，38×22）
+const SPRITE_SVG=spriteSVG(SPRITE_ROWS, CAT_PAL, '216px', 'class="fire-sprite" aria-label="胖貓"');
+const CAT_BACK_ROWS=['..................K......K....', '.................KLK....KLK...', '................KLLLK...KLLK..', '................KLLLLKKKLLLK..', '................KLLLOLLOLLLK..', '................KLLLOLLOLLLK..', '...............KLLLLOLLOLLLLK.', '...............KLLLLLLLLLLLLK.', '...........KKKKKLLLLLLLLLLLLK.', '.........KKOLLLKKLLLLLLLLLLKK.', '.......KKLLLLLLLLOOOOLLLLOK...', '.....KKLLLLLLLLLLLLLOOOLLOK...', '.....KLOOOOOOOOLLLLLLLLLLKKKK.', '....KOOOOOOOOOOOOOLLLLLLLKLLLK', '....KLLLLLLLLOOOOOOOOLLLLLLLLK', '...KLLLLLLLLLLLLLOOOOLLLLLLLKK', '...KLLLLLLLLLLLLLOOOOOLLLLLKK.', '...KOOOOOOOLLLLLLLLLLLLLLLKK..', '..KKOOOOOOOOOOLLLLLLLLLLLLK...', '..KLLLLLLLOOOOOLLLLLLLLLLLK...', '..KLLLLLLLLLLLLLLOOOOLLLLLK...', '..KLLLOOOOLLLLLLLLLLOOOLLLK...', '..KLOOOOLLLLLLLLLLLLLOOOLKK...', '..KLOOOLLLLLLLLLLLLLLOOLLK....', '.KKKOOLLLLLLLLLLLLLLLLLLKK....', 'KLLLLLLLLLLLLLLLLLLLLLLKK.....', 'KLLLLLLLLLLLLLLLLLLLLKKK......', '.KKKKKKKKKKKKKKKKKKKKK........'];   // 胖貓背影 30×28（打次元惡魔時背對玩家）
+const CAT_PUNCH_ROWS=['..................K......K........', '.................KLK....KLK.......', '................KLLLK...KLLK......', '................KLLLLKKKLLLK......', '................KLLLOLLOLLLK......', '................KLLLOLLOLLLK......', '...............KLLLLOLLOLLLLK.....', '...............KLLLLLLLLLLLLK.....', '...........KKKKKLLLLLLLLLLLLK.KKK.', '.........KKOLLLKKLLLLLLLLLLKK.KXLK', '.......KKLLLLLLLLOOOOLLLLOKKKKLLLK', '.....KKLLLLLLLLLLLLLOOOLLOKKLLLLK.', '.....KLOOOOOOOOLLLLLLLLLLLLLLLLK..', '....KOOOOOOOOOOOOOLLLLLLLLLLLLK...', '....KLLLLLLLLOOOOOOOOLLLLLLLLK....', '...KLLLLLLLLLLLLLOOOOLLLLLLLK.....', '...KLLLLLLLLLLLLLOOOOOLLLLLKK.....', '...KOOOOOOOLLLLLLLLLLLLLLLKK......', '..KKOOOOOOOOOOLLLLLLLLLLLLK.......', '..KLLLLLLLOOOOOLLLLLLLLLLLK.......', '..KLLLLLLLLLLLLLLOOOOLLLLLK.......', '..KLLLOOOOLLLLLLLLLLOOOLLLK.......', '..KLOOOOLLLLLLLLLLLLLOOOLKK.......', '..KLOOOLLLLLLLLLLLLLLOOLLK........', '.KKKOOLLLLLLLLLLLLLLLLLLKK........', 'KLLLLLLLLLLLLLLLLLLLLLLKK.........', 'KLLLLLLLLLLLLLLLLLLLLKKK..........', '.KKKKKKKKKKKKKKKKKKKKK............'];   // 胖貓出拳 34×28
+const DEVIL_ROWS=['..........DD....DD..........', '..........DD....DD..........', 'DDDDD....DWD....DWD....DDDDD', 'DVVVVD..DWWD....DWWD..DVVVVD', 'DVVVVDDDDWWDD..DDWWDDDDVVVVD', 'DVLLLVDDDWWWDDDDWWWDDDVLLLVD', 'DVLLLVVVDDWWDDVDWWDDVVVLLLVD', 'DVLLLLLVVDDDVVVVDDDVVLLLLLVD', 'DVLLLLLVVVVVVVVVVVVVVLLLLLD.', 'DDLLLLLVVVVVVVVVVDDDVLLLLD..', '.DDLLLLVVVVVVVVVDKDWDVLLLD..', '..DLLLVVVDDVVVVVDKKWDVVDD...', '..DDLLVVDKWDVVVVDKKKDVVD....', '...DDDVVDKWDDLLLDKKKDVD.....', '.....DVVDKKDDLDDLDDDVVD.....', '.....DDVDKKDLLDDLLLLVD......', '......DVVDDLLLLDDDDLD.DDD...', '.......DVLLLDDDDPDPDD.DLD...', '........DVLLLLLLDPPD..DVDDD.', '........DDDDLLLLLDDD.DVVVVD.', '......DDDDDDVLLLLDDD.DVVVVD.', '.....DDVVVVVVVLLLVVDDDVVVVD.', '....DDVVVVVVVLLLLVVVVDDVVD..', '....DDVVVDDVLLLLLLVVVVVVD...', '....DDDVVVDVLLLLLLVDVVVD....', '......DDVLDVLLLLLLVDDDD.....', '...DDD.DLLDVLLLLLLVD........', '...DVD.DDDVVLLLLLLVD........', '...DVVDDDVVVVVLLLVVD........', '...DDVVVDVVVVVLLLVVD........', '....DDDDDVVVDDDDDVVD........', '........DVVDD...DVVDDD......', '.......DLLLD....DLLLLD......', '.......DLLLD....DDLLLD......', '.......DDDDD....DDDDDD......'];   // 次元惡魔（紫色吉娃娃）28×35
+const FIST_ROWS=['............', '...KKKKK....', '..KWWWWWK...', '.KWWKWKWWK..', '.KWWWWWWWKK.', 'KWWKWKWKWWWK', 'KWWWWWWWWWWK', 'KWKWKWKWKWWK', 'KWWWWWWWWWK.', '.KWWWWWWWWK.', '..KKKKKKKK..', '............'];
+const FIST_SVG=spriteSVG(FIST_ROWS, {K:'#000',W:'#ffd9a8'}, '40px', 'aria-label="出拳"');
 const icons = t => (t||'').replace(/\{devil\}/g, DEVIL).replace(/\{tree\}/g, TREE).replace(/\{eye\}/g, EYE);
 
 /* 共用 UI */
@@ -769,7 +842,10 @@ function answerNote(s){
   const items=[];                                   // {label, value, copy}
   if(s.type==='library'){ items.push({label:'書名',value:s.riddleAnswer,copy:true},{label:'索書號 5 碼',value:s.callDigits,copy:true},{label:'ISBN 後 3 碼',value:s.bookAnswer,copy:true}); }
   else if(s.type==='firebadge'){ items.push({label:'線索',value:s.clue},{label:'過關',value:'掃牆上的〈四季〉＋戶外的〈大安之花〉'}); }
-  else if(s.type==='spot'){ (s.photos||[{spots:s.spots}]).forEach((p,i)=>items.push({label:`照片 ${i+1}`,value:`${p.spots.length} 處 ${p.spots.map(q=>`(${q.x},${q.y})`).join(' ')}`})); }
+  else if(s.type==='spot'){ (s.photos||[{spots:s.spots}]).forEach((p,i)=>{
+      if(p.spots){ items.push({label:`照片 ${i+1}`,value:`${p.spots.length} 處 ${p.spots.map(q=>`(${q.x},${q.y})`).join(' ')}`}); return; }
+      const qs=spotQs(p); if(!qs.length) items.push({label:`虛假空間 ${i+1}`,value:'（還沒設答案）'});
+      qs.forEach((x,j)=>items.push({label:`虛假空間 ${i+1}${qs.length>1?`-${j+1}`:''}`,value:x.answers[0]||'（還沒設答案）',copy:!!x.answers.length})); }); }
   else if(s.type==='game' && s.game==='song'){ s.songs.forEach((x,i)=>items.push({label:`第 ${i+1} 首`,value:x.answers[0],copy:true})); }
   else if(s.type==='ticket_puzzle'){ items.push({label:'過關',value:'合照上傳就點蠟燭'}); }
   else if(s.type==='photo_task'){ items.push({label:'過關',value:s.preStep?`先按「${s.preStep.button}」再上傳合照`:'上傳合照就過'}); }
@@ -836,7 +912,7 @@ function litStep(s, idx){                      // 回 true＝這次畫的是「�
 function arrivePage(s, idx){                   // 「已抵達 X」頁：大紅地標＋路線色按鈕
   const nx=CONFIG.stages[idx+1];
   main.innerHTML = ticket(s, `${steps()}
-    <div class="center hero" style="margin-bottom:24px">${PIN_BIG}</div>
+    <div class="hero pin-orbit"><div class="po-pin">${PIN_BIG}</div><div class="po-ring"><div class="po-hair hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '44px', 'aria-label="發光的貓毛"')}</div></div></div>   <!-- 貓毛繞著地標轉（Ming） -->
     <button class="nes-btn is-arrive btn" id="next" style="--arrive:${LINE[nx.line]}">已抵達 ${nx.name}</button>
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#next').onclick=()=>{ state.extra[s.id+'_left']=true; state.stage=Math.min(idx+1,CONFIG.stages.length-1); save(); render(); };
@@ -846,9 +922,16 @@ function goNextHTML(s, idx){
   const nx=CONFIG.stages[idx+1]; if(!nx) return '<button class="nes-btn is-primary btn" id="next" style="margin-top:14px">完成</button>';
   if(!nx.transit) return `${s.nextText?`<p style="margin-top:14px;font-size:18px">${s.nextText}</p>`:''}<button class="nes-btn is-success btn" id="next">下一步</button>`;
   const dest=CONFIG.stages.slice(idx+1).find(x=>!x.transit)||nx;
-  return `<p class="center" style="font-size:20px;margin:16px 0">${s.nextText||`請前往 <span class="big">${dest.name}</span>`}<br>並在路上進行秘密任務</p>
+  return `${s.goStory?`<p>${s.goStory}</p>`:''}<p class="center" style="font-size:20px;margin:16px 0">${s.nextText||`${s.goVerb||'請前往'} <span class="big">${dest.name}</span>`}<br>並在路上進行秘密任務</p>
+    ${s.goHair?`<div class="hero hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '96px', 'class="mx" aria-label="發光的貓毛"')}</div>`:''}
     <button class="nes-btn is-primary btn" id="next">進行秘密任務</button>`;
 }
+// 圖書館的小精靈飛在書上（科技大樓坐下解謎頁；編輯器 像素編輯器_小精靈.html）
+const FAIRY_ROWS=['...........................S....', '..........................SSS...', '...QPPPPP..............PPPPPQ...', '..QPPPPPPP.....LL.....PPPPPPPQ..', '.QQPPPPPPPPP..LFFL..PPPPPPPPPQQ.', '.QQPPPPPPPPPPLFFFFLPPPPPPPPPPQQ.', '..QPPPPPPPPPPLFFFFLPPPPPPPPPPQ..', '..QPPPPPPPPPPPLFFLPPPPPPPPPPPQ..', '..QPPPPPPPPPPP.LL.PPPPPPPPPPPQ..', '...QQPPPPPPPPPLFFLPPPPPPPPPQQ...', '.....QPPPPPPPPLFFLPPPPPPPPQ.....', '......QQQPPPPPLFFLPPPPPQQQ......', '.........QQPPPLFFLPPPQQ.........', '...........QPPLFFLPPQ...........', '..........QPPPLFFLPPPQ..........', '..U.....QPPPPPLFFLPPPPPQ........', '........QPPPPPLFFLPPPPPQ.....S..', '........QPPPPQ.LL.QPPPPQ........', '........QQQPQ..LL..QPQQQ........', '...........Q...LL...Q...........', '.....V.........LL...............', '.....V..........................', '....VVV..UU.........S...........', '.....V...UU.............S.......', '.....V.................SSS......', '.......EEEEE........EEEEE.......', '.....EEWWWWWEE.EE.EEWWWWWEE.....', '..CEEWWTWTTTWWEEEEWWTTWTTWWEEC..', '..CWWTTWWWWWTTWEEWTTWWWWWTTWWC..', '..CWTWWTTTTTWWWEEWWWWTTTTWWWWC..', '..CWWWTWWWWWWTWEEWTWWWWWWTWWWC..', '..CCCCWWWWWWWWWEEWWWWWWWWWCCCC..', '..CCCCCCCCCCCWWEEWWCCCCCCCCCCC..', '..CDDDCCCCCCCCCCCCRCCCCCCCDDDC..', '..D...DDDDDDDCCCCCRDDDDDDD...D..', '.............DDDDDR.............', '.................R.R............'];
+const FAIRY_PAL={C:'#b39ddb',D:'#8e72c4',E:'#ead9c8',T:'#d8cdee',R:'#e98fbf',W:'#fff9f0',F:'#f4f4f8',L:'#c9cfee',P:'#efc3de',Q:'#d98bc0',S:'#efc3de',V:'#b78fe0',U:'#dcc9f2'};
+// 一根發光的淺橘貓毛（麟光出發頁用）
+const HAIR_ROWS=['...........OL.', '..........OLL.', '.........OLL..', '........OLL...', '.......OLL....', '......OLL.....', '.....OLL......', '....OLL.......', '...OLL........', '..OLL.........', '.OLL..........', '.LL...........', 'LL............'];
+const HAIR_PAL={L:'#ffd9a3', O:'#f0a050'};   // 淺橘芯＋較深的橘邊，米色底上才看得到
 function giveDigit(id){ if(CONFIG.digits[id]!=null && state.codes[id]==null){ state.codes[id]=CONFIG.digits[id]; save(); } }
 /* 不顯示過關畫面，直接進下一站 */
 function lightFirst(s){ if(CONFIG.stages.indexOf(s)===0) state.extra[s.id+'_lit']=true; }   // 第一關跳過合照也要點亮蠟燭
@@ -954,10 +1037,10 @@ function snapshot(v){ const c=document.createElement('canvas'); c.width=v.videoW
    各關渲染
    ========================================================= */
 function render(){
-  stopCamera();
+  stopCamera(); stopGlitch(); document.body.classList.remove('noprog');
   setTimeout(recordPage,0);
   const idx=state.stage, s=CONFIG.stages[idx];
-  if(!state.started && idx===0 && !state.done.s0){ return renderWelcome(); }
+  if(!state.started && idx===0 && !state.done.s0){ return state.extra.openLetter ? renderWelcome() : renderOpenLetter(); }
   if(gameCleanup){ gameCleanup(); gameCleanup=null; }
   if(state.done[s.id] && s.type!=='final' && !((s.type==='game'||s.type==='firebadge'||s.type==='photo_task') && !state.extra[s.id+'_left']) && !s.finalPhoto){ state.stage=Math.min(idx+1, CONFIG.stages.length-1); save(); return render(); }
   const r = { photo_task:renderPhotoTask, firebadge:renderFireBadge, game:renderGame, library:renderLibrary, ticket_puzzle:renderTicketPuzzle, spot:renderSpot, gps_qr:renderGpsQr, ar:renderAR, compass_color:renderCompassColor, food:renderFood, sound_puzzle:renderSoundPuzzle, rainbow:renderRainbow, director:renderDirector, final:renderFinal }[s.type];
@@ -965,12 +1048,26 @@ function render(){
   window.scrollTo(0,0);
 }
 
+/* 最一開始：一封信，輸入密碼才進歡迎頁 */
+function renderOpenLetter(){
+  document.body.classList.add('noprog');   // 開頭的信不顯示蠟燭／密碼列（Ming）
+  main.innerHTML = `<section class="ticket nes-container is-rounded" style="--line-color:var(--brown)">
+    <div class="station"><span class="code" style="background:#000;box-shadow:var(--px) var(--px) 0 #9a9a9a">MOMO</span><span class="name">${CONFIG.openLetterTitle}</span></div>
+    <div class="letter nes-container is-rounded" style="font-size:17px">${CONFIG.openLetter.replace(/\[[^\]]+\]/g, m=>`<span style="color:${(CONFIG.openLetterColors||{})[m]||'var(--red)'}">${m}</span>`)}</div>
+    <div class="hero">${spriteSVG(window.MG_SPRITES.MOMO_CAP, window.MG_SPRITES.MOMO_CAP_PAL, '112px', 'aria-label="列車長墨墨" class="mx"')}</div>
+    <p class="tag" style="margin:0 0 6px">請輸入密碼：</p>
+    <input class="nes-input" type="text" id="pw" autocomplete="off" autocapitalize="characters"><div id="res"></div>
+    <button class="nes-btn is-primary btn" id="pwok" style="margin-top:14px">確認</button></section>`;
+  const norm=t=>t.normalize('NFKC').toUpperCase().replace(/\s/g,'');
+  const go=()=>{ if(norm($('#pw').value)===norm(CONFIG.openPassword)){ state.extra.openLetter=true; save(); render(); } else $('#res').innerHTML=bad('密碼不對。'); };
+  $('#pwok').onclick=go; $('#pw').onkeydown=e=>{ if(e.key==='Enter') go(); };
+}
 function renderWelcome(){
   main.innerHTML = `<section class="ticket nes-container is-rounded with-title" style="--line-color:var(--brown)">
     <p class="title">一日有效</p>
-    <div class="station"><span class="code" style="background:#000;box-shadow:var(--px) var(--px) 0 #9a9a9a">MO06</span><span class="name">${CONFIG.playerName}專屬</span></div>
+    <div class="station"><span class="code" style="background:#000;box-shadow:var(--px) var(--px) 0 #9a9a9a">MOMO</span><span class="name">${CONFIG.playerName}專屬</span></div>
     <p class="sub">生日列車 · 墨墨環狀線</p>
-    <p>今天妳要搭捷運趴趴造，收集 ${MID} 根蠟燭和 5 個數字。每一站都會有任務，如果卡關可以求助列車長-墨墨，妳準備好了嗎？</p>
+    <p>${'歡迎搭乘 [三十而莉．生日列車]，三十歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，今天妳要成功點燃自己的生日蠟燭，並在旅途中獲得 5 個秘密數字，最終得到生日禮物的藏寶地點，如果卡關可以求助 列車長-墨墨，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--red)">${m}</span>`)}</p>
     ${candles()}
     <button class="nes-btn is-primary btn" id="go" style="margin-top:10px">我準備好了！</button></section>`;
   $('#go').onclick=()=>{ state.started=Date.now(); save(); render(); };
@@ -1007,7 +1104,8 @@ function renderTicketPuzzle(s, idx){
   } else if(d.step==='go'){
     const dest=CONFIG.stages.slice(idx+1).find(x=>!x.transit)||next;
     main.innerHTML = ticket(s, `${steps()}
-      <p class="center" style="font-size:20px;margin:16px 0">請前往 <span class="big">${dest.name}</span><br>${s.noPuzzle?'並在路上進行秘密任務':'並在車上完成拼圖。'}</p>
+      ${s.goStory?`<p>${s.goStory}</p>`:''}<p class="center" style="font-size:20px;margin:16px 0">${s.goVerb||'請前往'} <span class="big">${dest.name}</span><br>${s.noPuzzle?'並在路上進行秘密任務':'並在車上完成拼圖。'}</p>
+      ${s.goHair?`<div class="hero hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '96px', 'class="mx" aria-label="發光的貓毛"')}</div>`:''}
       ${s.noPuzzle?`<button class="nes-btn is-primary btn" id="board">進行秘密任務</button>`:`<button class="nes-btn is-primary btn" id="open">開啟拼圖</button>`}
       ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
     const ob=$('#open'); if(ob) ob.onclick=()=>{ const n=s.grid||3; state.extra[k]={step:'puzzle', order:shuffle([...Array(n*n).keys()])}; save(); render(); };
@@ -1033,6 +1131,7 @@ function renderTicketPuzzle(s, idx){
 
 /* 備案 找不同 */
 function renderSpot(s, idx){
+  if(s.photos && !s.photos[0].spots) return renderSpotQuiz(s, idx);
   const fk=s.id+'_found'; const all = state.extra[fk] || {};          // {照片序號: [找到的 spot 序號]}
   const photos = s.photos || [{image:s.image, spots:s.spots}];
   let cur = photos.findIndex((p,i)=>(all[i]||[]).length < p.spots.length); if(cur<0) cur=photos.length-1;
@@ -1053,6 +1152,173 @@ function renderSpot(s, idx){
   };
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
 }
+/* 忠孝復興：每張圖 看圖 → 已找到地點 N → 找不一樣＋答題，答對才換下一張 */
+function renderSpotQuiz(s, idx){
+  const k=s.id+'_quiz'; const d=state.extra[k]||{cur:0, step:'look'};   // step: look／find／ok
+  const set=o=>{ Object.assign(d,o); state.extra[k]=d; save(); render(); };
+  const photos=s.photos, ph=photos[d.cur], last=d.cur>=photos.length-1;
+  const Z=spotZoom(s.id+'_'+d.cur);                                     // 縮放與準星位置（換張才歸零）
+  const view=cross=>`<div class="diffwrap zv" id="zv"><div class="zi">${ph.image?`<img src="${ph.image}" alt="" draggable="false">`:placeholderStation()}${cross?`<div class="xh">${XHAIR}</div>`:''}</div></div>`;
+  const qs=spotQs(ph).length?spotQs(ph):[{q:'',answers:[]}];          // 還沒設題目時給一格空白輸入，任何答案都算對
+  const got=d.got||[];
+  const qbox=x=>x.q?`<div class="letter nes-container is-rounded" style="font-size:17px">${x.q}</div>`:'';
+  const solved=()=>got.map(j=>`<div style="margin-top:14px">${qbox(qs[j])}${ok(qs[j].answers[0]||'答對了')}</div>`).join('');
+  // 一般題：輸入框＋確認；選圖題（choices）：一排圖示按鈕，點對的那個
+  // 依序題（seq）：一題裡有好幾張圖，一張一張問，全部答對才算這處看破
+  const openQ=j=>{ const x=qs[j]; if(x.seq){ const it=x.seq[d.seqi||0]; return `<div style="margin-top:14px">${qbox(x)}
+      <img src="${it.img}" alt="" style="display:block;width:60%;margin:0 auto;border:4px solid #000">   <!-- Ming：畫小一點、置中 -->
+      <input class="nes-input" type="text" id="ans" inputmode="numeric" style="margin-top:14px"><div id="res"></div>
+      <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button></div>`; }
+    return `<div style="margin-top:14px">${qbox(x)}${x.choices
+      ? `<div class="row">${x.choices.map((c,i)=>`<button class="nes-btn btn choice" data-i="${i}" style="margin:0;padding:8px 0"><img src="${c.img}" alt="${c.label}" style="height:64px;display:block;margin:0 auto;image-rendering:pixelated"></button>`).join('')}</div><div id="res"></div>`
+      : `<input class="nes-input" type="text" id="ans"><div id="res"></div>
+      <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`}</div>`; };
+  let body='';
+  if(d.step==='look') body=`<p class="tag">虛假空間 ${d.cur+1} / ${photos.length}</p>${view(false)}
+    <button class="nes-btn is-primary btn" id="here" style="margin-top:14px">已找到地點 ${d.cur+1}</button>`;
+  else if(d.step==='find') body=`<p class="tag" style="display:flex;justify-content:space-between;gap:8px"><span>虛假空間 ${d.cur+1} / ${photos.length}</span><span>請開始找哪裡不一樣</span></p>${view(true)}
+    <button class="nes-btn is-primary btn" id="scan" style="margin-top:14px">偵查</button><div id="scanres"></div>
+    <div id="solved">${solved()}</div><div id="qarea">${d.open!=null&&!got.includes(d.open)?openQ(d.open):''}</div>`;
+  else if(d.step==='boss') return renderBoss(s, idx, d, k);
+  else body=`<p class="tag">虛假空間 ${d.cur+1} / ${photos.length}</p>${view(false)}<div style="margin-top:14px">${ok('看破了！')}</div>
+    <button class="nes-btn is-success btn" id="${d.step==='all'?'allclear':'nextp'}" style="margin-top:8px">${d.step==='all'?'已看破全部虛假':'下一張'}</button>`;   /* 照片→訊息 14、訊息底 6＋8＝14 */
+  // 故事每一步、每一張都固定顯示；不放提示（Ming 2026-11-04）
+  main.innerHTML = ticket(s, `${steps()}<p>${s.intro}</p>${body}${backupScanBox()}${npcBox(s,idx)}`);
+  const ac=$('#allclear'); if(ac) ac.onclick=()=>set({step:'boss', boss:'wait', hits:0});
+  bindZoom($('#zv'), Z, d.step==='find');
+  const h=$('#here'); if(h) h.onclick=()=>set({step:'find', got:[], open:null, seqi:0});
+  const np=$('#nextp'); if(np) np.onclick=()=>set({cur:d.cur+1, step:'look', got:[], open:null, seqi:0});
+  // 比對：全形轉半形、不分大小寫、忽略空白與標點
+  const norm=t=>t.normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');
+  const bindAnswer=()=>{ if(d.open==null) return; const x=qs[d.open];
+    const done=()=>{ got.push(d.open); d.got=got; d.open=null; state.extra[k]=d; save(); $('#scanres').innerHTML='';   // 答對後清掉「找到破綻！」
+      if(got.length<qs.length){ $('#solved').innerHTML=solved(); $('#qarea').innerHTML=''; return; }   // 只換題目區，縮放與準星不動
+      set({step:last?'all':'ok'}); };
+    const wrong=()=>{ $('#res').innerHTML=bad('不對，再看仔細一點。'); };
+    if(x.choices){ document.querySelectorAll('#qarea .choice').forEach(b=>b.onclick=()=>{ +b.dataset.i===x.correct?done():wrong(); }); return; }
+    const c=$('#chk'); if(!c) return;
+    const go=()=>{ const v=norm($('#ans').value); if(!v) return;
+      if(x.seq){ const i=d.seqi||0;
+        if(!x.seq[i].answers.some(a=>norm(a)===v)) return wrong();
+        if(i<x.seq.length-1){ d.seqi=i+1; state.extra[k]=d; save(); $('#qarea').innerHTML=openQ(d.open); bindAnswer(); $('#ans').focus(); return; }   // 下一張
+        d.seqi=0; return done(); }
+      const right=!x.answers.length || x.answers.some(a=>norm(a)===v);
+      right?done():wrong(); };
+    c.onclick=go; $('#ans').onkeydown=e=>{ if(e.key==='Enter') go(); }; };
+  // 偵查：準星落在哪一處破綻的範圍內（小範圍優先，例如機台上的字比整台機台優先）
+  const sc=$('#scan'); if(sc) sc.onclick=()=>{
+    const hasSpot=qs.some(x=>x.spot);
+    // spot：一個或多個範圍；每個範圍可以是方框 [左,上,右,下]、多邊形 {poly:[[x,y],...]}、格子遮罩 {mask:{w,h,b}}（都用百分比）
+    const rects=x=>!x.spot?[]:(Array.isArray(x.spot) && typeof x.spot[0]==='number')?[x.spot]:Array.isArray(x.spot)?x.spot:[x.spot];
+    const hits=qs.map((x,j)=>({x,j,r:rects(x).filter(r=>spotHit(r,Z.cx,Z.cy))})).filter(h=>!hasSpot || h.r.length)
+      .sort((a,b)=>Math.min(...a.r.map(area),1e9)-Math.min(...b.r.map(area),1e9));
+    const fresh=hits.find(h=>!got.includes(h.j));
+    if(!hits.length){ $('#scanres').innerHTML=bad('這裡沒有破綻。'); return; }
+    if(!fresh){ $('#scanres').innerHTML=bad('這裡已經看破了。'); return; }
+    $('#scanres').innerHTML=ok(fresh.x.found||'找到破綻！'); if(d.open!==fresh.j) d.seqi=0; d.open=fresh.j; state.extra[k]=d; save();
+    $('#qarea').innerHTML=openQ(fresh.j); bindAnswer(); const a=$('#ans'); if(a) a.focus(); };
+  const area=r=>spotArea(r);
+  bindAnswer();
+  bindHints(s); bindBackupScan(s); bindNpc(s,idx);
+}
+/* 破綻範圍判定：方框／多邊形／格子遮罩；重疊時面積小的優先（遮罩永遠最後） */
+function spotHit(r,x,y){
+  if(Array.isArray(r)) return x>=r[0] && x<=r[2] && y>=r[1] && y<=r[3];
+  if(r.poly){ let inside=false; const p=r.poly;                       // 射線法
+    for(let i=0,j=p.length-1;i<p.length;j=i++){ const [xi,yi]=p[i],[xj,yj]=p[j];
+      if((yi>y)!==(yj>y) && x<(xj-xi)*(y-yi)/(yj-yi)+xi) inside=!inside; }
+    return inside; }
+  if(r.mask){ const m=r.mask; if(!m._bits) m._bits=Uint8Array.from(atob(m.b),c=>c.charCodeAt(0));
+    const gx=Math.floor(x/100*m.w), gy=Math.floor(y/100*m.h); if(gx<0||gy<0||gx>=m.w||gy>=m.h) return false;
+    const i=gy*m.w+gx; return !!((m._bits[i>>3]>>(7-(i&7)))&1); }
+  return false;
+}
+function spotArea(r){
+  if(Array.isArray(r)) return (r[2]-r[0])*(r[3]-r[1]);
+  if(r.poly){ let a=0; const p=r.poly; for(let i=0,j=p.length-1;i<p.length;j=i++) a+=(p[j][0]+p[i][0])*(p[j][1]-p[i][1]); return Math.abs(a/2); }
+  return 1e8;
+}
+/* 找不同的照片：兩指縮放／拖曳（電腦用滾輪），點一下把準星移過去 */
+let SPOTZ={key:''};
+function spotZoom(key){ if(SPOTZ.key!==key) SPOTZ={key, s:1, tx:0, ty:0, cx:50, cy:50}; return SPOTZ; }
+// 準星：眼睛（無邊線、半透明眼白＋灰藍虹膜＋白色反光），瞳孔中心＝判定點（Ming 2026-11-04 指定）
+const XHAIR=`<svg viewBox="0 0 100 100" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <path d="M6 50 Q50 8 94 50 Q50 92 6 50 Z" fill="rgba(255,255,255,.35)"/>
+  <circle cx="50" cy="50" r="17" fill="#6b84a0"/>
+  <circle cx="50" cy="50" r="7" fill="#26323f"/>
+  <circle cx="56" cy="44" r="4.5" fill="#fff"/></svg>`;
+function bindZoom(wrap, Z, tappable){
+  if(!wrap) return;
+  const inner=wrap.firstElementChild, xh=wrap.querySelector('.xh');
+  const apply=()=>{ const W=wrap.clientWidth, H=wrap.clientHeight;
+    Z.s=Math.min(5,Math.max(1,Z.s)); Z.tx=Math.min(0,Math.max(W-W*Z.s,Z.tx)); Z.ty=Math.min(0,Math.max(H-H*Z.s,Z.ty));
+    inner.style.transform=`translate(${Z.tx}px,${Z.ty}px) scale(${Z.s})`;
+    if(xh){ xh.style.left=Z.cx+'%'; xh.style.top=Z.cy+'%'; xh.style.transform=`translate(-50%,-50%) scale(${1/Z.s})`; } };
+  const pts=new Map(); let g=null;
+  const rel=e=>{ const r=wrap.getBoundingClientRect(); return {x:e.clientX-r.left-wrap.clientLeft, y:e.clientY-r.top-wrap.clientTop}; };   // 扣掉外框粗細，座標才會跟照片對齊
+  const zoomAt=(p,ns,base)=>{ const ix=(p.x-base.tx)/base.s, iy=(p.y-base.ty)/base.s; Z.s=Math.min(5,Math.max(1,ns)); Z.tx=p.x-ix*Z.s; Z.ty=p.y-iy*Z.s; apply(); };
+  wrap.addEventListener('pointerdown',e=>{ wrap.setPointerCapture(e.pointerId); pts.set(e.pointerId,rel(e));
+    if(pts.size===1) g={mode:'tap', start:rel(e), tx:Z.tx, ty:Z.ty, moved:false};
+    else if(pts.size===2){ const [a,b]=[...pts.values()]; g={mode:'pinch', d0:Math.hypot(a.x-b.x,a.y-b.y)||1, base:{s:Z.s,tx:Z.tx,ty:Z.ty}, m0:{x:(a.x+b.x)/2,y:(a.y+b.y)/2}}; } });
+  wrap.addEventListener('pointermove',e=>{ if(!pts.has(e.pointerId)||!g) return; pts.set(e.pointerId,rel(e));
+    if(g.mode==='pinch' && pts.size>=2){ const [a,b]=[...pts.values()], m={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+      const ns=g.base.s*Math.hypot(a.x-b.x,a.y-b.y)/g.d0; const ix=(g.m0.x-g.base.tx)/g.base.s, iy=(g.m0.y-g.base.ty)/g.base.s;
+      Z.s=Math.min(5,Math.max(1,ns)); Z.tx=m.x-ix*Z.s; Z.ty=m.y-iy*Z.s; apply(); }
+    else if(g.mode!=='pinch'){ const p=rel(e), dx=p.x-g.start.x, dy=p.y-g.start.y; if(Math.hypot(dx,dy)>6) g.moved=true;
+      if(g.moved && Z.s>1){ Z.tx=g.tx+dx; Z.ty=g.ty+dy; apply(); } } });
+  const end=e=>{ if(!pts.has(e.pointerId)) return; const p=pts.get(e.pointerId); pts.delete(e.pointerId);
+    if(g && g.mode==='tap' && !g.moved && pts.size===0 && tappable){ Z.cx=(p.x-Z.tx)/Z.s/wrap.clientWidth*100; Z.cy=(p.y-Z.ty)/Z.s/wrap.clientHeight*100; apply(); }
+    if(pts.size===0) g=null; else if(g && g.mode==='pinch'){ const q=[...pts.values()][0]; g={mode:'pan', start:q, tx:Z.tx, ty:Z.ty, moved:true}; } };
+  wrap.addEventListener('pointerup',end); wrap.addEventListener('pointercancel',end);
+  wrap.addEventListener('wheel',e=>{ e.preventDefault(); zoomAt(rel(e), Z.s*(e.deltaY<0?1.15:1/1.15), {s:Z.s,tx:Z.tx,ty:Z.ty}); },{passive:false});
+  wrap.addEventListener('gesturestart',e=>e.preventDefault());       // iOS Safari：不要整頁縮放
+  apply();
+}
+/* 忠孝復興最後：次元惡魔出現（整頁亂碼）→ 往上滑丟徽章召喚胖貓 → 按拳頭打，打滿 bossHits 下才過關 */
+let glitchTimer=null;
+function startGlitch(){ document.body.classList.add('glitch'); if(glitchTimer) return; const G='▚▞▛▜░▒▓█ÆØ¥§¿Ω∆ʘɸ҂☰☱☲#%&';
+  glitchTimer=setInterval(()=>{ document.querySelectorAll('#title,.ticket .sub,.ticket .station .name,.ticket .station .code').forEach(e=>{
+    if(!e.dataset.og) e.dataset.og=e.textContent; const og=e.dataset.og;
+    e.textContent=Math.random()<.35?og:[...og].map(c=>Math.random()<.45?G[Math.random()*G.length|0]:c).join(''); }); },110); }
+function stopGlitch(){ document.body.classList.remove('glitch'); if(glitchTimer){ clearInterval(glitchTimer); glitchTimer=null; }
+  document.querySelectorAll('[data-og]').forEach(e=>{ e.textContent=e.dataset.og; delete e.dataset.og; }); }
+function renderBoss(s, idx, d, k){
+  const keep=()=>{ state.extra[k]=d; save(); };
+  const fighting=d.boss==='fight', won=d.boss==='won';
+  main.innerHTML = ticket(s, `${steps()}
+    <p class="center" style="font-size:20px;color:var(--red)">${won?'次元惡魔被打敗了！':'次元惡魔出現了！召喚胖貓擊敗他'}</p>
+    <div class="arena" id="arena">
+      <div class="devil" id="devil" ${won?'hidden':''}>${spriteSVG(DEVIL_ROWS, DEVIL_PAL, '112px', 'aria-label="次元惡魔"')}</div>
+      <div class="cat" id="cat" ${fighting||won?'':'hidden'}>${spriteSVG(CAT_BACK_ROWS, CAT_PAL, '150px', 'aria-label="胖貓"')}</div>
+      <button class="nes-btn is-primary fist" id="fist" ${fighting?'':'hidden'} aria-label="出拳">${FIST_SVG}</button>
+    </div>
+    ${won?`<button class="nes-btn is-success btn" id="nextboss" style="margin-top:14px">下一步</button>`
+      :fighting?'':`<div class="throwbox" id="throwbox"><div class="tb-badge" id="tbadge">${badgeSVG('','56px')}</div><p class="tag center" style="margin:6px 0 0">丟出徽章召喚胖貓</p></div>`}
+    ${backupScanBox()}${npcBox(s,idx)}`);
+  bindBackupScan(s); bindNpc(s,idx);
+  if(!won) startGlitch();
+  const nb=$('#nextboss'); if(nb){ nb.onclick=()=>pass(s); return; }
+  const cat=$('#cat'), devil=$('#devil'), fist=$('#fist');
+  const back=spriteSVG(CAT_BACK_ROWS, CAT_PAL, '150px', 'aria-label="胖貓"'), punch=spriteSVG(CAT_PUNCH_ROWS, CAT_PAL, '170px', 'aria-label="胖貓出拳"');
+  // 丟徽章：按住往上滑超過 50px 就丟出去
+  const tb=$('#tbadge'); if(tb){ let y0=null;
+    tb.addEventListener('pointerdown',e=>{ y0=e.clientY; tb.setPointerCapture(e.pointerId); tb.classList.add('drag'); });
+    tb.addEventListener('pointermove',e=>{ if(y0==null) return; tb.style.transform=`translateY(${Math.min(0,e.clientY-y0)}px)`; });
+    const end=e=>{ if(y0==null) return; const dy=e.clientY-y0; y0=null; tb.classList.remove('drag'); tb.style.transform='';
+      if(dy>-50) return;
+      tb.classList.add('fly'); d.boss='fight'; keep();
+      setTimeout(()=>{ const box=$('#throwbox'); if(box) box.remove(); cat.hidden=false; cat.classList.add('rollin'); setTimeout(()=>{ fist.hidden=false; },1100); },500); };
+    tb.addEventListener('pointerup',end); tb.addEventListener('pointercancel',end); }
+  // 出拳：每按一下胖貓揮拳、惡魔被打到；打滿就倒
+  let busy=false;
+  fist.onclick=()=>{ if(d.boss!=='fight') return;
+    d.hits=(d.hits||0)+1; keep();
+    cat.innerHTML=punch; cat.classList.add('punch'); devil.classList.remove('hit'); void devil.offsetWidth; devil.classList.add('hit');
+    setTimeout(()=>{ if(d.boss==='fight'){ cat.innerHTML=back; cat.classList.remove('punch'); } devil.classList.remove('hit'); },160);
+    if(d.hits>=(s.bossHits||30)){ d.boss='won'; keep(); fist.hidden=true; devil.classList.remove('hit'); devil.classList.add('die'); stopGlitch();
+      setTimeout(()=>render(),1300); } };
+}
+function spotQs(p){ return p.qs || ((p.q||(p.answers||[]).length)?[{q:p.q||'',answers:p.answers||[]}]:[]); }
 function placeholderStation(){
   // 示意圖：現勘後換實拍
   return `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
@@ -1098,20 +1364,26 @@ function renderLibrary(s, idx){
   const gk=s.id+'_guess'; const guesses=state.extra[gk]||[];
   let body='';
   if(step==='go') body=`<p>${s.intro}</p><div class="center hero" style="margin-bottom:24px">${SHELF}</div><button class="nes-btn is-arrive btn" id="arr" style="--arrive:#209cee">${PIN} 已抵達圖書館</button>`;
-  else if(step==='sit') body=`<p>找一個地方坐下，先解開兩道謎題。</p><button class="nes-btn is-primary btn" id="start">開始解謎</button>`;
+  else if(step==='sit') body=`<p>圖書館似乎有結界，貓毛找不到路了，但圖書館的小精靈給了妳兩道謎題，並告訴妳：只要解開謎題，妳能找到一本書，告訴我 ISBN 的最後三個數字，我會幫妳點亮蠟燭並跟妳說這三個數字的秘密</p>
+    <div class="hero">${spriteSVG(FAIRY_ROWS, FAIRY_PAL, '160px', 'class="mx" aria-label="圖書館的小精靈"')}</div>
+    <button class="nes-btn is-primary btn" id="start">開始解謎</button>`;
   else if(step==='riddle') body=`<p class="tag">謎題 1 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">${icons(s.riddle)}</div>
     <input class="nes-input" type="text" id="ans" placeholder="書名" style="letter-spacing:.1em"><div id="res"></div>
     <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`;
-  else if(step==='riddle_ok') body=`${ok(`沒錯，就是《${s.book.title}》`)}<button class="nes-btn is-success btn" id="next1">下一題</button>`;
-  else if(step==='code') body=`<p class="tag">謎題 2 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">這本書的索書號是\n<b>OOO.OO ${s.callTail}</b>\n\n猜 5 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
+  else if(step==='riddle_ok') body=`<p class="tag">謎題 1 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">${icons(s.riddle)}</div>
+    <input class="nes-input" type="text" value="${s.riddleAnswer}" disabled style="letter-spacing:.1em">${ok(`沒錯，就是《${s.book.title}》`)}
+    <button class="nes-btn is-success btn" id="next1" style="margin-top:8px">下一題</button>`;   // 答對不換頁：留在原頁、輸入框下接提示＋按鈕（Ming）
+  else if(step==='code') body=`<p class="tag">謎題 2 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">這本書的索書號是\n<b>???.?? ${s.callTail}</b>\n\n猜 5 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
     <input class="nes-input" type="text" id="ans" inputmode="numeric" maxlength="5" placeholder="5 碼"><div id="res"></div>
     <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>
     ${guesses.length?`<div class="letter nes-container is-rounded" style="margin-top:14px;font-size:16px">${guesses.map(g=>`${g.v.slice(0,3)}.${g.v.slice(3)}　${g.a}A${g.b}B`).join('\n')}</div>`:''}`;
-  else if(step==='code_ok') body=`${ok(`索書號 ${s.book.call}`)}<button class="nes-btn is-success btn" id="next2">去找書</button>`;
-  else body=`<p>找到《${s.book.title}》以後，看書背的 <b>ISBN</b>（978 開頭那一串），把<b>最後 3 碼</b>輸進來。</p>
+  else if(step==='code_ok') body=`<p class="tag">謎題 2 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">這本書的索書號是\n<b>???.?? ${s.callTail}</b>\n\n猜 5 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
+    <input class="nes-input" type="text" value="${s.callDigits}" disabled>${ok(`索書號 ${s.book.call}`)}
+    <button class="nes-btn is-success btn" id="next2" style="margin-top:8px">去找書</button>`;   // 同上：答對留在原頁
+  else body=`<p>請根據索書號 <b>${s.book.call}</b> 找到《${s.book.title}》，獲得 <b>ISBN</b> 最後三碼</p>
     <input class="nes-input" type="text" id="ans" inputmode="numeric" maxlength="3" placeholder="3 碼"><div id="res"></div>
     <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`;
-  main.innerHTML = ticket(s, `${steps()}${body}${step==='find'?hintBox(s):''}${backupScanBox()}${npcBox(s,idx)}`);
+  main.innerHTML = ticket(s, `${steps()}${body}${backupScanBox()}${npcBox(s,idx)}`);
   const arr=$('#arr'); if(arr) arr.onclick=()=>set('sit');
   const st=$('#start'); if(st) st.onclick=()=>set('riddle');
   const n1=$('#next1'); if(n1) n1.onclick=()=>set('code');
@@ -1218,11 +1490,11 @@ function renderFood(s, idx){
   bindBackupScan(s); bindNpc(s,idx);
 }
 /* 置中裁成 1:1 */
-function ratioCrop(dataUrl, w, h, cb){   // 裁成 w:h（拍貼每格 3:2），置中取景
+function ratioCrop(dataUrl, w, h, cb){   // 裁成 w:h（拍貼每格 4:3），置中取景
   const im=new Image(); im.onload=()=>{ let cw=im.width, ch=Math.round(im.width*h/w); if(ch>im.height){ ch=im.height; cw=Math.round(im.height*w/h); }
     const k=Math.min(1,1200/cw); const c=document.createElement('canvas'); c.width=Math.round(cw*k); c.height=Math.round(ch*k);
     c.getContext('2d').drawImage(im,(im.width-cw)/2,(im.height-ch)/2,cw,ch,0,0,c.width,c.height); cb(c.toDataURL('image/jpeg',.9)); }; im.src=dataUrl; }
-function squareCrop(dataUrl, size, cb){ ratioCrop(dataUrl, 3, 2, cb); }   // 舊呼叫點一律走 3:2 const im=new Image(); im.onload=()=>{ const m=Math.min(im.width,im.height); const c=document.createElement('canvas'); c.width=c.height=Math.min(size,m); c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,c.width,c.height); cb(c.toDataURL('image/jpeg',.88)); }; im.src=dataUrl; }
+function squareCrop(dataUrl, size, cb){ ratioCrop(dataUrl, 4, 3, cb); }   // 舊呼叫點一律走 4:3（拍貼每格 4:3，Ming 2026-11-04）const im=new Image(); im.onload=()=>{ const m=Math.min(im.width,im.height); const c=document.createElement('canvas'); c.width=c.height=Math.min(size,m); c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,c.width,c.height); cb(c.toDataURL('image/jpeg',.88)); }; im.src=dataUrl; }
 function shrink(dataUrl, max, cb){ const im=new Image(); im.onload=()=>{ const k=Math.min(1,max/Math.max(im.width,im.height)); const c=document.createElement('canvas'); c.width=im.width*k|0; c.height=im.height*k|0; c.getContext('2d').drawImage(im,0,0,c.width,c.height); cb(c.toDataURL('image/jpeg',.8)); }; im.src=dataUrl; }
 
 /* 5 聽聲辨站 + 拼圖 */
@@ -1354,7 +1626,7 @@ function renderDirectorShoot(s, idx){            // 備案：原本的拍 3 張�
 /* 拍主題合照：上傳 → 成功點亮蠟燭 → 已抵達下一站 */
 function renderPhotoTask(s, idx){
   const nx=CONFIG.stages[idx+1]; const shot=(state.extra.strip||{})[s.id];
-  if(state.done[s.id] && s.finalPhoto) return renderFinish();
+  if(state.done[s.id] && s.finalPhoto) return state.extra.endLetter ? renderFinish() : renderEndLetter();
   if(state.done[s.id]){
     if(!s.noCandle && litStep(s,idx)) return;
     if(s.noCandle && state.extra[s.id+'_arrive']) return arrivePage(s,idx);
@@ -1555,6 +1827,17 @@ function renderLocker(){
     <button class="nes-btn is-primary btn" id="next" style="margin-top:14px">拿到禮物了</button>${npcBox(s,idx)}</section>`;
   $('#next').onclick=()=>{ state.done[s.id]=true; state.stage=idx+1; save(); render(); }; bindNpc(s,idx);
 }
+/* 生日快樂合照之後：一封信，按「領取通關證明」才到最後一頁 */
+function renderEndLetter(){
+  stopCamera();
+  const s=CONFIG.stages.find(x=>x.finalPhoto), idx=CONFIG.stages.indexOf(s);
+  main.innerHTML = `<section class="ticket nes-container is-rounded with-title" style="--line-color:var(--brown)">
+    <p class="title">一封信</p>
+    <div class="station"><span class="code">BR03</span><span class="name">麟光</span></div>
+    <div class="letter nes-container is-rounded" style="font-size:17px">${CONFIG.endLetter}</div>
+    <button class="nes-btn is-primary btn" id="cert" style="margin-top:0">領取通關證明</button>${npcBox(s,idx)}</section>`;
+  $('#cert').onclick=()=>{ state.extra.endLetter=true; save(); render(); }; bindNpc(s,idx);
+}
 /* 最後：四格拍貼＋完成通關 */
 function renderFinish(){
   stopCamera();
@@ -1602,21 +1885,42 @@ function drawSunset(g, W, H, deco){
   deco.forEach(d=>drawRows(g, d.rows, d.pal, d.x, d.y, d.k));
 }
 function drawRows(g, rows, pal, x, y, k){ rows.forEach((r,yy)=>[...r].forEach((c,xx)=>{ if(c!=='.' && pal[c]){ g.fillStyle=pal[c]; g.fillRect(x+xx*k, y+yy*k, k, k); } })); }
+/* 像素字：每個字分開用像素字型原生大小畫，去掉半透明邊、加粗，再每格放大 k 倍（含 1 格陰影）
+   opt：{gap:字距(格), chars:{'字':{size:字型px, boldY:true＝上下也加粗}}}；y0～y1：整排字（含陰影）上下置中 */
+function pixelText(g, txt, cx, y0, y1, k, col, shadow, opt={}){
+  const glyphs=[...txt].map(ch=>{ const o=(opt.chars||{})[ch]||{}, sz=o.size||12;
+    const c=document.createElement('canvas'), m=c.getContext('2d'), f=`${sz}px "Fusion Pixel 12px Proportional TC","PingFang TC",sans-serif`;
+    m.font=f; const w=Math.ceil(m.measureText(ch).width)+4, h=sz+6; c.width=w; c.height=h;
+    m.font=f; m.textBaseline='top'; m.fillStyle='#000'; m.fillText(ch,1,1);
+    const d=m.getImageData(0,0,w,h).data, on=(x,y)=>x>=0&&y>=0&&d[(y*w+x)*4+3]>110, px=[];
+    for(let y=0;y<h;y++) for(let x=0;x<w;x++) if(on(x,y)||on(x-1,y)||(o.boldY&&(on(x,y-1)||on(x-1,y-1)))) px.push([x,y]);
+    const xs=px.map(p=>p[0]), ys=px.map(p=>p[1]);
+    return {px, l:Math.min(...xs), r:Math.max(...xs)+1, t:Math.min(...ys), b:Math.max(...ys)+1}; });
+  const gap=opt.gap??1, base=Math.max(...glyphs.map(q=>q.b));            // 底部對齊
+  const total=glyphs.reduce((s,q)=>s+(q.r-q.l),0)+gap*(glyphs.length-1)+1;  // +1 陰影
+  const top=Math.min(...glyphs.map(q=>q.t+(base-q.b))), hh=base-top+1;
+  const ty=Math.round(y0+(y1-y0-hh*k)/2)-top*k; let x=Math.round(cx-total*k/2);
+  const place=glyphs.map(q=>{ const ox=x-q.l*k, oy=base-q.b; x+=(q.r-q.l+gap)*k; return {q,ox,oy}; });
+  [[shadow,1],[col,0]].forEach(([fill,o])=>{ if(!fill) return; g.fillStyle=fill;
+    place.forEach(({q,ox,oy})=>q.px.forEach(([px,py])=>g.fillRect(ox+(px+o)*k, ty+(py+oy+o)*k, k, k))); });
+}
 async function makeStrip(){
   const st=state.extra.strip||{}; const list=CONFIG.stripOrder.map(k=>st[k]).filter(Boolean);
   if(!list.length) return null;
   try{ await document.fonts.load('40px "Fusion Pixel 12px Proportional TC"'); }catch(e){}
-  const W=500, H=1500, pad=52, pw=W-pad*2, ph=Math.round(pw*2/3), gap=24, head=118, foot=H-head-(ph*4+gap*3)-pad;   // 上方標題、下方捷運＋人物   // 1:3 直條、4 格 3:2
+  // 2×6 吋拍貼（5.1×15.2cm，1:3）、300dpi＝600×1800；每格照片 4:3；高度先給照片，左右留白跟著算
+  const W=600, H=1800, head=102, gap=18, foot=204, ph=Math.floor((H-head-foot-gap*3)/4), pw=Math.round(ph*4/3), pad=Math.round((W-pw)/2);
   const c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d');
   const F=n=>`${n}px "Fusion Pixel 12px Proportional TC","PingFang TC",sans-serif`;
   const T=CONFIG.stripTheme;
   if(T.sunset){
     const HP={R:'#ff4d6d'}, HP2={R:'#ffc2d1'}, CP={W:'#fff',B:'#bfe3ff'}, SP={W:'#fff'};
+    const ky=H/1500;   // 裝飾原本照 1500 高排，等比例分布到新高度
     drawSunset(g, W, H, [
       {rows:CLOUD_ROWS,pal:CP,x:14,y:150,k:3},{rows:CLOUD_ROWS,pal:CP,x:W-60,y:230,k:3},{rows:CLOUD_ROWS,pal:CP,x:W-56,y:560,k:2},{rows:CLOUD_ROWS,pal:CP,x:12,y:980,k:2},
       {rows:HEART_ROWS,pal:HP,x:16,y:420,k:3},{rows:HEART_ROWS,pal:HP2,x:W-38,y:400,k:3},{rows:HEART_ROWS,pal:HP,x:W-34,y:760,k:3},{rows:HEART_ROWS,pal:HP2,x:16,y:800,k:3},{rows:HEART_ROWS,pal:HP,x:18,y:1180,k:3},{rows:HEART_ROWS,pal:HP2,x:W-36,y:1120,k:3},{rows:HEART_ROWS,pal:HP,x:60,y:1300,k:4},{rows:HEART_ROWS,pal:HP,x:W-90,y:1320,k:4},{rows:HEART_ROWS,pal:HP2,x:W/2-10,y:1250,k:3},
       {rows:STAR_ROWS,pal:SP,x:40,y:40,k:3},{rows:STAR_ROWS,pal:SP,x:W-60,y:30,k:3},{rows:STAR_ROWS,pal:SP,x:W-40,y:300,k:2},{rows:STAR_ROWS,pal:SP,x:20,y:620,k:2},{rows:STAR_ROWS,pal:SP,x:W-30,y:900,k:2},{rows:STAR_ROWS,pal:SP,x:24,y:1420,k:3},{rows:STAR_ROWS,pal:SP,x:W-44,y:1440,k:3}
-    ]);
+    ].map(d=>({...d, y:Math.round(d.y*ky)})));
   } else { g.fillStyle=T.bg; g.fillRect(0,0,W,H); }
   g.fillStyle=T.frame; g.fillRect(0,0,W,8); g.fillRect(0,H-8,W,8); g.fillRect(0,0,8,H); g.fillRect(W-8,0,8,H);   // 像素粗框
   /* 上方：捷運＋莉莉（戴生日帽）＋墨墨坐在車頂 */
@@ -1631,15 +1935,17 @@ async function makeStrip(){
   if(T.sunset){ const HP={R:'#ff4d6d'}, HP2={R:'#ffc2d1'}, y1=head, y2=head+ph+gap, y3=head+(ph+gap)*2, y4=head+(ph+gap)*3;   // 故意蓋到照片邊角的愛心
     [{x:pad-10,y:y1+ph-16,k:4,pal:HP},{x:W-pad-18,y:y2-12,k:4,pal:HP2},{x:pad-12,y:y3+ph-20,k:4,pal:HP2},{x:W-pad-14,y:y4-10,k:4,pal:HP},{x:W-pad-20,y:y3+ph-14,k:3,pal:HP}].forEach(d=>drawRows(g, HEART_ROWS, d.pal, d.x, d.y, d.k)); }
   /* 捷運＋人物畫在照片之後，帽子會蓋在照片上 */
-  const tk=7, tw=TRAIN_ROWS[0].length*tk, tx=Math.round((W-tw)/2), ty=H-60-TRAIN_ROWS.length*tk-18;   // 再往上一點，讓莉莉的帽子疊到最後一張照片上
-  const pk=4, ph2=window.MG_SPRITES.LILY.length*pk, py=ty-ph2+2;
+  const tk=9, tw=TRAIN_ROWS[0].length*tk, tx=Math.round((W-tw)/2), ty=H-42-TRAIN_ROWS.length*tk;   // 捷運底部離下緣 42，日期緊貼車輪下；人物可以蓋到最後一張照片（Ming）
+  const pk=5, ph2=window.MG_SPRITES.LILY.length*pk, py=ty-ph2+2;
   drawRows(g, TRAIN_ROWS, TRAIN_PAL, tx, ty, tk);
-  const {LILY,LILY_PAL,MOMO,MOMO_PAL}=window.MG_SPRITES;
-  drawRows(g, MOMO, MOMO_PAL, Math.round(W/2+6), py-(MOMO.length-LILY.length)*pk, pk);   // 腳底對齊莉莉
+  const {LILY,LILY_PAL,MOMO_CAP,MOMO_CAP_PAL}=window.MG_SPRITES;
+  drawRows(g, MOMO_CAP, MOMO_CAP_PAL, Math.round(W/2+6-2*pk), py-(MOMO_CAP.length-LILY.length)*pk, pk);   // 拍貼用戴車長帽的墨墨（Ming：只有開頭信和拍貼戴帽）；身體左緣位置跟原本一樣、腳底對齊莉莉
   const LF=window.MG_SPRITES.LILY_FULL; drawRows(g, LF, LILY_PAL, Math.round(W/2-6-LF[0].length*pk), py-(LF.length-LILY.length)*pk, pk);   // 戴帽全身版，底部對齊墨墨
   g.textAlign='center';
-  g.font=F(64); g.fillStyle=T.shadow; g.fillText(CONFIG.stripTitle, W/2+5, 84+5); g.fillStyle=T.title; g.fillText(CONFIG.stripTitle, W/2, 84);
-  const d=new Date(), ds=CONFIG.stripDate||`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`; g.font=F(18); g.fillStyle=T.date; g.fillText(`${ds} · 墨墨環狀線`, W/2, H-16);
+  if(CONFIG.stripTitleImg){ const ti=await load(CONFIG.stripTitleImg); const th=66, tw2=Math.round(ti.width*th/ti.height);   // 標題用 GPT 畫的像素字圖，上框（8）到第一張照片之間置中
+    g.imageSmoothingQuality='high'; g.drawImage(ti, Math.round((W-tw2)/2), Math.round(8+(head-8-th)/2), tw2, th); }
+  else pixelText(g, CONFIG.stripTitle, W/2, 8, head, 4, T.title, T.shadow, CONFIG.stripTitleStyle);   // 沒有圖時改用程式畫的像素字
+  const d=new Date(), ds=CONFIG.stripDate||`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`; g.font=F(18); g.fillStyle=T.date; g.fillText(`${ds} · 墨墨環狀線`, W/2, H-18);
   return c.toDataURL('image/jpeg',.92);
 }
 
