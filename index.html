@@ -2076,7 +2076,7 @@ async function makeStrip(){
   if(CONFIG.stripTitleImg){ const ti=await load(CONFIG.stripTitleImg); const th=66, tw2=Math.round(ti.width*th/ti.height);   // 標題用 GPT 畫的像素字圖，上框（8）到第一張照片之間置中
     g.imageSmoothingQuality='high'; g.drawImage(ti, Math.round((W-tw2)/2), Math.round(8+(head-8-th)/2), tw2, th); }
   else pixelText(g, CONFIG.stripTitle, W/2, 8, head, 4, T.title, T.shadow, CONFIG.stripTitleStyle);   // 沒有圖時改用程式畫的像素字
-  const d=new Date(), ds=CONFIG.stripDate||`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`; g.font=F(18); g.fillStyle=T.date; g.fillText(`${ds} · 墨墨環狀線`, W/2, H-18);
+  const d=new Date(), ds=CONFIG.stripDate||`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`; g.font=F(18); g.fillStyle=T.date; g.fillText(ds, W/2, H-18);   // 只留日期（Ming）
   return c.toDataURL('image/jpeg',.92);
 }
 
