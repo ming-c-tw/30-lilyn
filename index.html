@@ -142,6 +142,15 @@
   .npc .ans-row .copy{flex:0 0 auto;margin:0;font-size:12px;padding:2px 8px}
   .npc .row .btn.small{flex:1;margin:0;font-size:12px;padding:4px 2px;white-space:nowrap;text-align:center}
   .photo{width:100%;display:block;border:4px solid #000}
+  /* 可拖曳調整位置的照片框（4:3，跟拍貼每格一樣） */
+  .pframe{position:relative;width:100%;aspect-ratio:4/3;border:4px solid #000;background:#222 no-repeat;background-size:cover;touch-action:none;cursor:grab;user-select:none}
+  .pframe.drag{cursor:grabbing}
+  .stripwrap{position:relative;width:60%;margin:0 auto;border:4px solid #000}
+  .stripwrap img{display:block;width:100%}
+  .stripwrap .slot{position:absolute;border:0;outline:2px dashed #fff;outline-offset:-2px}
+  .stripwrap .slot.pframe{border:0}
+  .stripwrap .slot.empty{background:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .slot .px{position:absolute;top:-8px;right:-8px;width:26px;height:26px;padding:0;border:3px solid #000;background:#e76e55;color:#fff;font:inherit;font-size:16px;line-height:18px;cursor:pointer;z-index:2}
   .nes-progress{height:14px;margin:4px 0 8px}
   .steps{display:flex;gap:4px;margin:0 0 10px}
   .steps i{flex:1;height:8px;background:#ccc;box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)}
@@ -287,7 +296,7 @@ const CONFIG = {
   openLetter: '恭喜妳，符合搭乘[三十而莉．生日列車]的條件，若有乘車意願，請於當日認真打扮，持此邀請函前往集合地點[麟光捷運站]向列車長-墨墨索取密碼，開啟只屬於妳的奇幻旅程，祝妳一路順風。',     // 最一開始的信；輸入密碼才開始；[ ] 裡的字會換色（預設粉紅，下面可指定）
   openLetterColors: { '[麟光捷運站]': 'var(--brown)' },   // 麟光＝文湖線咖啡色
   openPassword: 'ILOVEMOMO',                  // 開頭密碼（大小寫不分、忽略空白）
-  endLetter: '親愛的莉莉：\n\n恭喜妳轉職成三十歲的輕熟女了，不論妳過去一年經歷了什麼，遇到什麼討厭的人事物，接下來都將開啟新的人生階段：有我相伴的三十歲，我會陪妳踩過一切不順遂，牽著妳不斷前行，持續創造美好的回憶，生日快樂！\n\n墨墨',      // 生日快樂合照之後的信；按「領取通關證明」才到最後一頁
+  endLetter: '親愛的莉莉：\n\n恭喜妳轉職成 30 歲的輕熟女了，不論妳過去一年經歷了什麼，遇到什麼討厭的人事物，接下來都將開啟新的人生階段：有我相伴的 30 歲，我會陪妳踩過一切不順遂，牽著妳不斷前行，持續創造美好的回憶，生日快樂！\n\n墨墨',      // 生日快樂合照之後的信；按「領取通關證明」才到最後一頁
   testMode: false,          // 測試模式：控制者介面常開＋底部上一頁／下一頁。正式版 false（控制者介面要備援密碼或頁尾連點 5 下才開、可關閉）；網址加 ?test 可暫時打開
   npcPin: '0501',            // 備援密碼＝控制者介面密碼（每關「機器壞了？」輸入，或頁尾連點 5 下）
   lockerNumber: '30',        // 麟光站置物櫃號碼，開局放禮物後填
@@ -304,7 +313,7 @@ const CONFIG = {
 
   stages: [
     { id:'s0', name:'麟光', code:'BR03', line:'brown', type:'ticket_puzzle',
-      litStory:'合照很可愛，列車長很滿意，用魔力幫妳點燃了一根蠟燭，但魔力消耗巨大，妳接下來要用其他方式點燃了。',   // 點亮第 1 根蠟燭頁上方的故事
+      litStory:'合照很可愛，列車長很滿意，用魔力幫妳點燃了 1 根蠟燭，但魔力消耗巨大，妳接下來要用其他方式點燃了。',   // 點亮第 1 根蠟燭頁上方的故事
       goStory:'妳撿到一根貓毛，上面帶有魔力，似乎想帶妳去一個地方，與此同時，列車長交給妳一個秘密任務。', goVerb:'請跟隨貓毛前往', goHair:true,   // 出發頁：故事＋發光貓毛（Ming）
       sub:'起點 · 列車出發',
       ticketText:'啊！妳沒有車票，請做一件讓列車長舒服的事來換取車票。{devil}',
@@ -318,8 +327,8 @@ const CONFIG = {
       intro:'上車坐好。跟列車長打一場排球。' },
 
     { id:'s1', name:'科技大樓', code:'BR05', line:'brown', type:'library',
-      litStory:'將密碼給小精靈後，小精靈幫妳點燃了一根蠟燭，並告訴妳，原來胖貓被封印在大安森林公園，胖貓可以幫妳點燃蠟燭。',   // 點亮第 2 根蠟燭頁上方的故事
-      goStory:'出發！解救胖貓，與此同時列車長給了妳第二個秘密任務。',   // 目的地頁跟其他站同格式（Ming）
+      litStory:'將密碼給小精靈後，小精靈幫妳點燃了 1 根蠟燭，並告訴妳，原來胖貓被封印在大安森林公園，胖貓可以幫妳點燃蠟燭。',   // 點亮第 2 根蠟燭頁上方的故事
+      goStory:'出發！解救胖貓，與此同時列車長給了妳第 2 個秘密任務。',   // 目的地頁跟其他站同格式（Ming）
       sub:'圖書館 · 一本書',
       intro:'跟隨貓毛從 2 號出口出站，前往台北市立圖書館總館。',
       // 書名＝莉莉 的 相 片；相＝木＋目（木頭做的眼睛），片＝披薩沒有欺（Ming 2026-11-03 定）
@@ -333,7 +342,7 @@ const CONFIG = {
       hints:[] },
 
     { id:'g2', name:'科技大樓 >> 大安森林公園', code:'移動中', line:'red', transit:true, type:'game', game:'song',
-      arriveStory:'妳在前往的路途上，遇到好心的老太太，她告訴妳，想解除胖貓的封印必須要有徽章。但解封的徽章碎成兩半，被藏在兩個地方。',   // 抵達頁上方的敘述（貓毛已失去魔力）
+      arriveStory:'妳在前往的路途上，遇到好心的老太太，她告訴妳，想解除胖貓的封印必須要有徽章。但解封的徽章碎成 2 半，被藏在 2 個地方。',   // 抵達頁上方的敘述（貓毛已失去魔力）
       sub:'秘密任務 2 · 莉莉之歌',
       intro:'這 4 句歌詞裡都藏著莉莉。聽一聽，把歌名填進來。',
       // 歌詞是莉莉諧音版；yt＝YouTube 影片 id，start／end＝播放起訖秒數（估的，試聽後校正）
@@ -347,10 +356,10 @@ const CONFIG = {
 
     { id:'s3', name:'大安森林公園', code:'R06', line:'red', type:'firebadge',
       sub:'封印之地 · 拯救胖貓',
-      goStory:'列車長肚子餓了，請前往妳最熟悉的地方，幫助他填飽肚子，並完成第三個秘密任務。',   // 目的地頁（往東門）上方的敘述
-      litStory:'胖貓幫妳點燃一根蠟燭，並告訴妳，危急時刻丟出徽章，會有好事發生，接著就去睡覺了。',   // 點亮第 3 根蠟燭頁上方的故事
+      goStory:'列車長肚子餓了，請前往妳最熟悉的地方，幫助他填飽肚子，並完成第 3 個秘密任務。',   // 目的地頁（往東門）上方的敘述
+      litStory:'胖貓幫妳點燃 1 根蠟燭，並告訴妳，危急時刻丟出徽章，會有好事發生，接著就去睡覺了。',   // 點亮第 3 根蠟燭頁上方的故事
       story:'抵達胖貓的封印之地。用異次元觀測器找到藏在異次元的徽章，合成後就能解開胖貓的封印。',
-      clue:'11月盛開的美麗',
+      clue:'11 月盛開的美麗',
       // 輪盤上的兩個方位（度，0＝北）；〈四季〉在穿堂層北側牆面、〈大安之花〉在車站西側空橋旁廣場，現勘校正
       mind:'img/targets_all.mind',   // 一個目標檔：索引 0–1＝〈四季〉牆、2–4＝〈大安之花〉
       targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mindIdx:[0,1]}, {key:'flower', icon:'✿', name:'花', heading:222, mindIdx:[2,3,4], color:{pink:0.02, red:0.004, blueMax:0.08}} ],   // 花：影像＋顏色同時跑，哪個先命中算哪個；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
@@ -361,13 +370,13 @@ const CONFIG = {
     { id:'g3', name:'大安森林公園 >> 東門', code:'移動中', line:'red', transit:true, type:'game', game:'memory',
       arriveStory:'列車長的肚子咕嚕咕嚕叫。',   // 抵達頁（往東門）地標上方的敘述
       sub:'秘密任務 3 · 記憶莉考驗',
-      intro:'翻開兩張一樣的牌。翻錯會蓋回去。',
+      intro:'翻開 2 張一樣的牌。翻錯會蓋回去。',
       icons:['man','lily','ball','wine','cat','donut'],   // 像素圖示：男主角、莉莉、排球、酒杯、橘貓、甜甜圈（6 對）
       nextText:'' },
 
     { id:'s4', name:'東門', code:'R07 / O06', line:'red', type:'photo_task',
-      goStory:'列車長說：「我知道附近有個人能幫妳點燃蠟燭，邊移動邊完成第四個秘密任務吧。」',   // 目的地頁（往忠孝新生）上方的敘述
-      litStory:'吃飽後列車長魔力恢復了一部分，再次幫妳點燃了一根蠟燭。',   // 點亮第 4 根蠟燭頁上方的故事
+      goStory:'列車長說：「我知道附近有個人能幫妳點燃蠟燭，邊移動邊完成第 4 個秘密任務吧。」',   // 目的地頁（往忠孝新生）上方的敘述
+      litStory:'吃飽後列車長魔力恢復了一部分，再次幫妳點燃了 1 根蠟燭。',   // 點亮第 4 根蠟燭頁上方的故事
       sub:'莉莉的家 · 莉害的美食',
       intro:'挑一個妳覺得好吃的食物，帶列車長去吃。',
       preStep:{ button:'列車長滿意', icon:'food' },   // 按了才進合照；icon 畫在說明下面
@@ -379,10 +388,10 @@ const CONFIG = {
       nextText:'' },
 
     { id:'s5d', name:'忠孝新生', code:'O07 / BL14', line:'orange', type:'director',
-      goStory:'此時列車長也給妳第五個秘密任務，難道要集齊 5 個秘密數字了嗎？',   // 目的地頁（往忠孝復興）上方的敘述
+      goStory:'此時列車長也給妳第 5 個秘密任務，難道要集齊 5 個秘密數字了嗎？',   // 目的地頁（往忠孝復興）上方的敘述
       litStory:'IG 總編替妳點燃蠟燭了！同時他告訴妳，附近出現一隻邪惡的惡魔，似乎打著不好的主意，前往忠孝復興調查。',   // 點亮第 5 根蠟燭頁上方的故事
       sub:'天地攝影棚 · 好美莉',
-      intro:'在忠孝新生站遇到 IG 總編了！這一關妳是模特兼動作指導，總編是攝影師，他只能照妳的話做：拍出一張總編滿意並且可以發 IG 的照片，總編會替妳點燃蠟燭。',
+      intro:'在忠孝新生站遇到 IG 總編了！這一關妳是模特兼動作指導，總編是攝影師，他只能照妳的話做：拍出一張總編給過並且可以發 IG 的照片，總編會替妳點燃蠟燭。',
       styles:[
         {n:'雜誌封面', tip:'人放在三分線上，留一大片空白給「標題」', filter:'contrast(1.1) saturate(1.1)'},
         {n:'電影感', tip:'橫著拍，人小一點，前景要有東西擋一下', filter:'contrast(1.15) saturate(.85) sepia(.15)'},
@@ -402,7 +411,7 @@ const CONFIG = {
       theme:'秘密任務！' },
 
     { id:'s6', name:'忠孝復興', code:'BL15 / BR10', line:'blue', type:'spot', bossHits:30, litStory:'次元惡魔消散的魔力點燃了蠟燭，胖貓揍完惡魔心滿意足的回去睡覺了。',
-      goStory:'六根蠟燭都點燃了，燭火都指向同個方向，是麟光！回到麟光並執行第 5 個秘密任務，列車長這次不會騙人了，應該吧。',   // 目的地頁（回麟光）上方的敘述   // 全部看破 → 次元惡魔出現 → 丟徽章召喚胖貓 → 按拳頭 30 下打敗（不告訴玩家幾下）
+      goStory:'6 根蠟燭都點燃了，燭火都指向同個方向，是麟光！回到麟光並執行第 5 個秘密任務，列車長這次不會騙人了，應該吧。',   // 目的地頁（回麟光）上方的敘述   // 全部看破 → 次元惡魔出現 → 丟徽章召喚胖貓 → 按拳頭 30 下打敗（不告訴玩家幾下）
       sub:'次元入侵 · 好眼莉',
       intro:'次元惡魔想用虛假的空間替換現實，請依序找到惡魔想替換的地點，並看破假空間的破綻，阻止惡魔！',
       // 一張一張來：先看圖 →「已找到地點 N」→ 開始找哪裡不一樣＋答題，答對才給下一張
@@ -447,7 +456,7 @@ const CONFIG = {
     { id:'g5', name:'忠孝復興 >> 麟光', code:'移動中', line:'brown', type:'game', game:'puzzle', transit:true,
       arriveStory:'隨著麟光越來越近，蠟燭的魔力越來越強了。',   // 抵達頁（回麟光）地標上方的敘述
       sub:'秘密任務 5 · 莉莉皆辛苦',
-      intro:'點兩個交換位置，完成拼圖。',
+      intro:'點 2 個交換位置，完成拼圖。',
       grid:8, image:'img/s0_puzzle_pixel.png' },
 
     { id:'s7', name:'麟光', code:'BR03', line:'brown', type:'final',
@@ -966,7 +975,20 @@ function clearStage(id){
 }
 /* 上傳照片一律從相簿選：列出明確的圖片格式（不用 image/*），Android 會直接開相簿，不會跳出相機選項（Ming：開相機再關掉會卡住） */
 const PHOTO_ACCEPT='image/jpeg,image/png,image/webp,image/heic,image/heif';
-function savePhoto(key, theme, url){ state.extra.strip = state.extra.strip||{}; state.extra.strip[key]={theme,url}; save(); }
+function savePhoto(key, theme, url){ state.extra.strip = state.extra.strip||{}; state.extra.strip[key]={theme,url,ox:.5,oy:.5}; save(); }
+/* 照片框：背景圖 cover＋位置百分比（跟拍貼 drawImage 的裁法一樣），可拖曳 */
+function photoFrame(key, extra=''){ const it=(state.extra.strip||{})[key]; if(!it||!it.url) return '';
+  return `<div class="pframe" data-k="${key}" style="background-image:url(${it.url});background-position:${(it.ox??.5)*100}% ${(it.oy??.5)*100}%;${extra}"></div>`; }
+function bindPframes(root, onEnd){
+  (root||document).querySelectorAll('.pframe[data-k]').forEach(el=>{ const key=el.dataset.k, it=(state.extra.strip||{})[key]; if(!it||!it.url) return;
+    let iw=0, ih=0; const im=new Image(); im.onload=()=>{ iw=im.width; ih=im.height; }; im.src=it.url;
+    let st=null;
+    el.addEventListener('pointerdown',e=>{ if(e.target.closest('.px')||!iw) return; e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.add('drag'); st={x:e.clientX,y:e.clientY,ox:it.ox??.5,oy:it.oy??.5}; });
+    el.addEventListener('pointermove',e=>{ if(!st) return; const fw=el.clientWidth, fh=el.clientHeight, r=Math.max(fw/iw, fh/ih), ovx=iw*r-fw, ovy=ih*r-fh;
+      it.ox=ovx>0.5?Math.min(1,Math.max(0,st.ox-(e.clientX-st.x)/ovx)):.5; it.oy=ovy>0.5?Math.min(1,Math.max(0,st.oy-(e.clientY-st.y)/ovy)):.5;
+      el.style.backgroundPosition=`${it.ox*100}% ${it.oy*100}%`; });
+    const end=()=>{ if(!st) return; st=null; el.classList.remove('drag'); save(); if(onEnd) onEnd(key); };
+    el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end); }); }
 function cardBlock(){
   const u=state.extra.birthdayCard; if(!u) return '';
   return `<p class="center" style="margin:12px 0 4px">今天的生日卡</p><img class="photo" src="${u}" alt=""><a class="nes-btn btn small" style="display:inline-block;margin-top:8px" download="生日卡.jpg" href="${u}">⬇ 存到手機</a>`;
@@ -1152,7 +1174,7 @@ function renderWelcome(){
     <p class="title">一日有效</p>
     <div class="station"><span class="code" style="background:#000;box-shadow:var(--px) var(--px) 0 #9a9a9a">MOMO</span><span class="name">${CONFIG.playerName}專屬</span></div>
     <p class="sub">三十而莉 · 生日列車</p>
-    <p>${'歡迎搭乘[三十而莉．生日列車]，三十歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，今天妳要成功點燃 6 根魔力蠟燭，並在旅途中獲得 5 個秘密數字，最終得到生日禮物的藏寶地點，如果卡關可以求助列車長-墨墨，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--pink)">${m}</span>`)}</p>
+    <p>${'歡迎搭乘[三十而莉．生日列車]，30 歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，今天妳要成功點燃 6 根魔力蠟燭，並在旅途中獲得 5 個秘密數字，最終得到生日禮物的藏寶地點，如果卡關可以求助列車長-墨墨，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--pink)">${m}</span>`)}</p>
     ${candles()}
     <button class="nes-btn is-primary btn" id="go" style="margin-top:10px">我準備好了！</button></section>`;
   $('#go').onclick=()=>{ state.started=Date.now(); save(); render(); };
@@ -1173,12 +1195,13 @@ function renderTicketPuzzle(s, idx){
     main.innerHTML = ticket(s, `${steps()}
       <p style="margin:4px 0 2px">請拍一張合照，合照主題：</p>
       <p class="center" style="font-size:34px;margin:0 0 12px;color:var(--red)">${s.departTheme}</p>
-      ${shot?`<img class="photo" src="${shot.url}" alt="" style="margin-bottom:14px">`:''}
+      ${shot?photoFrame(s.id,'margin-bottom:14px'):''}
       <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
       ${shot?'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:14px">下一步</button>':''}
       ${backupScanBox()}${npcBox(s,idx)}`);
     $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.departTheme, u); render(); }); rd.readAsDataURL(f); };
     const np=$('#nextp'); if(np) np.onclick=()=>{ state.extra[s.id+'_lit']=true; state.extra[k]={step:'lit'}; save(); render(); };
+    bindPframes(main);
   } else if(d.step==='lit'){
     main.innerHTML = ticket(s, `${steps()}
       ${s.litStory?`<p>${s.litStory}</p>`:''}${ok('成功點亮第 1 根蠟燭！')}
@@ -1199,7 +1222,7 @@ function renderTicketPuzzle(s, idx){
     const n=s.grid||3;
     const solved=!!d.solved;
     main.innerHTML = ticket(s, `${steps()}
-      ${solved?ok(`拼好了！獲得數字 ${CONFIG.digits[s.id]}`):'<p class="tag">點兩格交換，拼回原圖。</p>'}<div class="grid" id="grid" style="grid-template-columns:repeat(${n},1fr);${solved?'gap:0':''}"></div>
+      ${solved?ok(`拼好了！獲得數字 ${CONFIG.digits[s.id]}`):'<p class="tag">點 2 格交換，拼回原圖。</p>'}<div class="grid" id="grid" style="grid-template-columns:repeat(${n},1fr);${solved?'gap:0':''}"></div>
       ${solved?`<button class="nes-btn is-arrive btn" id="lit" style="margin-top:12px;--arrive:${LINE[CONFIG.stages[idx+1].line]}">${PIN} 已抵達 ${CONFIG.stages[idx+1].name}</button>`:''}
       ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}
       ${state.npc&&!solved?'<button class="nes-btn is-warning btn small" id="simsolve" style="margin-top:8px">控制者：直接拼好</button>':''}`);
@@ -1482,7 +1505,7 @@ function renderLibrary(s, idx){
   const gk=s.id+'_guess'; const guesses=state.extra[gk]||[];
   let body='';
   if(step==='go') body=`<p>${s.intro}</p><div class="center hero" style="margin-bottom:24px">${SHELF}</div><button class="nes-btn is-arrive btn" id="arr" style="--arrive:#209cee">${PIN} 已抵達圖書館</button>`;
-  else if(step==='sit') body=`<p>進入圖書館，貓毛的魔力消失了，掉落在地上一動也不動，但妳遇到了圖書小精靈，她給了妳兩道謎題，並告訴妳：「解開謎題，妳能找到一本書，給我 ISBN 的最後三個數字，我會幫妳點亮蠟燭並跟妳說一個秘密。」</p>
+  else if(step==='sit') body=`<p>進入圖書館，貓毛的魔力消失了，掉落在地上一動也不動，但妳遇到了圖書小精靈，她給了妳 2 道謎題，並告訴妳：「解開謎題，妳能找到一本書，給我 ISBN 的最後 3 個數字，我會幫妳點亮蠟燭並跟妳說一個秘密。」</p>
     <div class="hero">${spriteSVG(FAIRY_ROWS, FAIRY_PAL, '160px', 'class="mx" aria-label="圖書館的小精靈"')}</div>
     <button class="nes-btn is-primary btn" id="start">開始解謎</button>`;
   else if(step==='riddle') body=`<p class="tag">謎題 1 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">${icons(s.riddle)}</div>
@@ -1498,7 +1521,7 @@ function renderLibrary(s, idx){
   else if(step==='code_ok') body=`<p class="tag">謎題 2 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">這本書的索書號是\n<b>${'?'.repeat(s.callDigits.length)}${s.callTail}</b>\n\n猜 ${s.callDigits.length} 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
     <input class="nes-input" type="text" value="${s.callDigits}" disabled>${ok(`索書號 ${s.book.call}`)}
     <button class="nes-btn is-success btn" id="next2" style="margin-top:8px">去找書</button>`;   // 同上：答對留在原頁
-  else body=`<p>請根據索書號 <b>${s.book.call}</b> 找到《${s.book.title}》，獲得 <b>ISBN</b> 最後三碼。</p>
+  else body=`<p>請根據索書號 <b>${s.book.call}</b> 找到《${s.book.title}》，獲得 <b>ISBN</b> 最後 3 碼。</p>
     <input class="nes-input" type="text" id="ans" inputmode="numeric" maxlength="3" placeholder="3 碼"><div id="res"></div>
     <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`;
   main.innerHTML = ticket(s, `${steps()}${body}${backupScanBox()}${npcBox(s,idx)}`);
@@ -1612,7 +1635,8 @@ function ratioCrop(dataUrl, w, h, cb){   // 裁成 w:h（拍貼每格 4:3），�
   const im=new Image(); im.onload=()=>{ let cw=im.width, ch=Math.round(im.width*h/w); if(ch>im.height){ ch=im.height; cw=Math.round(im.height*w/h); }
     const k=Math.min(1,1200/cw); const c=document.createElement('canvas'); c.width=Math.round(cw*k); c.height=Math.round(ch*k);
     c.getContext('2d').drawImage(im,(im.width-cw)/2,(im.height-ch)/2,cw,ch,0,0,c.width,c.height); cb(c.toDataURL('image/jpeg',.9)); }; im.src=dataUrl; }
-function squareCrop(dataUrl, size, cb){ ratioCrop(dataUrl, 4, 3, cb); }   // 舊呼叫點一律走 4:3（拍貼每格 4:3，Ming 2026-11-04）const im=new Image(); im.onload=()=>{ const m=Math.min(im.width,im.height); const c=document.createElement('canvas'); c.width=c.height=Math.min(size,m); c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,c.width,c.height); cb(c.toDataURL('image/jpeg',.88)); }; im.src=dataUrl; }
+function squareCrop(dataUrl, size, cb){ shrink(dataUrl, 1400, cb); }   // 2026-11-05 改存原圖（長邊 1400），裁切位置另存 ox/oy，拍貼與照片框照位置裁（Ming：要能手動拉位置）
+function _oldSquareCrop(dataUrl, size, cb){ ratioCrop(dataUrl, 4, 3, cb); }   // 舊呼叫點一律走 4:3（拍貼每格 4:3，Ming 2026-11-04）const im=new Image(); im.onload=()=>{ const m=Math.min(im.width,im.height); const c=document.createElement('canvas'); c.width=c.height=Math.min(size,m); c.getContext('2d').drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,c.width,c.height); cb(c.toDataURL('image/jpeg',.88)); }; im.src=dataUrl; }
 function shrink(dataUrl, max, cb){ const im=new Image(); im.onload=()=>{ const k=Math.min(1,max/Math.max(im.width,im.height)); const c=document.createElement('canvas'); c.width=im.width*k|0; c.height=im.height*k|0; c.getContext('2d').drawImage(im,0,0,c.width,c.height); cb(c.toDataURL('image/jpeg',.8)); }; im.src=dataUrl; }
 
 /* 5 聽聲辨站 + 拼圖 */
@@ -1622,7 +1646,7 @@ function renderSoundPuzzle(s, idx){
     <p>${s.intro}</p>
     ${!heard?`<p>哪一段是這一站的到站音？</p><div class="row" style="flex-direction:column">${[0,1,2].map(i=>`<button class="nes-btn btn audio-btn" data-i="${i}">▶ 第 ${i+1} 段</button>`).join('')}</div><div id="res"></div>`
     : !img?`${ok('對，就是這一段。')}<p>把站內「華山 1914」指標牌拍下來。</p><label class="nes-btn is-primary btn" style="display:block;text-align:center">${CAMERA} 拍指標牌<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>`
-    : !solved?`<p class="tag">點兩格交換，拼回原圖。</p><div class="grid" id="grid"></div>`
+    : !solved?`<p class="tag">點 2 格交換，拼回原圖。</p><div class="grid" id="grid"></div>`
     : `${ok('拼好了。')}<p>牌子上的數字：<span class="big">${s.puzzleNumber}</span></p><p>照列車長運算卡上的規則算出一位數。</p><input class="nes-input" type="number" id="ans" inputmode="numeric" placeholder="一位數"><div id="res"></div><button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`}
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
   document.querySelectorAll('.audio-btn').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; playTone(i); b.onclick=()=>{ if(i===s.soundCorrect){ state.extra.s5_heard=true; save(); render(); } else { $('#res').innerHTML=bad('不是這一段。'); playTone(i); } }; b.textContent=`▶ 第 ${i+1} 段（再按一次選它）`; b.classList.add('is-primary'); });
@@ -1768,13 +1792,13 @@ function renderPhotoTask(s, idx){
     ${s.intro && !s.preStep?`<p>${s.intro}</p>`:''}
     <p style="margin:4px 0 2px">${s.photoPrompt||'請拍一張合照，合照主題：'}</p>
     <p class="center" style="font-size:34px;margin:0 0 12px;color:var(--red)">${s.theme}</p>
-    ${shot?`<img class="photo" src="${shot.url}" alt="" style="margin-bottom:14px">`:''}
+    ${shot?photoFrame(s.id,'margin-bottom:14px'):''}
     <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
     ${shot?'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:14px">下一步</button>':''}
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.theme, u); if(s.finalPhoto){ state.done[s.id]=true; save(); } render(); }); rd.readAsDataURL(f); };
   const np=$('#nextp'); if(np) np.onclick=()=>{ state.done[s.id]=true; save(); render(); };
-  bindBackupScan(s); bindNpc(s,idx);
+  bindPframes(main); bindBackupScan(s); bindNpc(s,idx);
 }
 
 /* 火焰徽章：輪盤兩個方位 → AR 掃到兩半 → 合體 → 召喚火焰小精靈點亮蠟燭 */
@@ -1900,11 +1924,11 @@ function renderFinal(s, idx){
 }
 function renderFinalOpen(s){
   main.innerHTML = ticket(s, `
-    <p>蠟燭的魔力進化成許願之力了！許下三個願望，將前兩個說出來，第三個藏心裡。</p>
+    <p>蠟燭的魔力進化成許願之力了！許下 3 個願望，將前 2 個說出來，第 3 個藏心裡。</p>
     <div class="candles mid" id="fc">${Array.from({length:MID},()=>candleHTML('lit')).join('')}</div>
     <progress class="nes-progress is-warning" id="mic" value="0" max="100"></progress>
     <button class="nes-btn is-primary btn" id="blow">吹熄蠟燭</button><button class="nes-btn is-success btn" id="wish" style="display:none">願望會實現！</button><div id="micmsg"></div>${npcBox(s,CONFIG.stages.indexOf(s))}
-    ${state.npc?'<button class="nes-btn is-warning btn small" id="simblow" style="margin-top:8px">控制者：模擬吹熄一根</button>':''}`);
+    ${state.npc?'<button class="nes-btn is-warning btn small" id="simblow" style="margin-top:8px">控制者：模擬吹熄 1 根</button>':''}`);
   let out=0;
   const extinguish=()=>{ const cs=document.querySelectorAll('#fc .candle.lit'); if(cs.length){ cs[cs.length-1].classList.remove('lit'); cs[cs.length-1].classList.add('out'); out++; } if(out>=MID){ $('#blow').style.display='none'; $('#wish').style.display=''; } };   // 全吹熄 → 出現「願望會實現！」
   $('#wish').onclick=renderSmoke;
@@ -1926,7 +1950,7 @@ function renderFinalOpen(s){
 function renderSmoke(){
   const s=CONFIG.stages.find(x=>x.type==='final');
   main.innerHTML = ticket(s, `
-    <p>蠟燭的魔力進化成許願之力了！許下三個願望，將前兩個說出來，第三個藏心裡。</p>
+    <p>蠟燭的魔力進化成許願之力了！許下 3 個願望，將前 2 個說出來，第 3 個藏心裡。</p>
     <div class="candles mid" id="fc">${Array.from({length:MID},()=>candleHTML('out')).join('')}</div>
     <progress class="nes-progress is-warning" value="0" max="100" style="visibility:hidden"></progress>
     <div class="smoke-wrap"><div class="smoke-num" id="smokenum">${CONFIG.lockerNumber}</div><p class="tag center smoke-late" style="margin:0">煙霧慢慢聚成了一個數字。</p></div>
@@ -1940,7 +1964,7 @@ function renderLocker(){
   main.innerHTML = `<section class="ticket nes-container is-rounded with-title" style="--line-color:var(--brown)">
     <p class="title">三十而莉</p>
     <div class="station"><span class="code">BR03</span><span class="name">麟光置物櫃</span></div>
-    <p class="center" style="font-size:20px;margin:6px 0 4px">${GIFT} 去${CONFIG.lockerNumber}號櫃找禮物！</p>
+    <p class="center" style="font-size:20px;margin:6px 0 4px">${GIFT} 去 ${CONFIG.lockerNumber} 號櫃找禮物！</p>
     <p class="center" style="margin:0 0 4px">密碼 <span class="big">${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}</span></p>
     ${CONFIG.codeMeaning?`<p class="center" style="margin:0 0 4px;font-size:22px;color:var(--red)">${CONFIG.codeMeaning}</p>`:''}
     <button class="nes-btn is-success btn" id="next" style="margin-top:14px">拿到禮物了！</button>${npcBox(s,idx)}</section>`;
@@ -1982,7 +2006,24 @@ function renderFinish(){
     <div id="stripbox"></div>
     ${state.npc?'<button class="nes-btn is-error btn small" id="npcreset" style="margin-top:12px">控制者：全部重來</button>':''}</section>`;
   const r=$('#npcreset'); if(r) r.onclick=()=>{ if(confirm('全部重來？')) reset(); };
-  makeStrip().then(u=>{ const b=$('#stripbox'); if(!b||!u) return; b.innerHTML=`<p class="center" style="margin:18px 0 6px">今天的拍貼</p><img src="${u}" alt="" style="display:block;width:60%;margin:0 auto;border:4px solid #000"><div class="center"><a class="nes-btn btn small" style="display:inline-block;margin-top:10px" download="生日列車拍貼.jpg" href="${u}">⬇ 存到手機</a></div>`; });
+  stripAdj=false; showStrip();
+}
+/* 最後拍貼：「調整相片」模式＝每張照片可拖曳、右上 X 刪掉後可重新上傳；再按一次關閉 */
+let stripAdj=false;
+async function showStrip(){
+  const u=await makeStrip(); const b=$('#stripbox'); if(!b||!u) return;
+  const G=makeStrip.geo, st=state.extra.strip||{};
+  const slots=stripAdj?CONFIG.stripOrder.slice(0,4).map((k,i)=>{ const pos=`left:${G.pad/G.W*100}%;top:${(G.head+i*(G.ph+G.gap))/G.H*100}%;width:${G.pw/G.W*100}%;height:${G.ph/G.H*100}%`; const it=st[k];
+    return it&&it.url?`<div class="slot pframe" data-k="${k}" style="${pos};background-image:url(${it.url});background-position:${(it.ox??.5)*100}% ${(it.oy??.5)*100}%"><button class="px" data-del="${k}" aria-label="刪掉照片">✕</button></div>`
+      :`<label class="slot empty" style="${pos}">${CAMERA}<input type="file" accept="${PHOTO_ACCEPT}" data-up="${k}" hidden></label>`; }).join(''):'';
+  b.innerHTML=`<p class="center" style="margin:18px 0 6px">今天的拍貼</p>
+    <div class="stripwrap"><img src="${u}" alt="">${slots}</div>
+    <div class="row" style="margin-top:10px;justify-content:center"><a class="nes-btn btn small" style="display:inline-block;margin:0" download="生日列車拍貼.jpg" href="${u}">⬇ 存到手機</a><button class="nes-btn ${stripAdj?'is-primary':''} btn small" id="stripadj" style="margin:0">調整相片</button></div>`;
+  $('#stripadj').onclick=()=>{ stripAdj=!stripAdj; showStrip(); };
+  if(!stripAdj) return;
+  bindPframes(b, ()=>showStrip());
+  b.querySelectorAll('[data-del]').forEach(x=>x.onclick=e=>{ e.stopPropagation(); if(!confirm('刪掉這張照片？')) return; const k=x.dataset.del; st[k]={theme:st[k].theme, url:null}; save(); showStrip(); });
+  b.querySelectorAll('[data-up]').forEach(inp=>inp.onchange=e=>{ const f=e.target.files[0]; if(!f) return; const k=inp.dataset.up; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, url=>{ savePhoto(k, (st[k]||{}).theme||'', url); showStrip(); }); rd.readAsDataURL(f); });
 }
 /* 拍貼機相片：直式長條，每格 1:1，像素字標題 */
 const TRAIN_ROWS=[
@@ -2037,8 +2078,8 @@ function pixelText(g, txt, cx, y0, y1, k, col, shadow, opt={}){
     place.forEach(({q,ox,oy})=>q.px.forEach(([px,py])=>g.fillRect(ox+(px+o)*k, ty+(py+oy+o)*k, k, k))); });
 }
 async function makeStrip(){
-  const st=state.extra.strip||{}; const list=CONFIG.stripOrder.map(k=>st[k]).filter(Boolean);
-  if(!list.length) return null;
+  const st=state.extra.strip||{}; const list=CONFIG.stripOrder.map(k=>st[k]&&st[k].url?st[k]:null);   // 依格子位置；刪掉的照片那格留空
+  if(!CONFIG.stripOrder.some(k=>st[k])) return null;
   try{ await document.fonts.load('40px "Fusion Pixel 12px Proportional TC"'); }catch(e){}
   // 2×6 吋拍貼（5.1×15.2cm，1:3）、300dpi＝600×1800；每格照片 4:3；高度先給照片，左右留白跟著算
   const W=600, H=1800, head=102, gap=18, foot=204, ph=Math.floor((H-head-foot-gap*3)/4), pw=Math.round(ph*4/3), pad=Math.round((W-pw)/2);
@@ -2057,12 +2098,14 @@ async function makeStrip(){
   g.fillStyle=T.frame; g.fillRect(0,0,W,8); g.fillRect(0,H-8,W,8); g.fillRect(0,0,8,H); g.fillRect(W-8,0,8,H);   // 像素粗框
   /* 上方：捷運＋莉莉（戴生日帽）＋墨墨坐在車頂 */
   const load=u=>new Promise(r=>{ const im=new Image(); im.onload=()=>r(im); im.src=u; });
+  makeStrip.geo={W,H,pad,head,ph,pw,gap};   // 調整相片模式用來對位
   for(let i=0;i<Math.min(4,list.length);i++){
     const it=list[i], x=pad, y=head+i*(ph+gap);
-    const im=await load(it.url);
     if(!T.noFrame){ g.fillStyle=T.frame; g.fillRect(x-4,y-4,pw+8,ph+8); }
+    if(!it){ g.fillStyle='rgba(255,255,255,.35)'; g.fillRect(x,y,pw,ph); continue; }
+    const im=await load(it.url);
     const r=Math.max(pw/im.width, ph/im.height), sw=pw/r, sh=ph/r;
-    g.drawImage(im,(im.width-sw)/2,(im.height-sh)/2,sw,sh,x,y,pw,ph);
+    g.drawImage(im,(im.width-sw)*(it.ox??.5),(im.height-sh)*(it.oy??.5),sw,sh,x,y,pw,ph);
   }
   if(T.sunset){ const HP={R:'#ff4d6d'}, HP2={R:'#ffc2d1'}, y1=head, y2=head+ph+gap, y3=head+(ph+gap)*2, y4=head+(ph+gap)*3;   // 故意蓋到照片邊角的愛心
     [{x:pad-10,y:y1+ph-16,k:4,pal:HP},{x:W-pad-18,y:y2-12,k:4,pal:HP2},{x:pad-12,y:y3+ph-20,k:4,pal:HP2},{x:W-pad-14,y:y4-10,k:4,pal:HP},{x:W-pad-20,y:y3+ph-14,k:3,pal:HP}].forEach(d=>drawRows(g, HEART_ROWS, d.pal, d.x, d.y, d.k)); }
