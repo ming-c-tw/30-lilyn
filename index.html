@@ -205,6 +205,11 @@
   @keyframes chfly{from{transform:translate(0,6px)}to{transform:translate(18px,-6px)}}
   .chase .ch-dash{position:absolute;height:4px;background:#e8d6b6;animation:chdash .6s steps(3) infinite}
   @keyframes chdash{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-24px)}}
+  .rc{position:relative;width:220px;height:200px}   /* 忠孝復興 >> 麟光：發光蠟燭＋七彩光波 */
+  .rc-candle{position:absolute;left:50%;bottom:22px;transform:translateX(-50%) scale(2.4);transform-origin:50% 100%;filter:drop-shadow(0 0 4px #ffe066) drop-shadow(0 0 10px #ffb000)}
+  .rc-wave{position:absolute;left:50%;top:30%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;border:5px solid #ff4d6d;box-shadow:0 0 10px currentColor,inset 0 0 8px currentColor;color:#ff4d6d;opacity:0;animation:rcwave 2.2s steps(11) infinite, rchue 1.6s linear infinite}
+  @keyframes rcwave{0%{transform:scale(.15);opacity:0}15%{opacity:1}100%{transform:scale(1.45);opacity:0}}
+  @keyframes rchue{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}   /* 光波顏色在彩虹之間流轉 */
   .rift{position:relative;width:168px}
   .rift svg{display:block}
   .rift .rf-body{position:relative}
@@ -269,7 +274,13 @@
   .pre-intro{visibility:hidden}
   .devil.pre-intro{opacity:0}   /* 惡魔裡的輪替動畫會強制顯示，所以用透明度藏 */
   .arena-hole.line{animation:none}   /* 一開始只是一條線（光由 .rift-glow 閃） */
-  .arena-hole.line .hole-edge{visibility:hidden}   /* 一條線時不要紅藍實線，只有閃爍的紅藍光（Ming） */
+  .arena-hole.line .hole-edge{visibility:hidden}
+  .arena-hole.closing .hole-edge,.arena-hole.closing .arena-clip{animation:holeopen2 1.4s linear reverse both}   /* 合上：拉開倒放 */
+  .arena-hole.closing .frame-wire{animation:fwopen 1.4s linear reverse both}
+  .arena-hole.lineclose .hole-edge,.arena-hole.lineclose .frame-wire{visibility:hidden}
+  .arena-hole.lineclose .arena-clip{animation:holeline 1.5s steps(16) reverse both}   /* 再從一條線收成一個點 */
+  .arena-hole.shut{visibility:hidden}   /* 合上之後：裂隙不見了 */
+  .cat.rest{left:calc(50% - 95px)}   /* 合上後胖貓在畫面中間正面躺著 */   /* 一條線時不要紅藍實線，只有閃爍的紅藍光（Ming） */
   @keyframes holeburst{from{filter:drop-shadow(-6px 0 6px #ff2a6d) drop-shadow(6px 0 6px #05d9e8)}to{filter:drop-shadow(-14px 0 14px #ff2a6d) drop-shadow(14px 0 14px #05d9e8) drop-shadow(0 0 4px #fff)}}
   .rift-glow{position:absolute;top:-12px;bottom:-12px;transform-origin:50% 50%;left:49%;width:2%;z-index:1;pointer-events:none;box-sizing:border-box;animation:riftblink .32s steps(1) infinite, glowgrow 1.5s steps(16) both}
   @keyframes glowgrow{from{transform:scaleY(.01)}to{transform:scaleY(1)}}   /* 光也跟著從一個點拉長 */   /* 一條線時：沒有實線，只有紅藍光不斷交替閃爍 */
@@ -576,7 +587,7 @@ const CONFIG = {
 
       ], },
 
-    { id:'g5', name:'忠孝復興 >> 麟光', code:'移動中', line:'brown', type:'game', game:'puzzle', transit:true,
+    { id:'g5', name:'忠孝復興 >> 麟光', code:'移動中', line:'brown', type:'game', game:'puzzle', transit:true, arriveArt:'rainbowCandle',
       arriveStory:'隨著麟光越來越近，蠟燭的魔力越來越強了。',   // 抵達頁（回麟光）地標上方的敘述
       sub:'秘密任務 5 · 莉莉皆辛苦',
       intro:'點 2 個交換位置，完成拼圖。',
@@ -1187,7 +1198,8 @@ const MOMO_EDITOR_PAL={B:'#111',G:'#5a4a40',S:'#dcb48e',E:'#222',M:'#8a5a44',R:'
 const RIFT_FRAMES=[['...........PVC..........', '............PVC.........', '...........PVVVC........', '..........PVVVC.........', '........PPVVVC..........', '.......PVVVVVC..........', '.......PVVVVVCC.........', '.......PVVVVVVVC........', '........PVVVVVVVC.......', '.........PVVWVVVVCC.....', '.........PVVVVVVVVVC....', '.........PVVVVWVVVVC....', '........PVVVVVVVVVC.....', '.......PVVVVVWVVVC......', '......PVVVVVVVVVC.......', '......PVVVVVVVCC........', '......PVVVVWVVC.........', '.......PVVVVVVVC........', '........PPVVVVVC........', '..........PVWVVVC.......', '..........PVVVVVC.......', '..........PVVVCC........', '..........PVVVC.........', '.........PVVVC..........', '..........PVC...........', '...........PVC..........'], ['...........PVC..........', '............PVC.........', '............PVC.........', '...........PVC..........', '.........PPVC...........', '........PVVVC...........', '........PVVVCC..........', '........PVVVVVC.........', '.........PVVVVVC........', '..........PVVVVVC.......', '...........PVVVVVC......', '...........PVVVVVC......', '..........PVVVVVC.......', '.........PVVVVVC........', '........PVVVVVC.........', '.......PVVVVVC..........', '.......PVVVVVC..........', '........PVVVVVC.........', '.........PPVVVC.........', '...........PVVVC........', '...........PVVVC........', '...........PVCC.........', '...........PVC..........', '..........PVC...........', '..........PVC...........', '...........PVC..........'], ['........................', '............PPC.........', '.............PC.........', '............PCC.........', '...........PCC..........', '..........PCC...........', '..........PC............', '..........PPC...........', '...........PPC..........', '............PPC.........', '.............PPC........', '..............PC........', '.............PCC........', '............PCC.........', '...........PCC..........', '..........PCC...........', '..........PC............', '..........PPC...........', '...........PPC..........', '............PPC.........', '.............PC.........', '............PCC.........', '............PC..........', '...........PCC..........', '...........PC...........', '........................']];   // 空間裂縫三幀：張開／半開／合成紅藍一條線（24×26）
 const RIFT_SHARDS=['........................', '........................', '........................', '........................', '....................C...', '...PP...................', '....P...................', '........................', '...................CC...', '........................', '........................', '........................', '........................', '........................', '........................', '..C.....................', '........................', '.....................PP.', '........................', '........................', '........................', '.....P..................', '..................CC....', '...................C....', '........................', '........................'];   // 裂縫旁漂浮的碎片（另一層）
 const RIFT_PAL={V:'#140a22',P:'#ff2a6d',C:'#05d9e8',W:'#fff'};
-const ARRIVE_ART={ rift:()=>`<div class="rift" aria-label="空間裂縫"><div class="rf-body">${RIFT_FRAMES.map((f,i)=>`<div class="rf-f rf-f${i}">${spriteSVG(f, RIFT_PAL, '168px', 'aria-hidden="true"')}</div>`).join('')}</div><div class="rf-shards">${spriteSVG(RIFT_SHARDS, RIFT_PAL, '168px', 'aria-hidden="true"')}</div></div>`,
+const ARRIVE_ART={ rainbowCandle:()=>`<div class="rc" aria-label="發出七彩光波的蠟燭">${[0,1,2,3].map(i=>`<i class="rc-wave" style="animation-delay:${i*.55}s,${i*-.4}s"></i>`).join('')}<div class="rc-candle">${candleHTML('lit')}</div></div>`,
+  rift:()=>`<div class="rift" aria-label="空間裂縫"><div class="rf-body">${RIFT_FRAMES.map((f,i)=>`<div class="rf-f rf-f${i}">${spriteSVG(f, RIFT_PAL, '168px', 'aria-hidden="true"')}</div>`).join('')}</div><div class="rf-shards">${spriteSVG(RIFT_SHARDS, RIFT_PAL, '168px', 'aria-hidden="true"')}</div></div>`,
   momoMystery:()=>spriteSVG(MOMO_MYSTERY_ROWS, MOMO_EDITOR_PAL, '216px', 'aria-label="神秘人的剪影"'),
   momoHungry:()=>`<div class="hungry" aria-label="墨墨摸著肚子"><div class="h-body">${spriteSVG(MOMO_HUNGRY_ROWS, MOMO_HUNGRY_PAL, '200px', 'aria-hidden="true"')}</div><div class="h-growl">${spriteSVG(MOMO_GROWL_ROWS, MOMO_HUNGRY_PAL, '200px', 'aria-hidden="true"')}</div></div>`,
   granny:()=>`<div class="granny" style="margin-top:12px" aria-label="拿著七彩望遠鏡的老太太">${spriteSVG(GRANNY_TEL_ROWS, GRANNY_PAL, '168px', 'aria-hidden="true"')}<div class="g-edge">${spriteSVG(GRANNY_TEL_LENS, RAINBOW_PAL, '168px', 'aria-hidden="true"')}</div><div class="g-top">${spriteSVG(GRANNY_ROWS, GRANNY_PAL, '168px', 'aria-hidden="true"')}</div></div>` };
@@ -1601,6 +1613,21 @@ function startSpray(arena, hole){
 }
 /* 裂隙外圍一圈扭動的線框（左紅、右藍、上下漸層），跟邊框不同步 */
 const FRAME_WIRE=`<div class="frame-wire"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="fwg" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#ff2a6d"/><stop offset=".45" stop-color="#ff2a6d"/><stop offset=".55" stop-color="#05d9e8"/><stop offset="1" stop-color="#05d9e8"/></linearGradient></defs><path d="M0.0 2.8 L7.1 2.0 L14.3 1.2 L21.4 1.2 L28.6 2.8 L35.7 3.6 L42.9 2.0 L50.0 3.6 L57.1 2.0 L64.3 2.8 L71.4 3.6 L78.6 0.4 L85.7 1.2 L92.9 0.4 L97.5 0.0 L98.9 7.1 L98.9 14.3 L98.2 21.4 L98.9 28.6 L98.2 35.7 L96.8 42.9 L96.8 50.0 L99.6 57.1 L99.6 64.3 L96.8 71.4 L99.6 78.6 L97.5 85.7 L98.2 92.9 L100.0 98.8 L92.9 99.6 L85.7 98.0 L78.6 97.2 L71.4 98.8 L64.3 96.4 L57.1 99.6 L50.0 99.6 L42.9 99.6 L35.7 98.8 L28.6 98.8 L21.4 99.6 L14.3 98.0 L7.1 98.0 L1.1 100.0 L3.2 92.9 L0.4 85.7 L3.2 78.6 L3.2 71.4 L1.1 64.3 L2.5 57.1 L0.4 50.0 L1.8 42.9 L2.5 35.7 L1.1 28.6 L0.4 21.4 L0.4 14.3 L2.5 7.1 Z" fill="none" stroke="url(#fwg)" stroke-width="3.5" vector-effect="non-scaling-stroke" stroke-linejoin="miter"><animate attributeName="d" dur=".8s" repeatCount="indefinite" values="M0.0 2.8 L7.1 2.0 L14.3 1.2 L21.4 1.2 L28.6 2.8 L35.7 3.6 L42.9 2.0 L50.0 3.6 L57.1 2.0 L64.3 2.8 L71.4 3.6 L78.6 0.4 L85.7 1.2 L92.9 0.4 L97.5 0.0 L98.9 7.1 L98.9 14.3 L98.2 21.4 L98.9 28.6 L98.2 35.7 L96.8 42.9 L96.8 50.0 L99.6 57.1 L99.6 64.3 L96.8 71.4 L99.6 78.6 L97.5 85.7 L98.2 92.9 L100.0 98.8 L92.9 99.6 L85.7 98.0 L78.6 97.2 L71.4 98.8 L64.3 96.4 L57.1 99.6 L50.0 99.6 L42.9 99.6 L35.7 98.8 L28.6 98.8 L21.4 99.6 L14.3 98.0 L7.1 98.0 L1.1 100.0 L3.2 92.9 L0.4 85.7 L3.2 78.6 L3.2 71.4 L1.1 64.3 L2.5 57.1 L0.4 50.0 L1.8 42.9 L2.5 35.7 L1.1 28.6 L0.4 21.4 L0.4 14.3 L2.5 7.1 Z;M0.0 0.4 L7.1 0.4 L14.3 2.0 L21.4 1.2 L28.6 1.2 L35.7 1.2 L42.9 0.4 L50.0 3.6 L57.1 0.4 L64.3 3.6 L71.4 2.8 L78.6 0.4 L85.7 0.4 L92.9 0.4 L98.9 0.0 L98.9 7.1 L96.8 14.3 L96.8 21.4 L99.6 28.6 L96.8 35.7 L98.9 42.9 L96.8 50.0 L97.5 57.1 L98.9 64.3 L97.5 71.4 L96.8 78.6 L98.2 85.7 L99.6 92.9 L100.0 98.8 L92.9 97.2 L85.7 98.0 L78.6 98.0 L71.4 98.8 L64.3 98.8 L57.1 98.0 L50.0 99.6 L42.9 99.6 L35.7 97.2 L28.6 99.6 L21.4 98.0 L14.3 98.0 L7.1 96.4 L1.8 100.0 L0.4 92.9 L2.5 85.7 L3.2 78.6 L0.4 71.4 L2.5 64.3 L0.4 57.1 L3.2 50.0 L1.8 42.9 L3.2 35.7 L1.8 28.6 L3.2 21.4 L1.1 14.3 L0.4 7.1 Z;M0.0 0.4 L7.1 2.0 L14.3 1.2 L21.4 2.8 L28.6 2.0 L35.7 0.4 L42.9 2.8 L50.0 3.6 L57.1 2.8 L64.3 3.6 L71.4 0.4 L78.6 3.6 L85.7 2.8 L92.9 3.6 L98.2 0.0 L96.8 7.1 L96.8 14.3 L97.5 21.4 L97.5 28.6 L98.9 35.7 L99.6 42.9 L99.6 50.0 L99.6 57.1 L97.5 64.3 L98.9 71.4 L99.6 78.6 L98.9 85.7 L96.8 92.9 L100.0 97.2 L92.9 98.8 L85.7 97.2 L78.6 96.4 L71.4 96.4 L64.3 98.0 L57.1 96.4 L50.0 98.8 L42.9 97.2 L35.7 99.6 L28.6 99.6 L21.4 96.4 L14.3 99.6 L7.1 98.8 L0.4 100.0 L1.1 92.9 L1.8 85.7 L1.8 78.6 L0.4 71.4 L3.2 64.3 L3.2 57.1 L0.4 50.0 L3.2 42.9 L0.4 35.7 L0.4 28.6 L3.2 21.4 L2.5 14.3 L1.8 7.1 Z;M0.0 2.8 L7.1 3.6 L14.3 3.6 L21.4 0.4 L28.6 1.2 L35.7 2.8 L42.9 1.2 L50.0 2.0 L57.1 0.4 L64.3 1.2 L71.4 0.4 L78.6 3.6 L85.7 0.4 L92.9 0.4 L98.9 0.0 L96.8 7.1 L98.2 14.3 L97.5 21.4 L96.8 28.6 L97.5 35.7 L98.2 42.9 L98.2 50.0 L99.6 57.1 L98.2 64.3 L98.2 71.4 L96.8 78.6 L98.9 85.7 L99.6 92.9 L100.0 96.4 L92.9 99.6 L85.7 96.4 L78.6 99.6 L71.4 98.0 L64.3 98.0 L57.1 99.6 L50.0 98.0 L42.9 99.6 L35.7 98.0 L28.6 97.2 L21.4 99.6 L14.3 97.2 L7.1 97.2 L1.1 100.0 L1.1 92.9 L1.1 85.7 L1.8 78.6 L1.1 71.4 L0.4 64.3 L0.4 57.1 L2.5 50.0 L0.4 42.9 L1.8 35.7 L1.8 28.6 L2.5 21.4 L2.5 14.3 L3.2 7.1 Z;M0.0 2.0 L7.1 2.8 L14.3 2.8 L21.4 2.0 L28.6 0.4 L35.7 2.0 L42.9 2.0 L50.0 0.4 L57.1 0.4 L64.3 2.8 L71.4 0.4 L78.6 0.4 L85.7 2.0 L92.9 0.4 L98.2 0.0 L99.6 7.1 L96.8 14.3 L99.6 21.4 L98.9 28.6 L98.2 35.7 L98.9 42.9 L98.9 50.0 L97.5 57.1 L99.6 64.3 L96.8 71.4 L97.5 78.6 L98.9 85.7 L99.6 92.9 L100.0 99.6 L92.9 98.8 L85.7 98.0 L78.6 98.0 L71.4 98.0 L64.3 98.0 L57.1 99.6 L50.0 97.2 L42.9 99.6 L35.7 99.6 L28.6 98.0 L21.4 98.0 L14.3 97.2 L7.1 96.4 L3.2 100.0 L3.2 92.9 L1.8 85.7 L3.2 78.6 L0.4 71.4 L2.5 64.3 L1.8 57.1 L1.1 50.0 L1.8 42.9 L1.1 35.7 L0.4 28.6 L1.1 21.4 L2.5 14.3 L3.2 7.1 Z;M0.0 2.8 L7.1 2.0 L14.3 1.2 L21.4 1.2 L28.6 2.8 L35.7 3.6 L42.9 2.0 L50.0 3.6 L57.1 2.0 L64.3 2.8 L71.4 3.6 L78.6 0.4 L85.7 1.2 L92.9 0.4 L97.5 0.0 L98.9 7.1 L98.9 14.3 L98.2 21.4 L98.9 28.6 L98.2 35.7 L96.8 42.9 L96.8 50.0 L99.6 57.1 L99.6 64.3 L96.8 71.4 L99.6 78.6 L97.5 85.7 L98.2 92.9 L100.0 98.8 L92.9 99.6 L85.7 98.0 L78.6 97.2 L71.4 98.8 L64.3 96.4 L57.1 99.6 L50.0 99.6 L42.9 99.6 L35.7 98.8 L28.6 98.8 L21.4 99.6 L14.3 98.0 L7.1 98.0 L1.1 100.0 L3.2 92.9 L0.4 85.7 L3.2 78.6 L3.2 71.4 L1.1 64.3 L2.5 57.1 L0.4 50.0 L1.8 42.9 L2.5 35.7 L1.1 28.6 L0.4 21.4 L0.4 14.3 L2.5 7.1 Z"/></path></svg></div>`;
+/* 打倒惡魔後：次元裂隙用開場動畫倒放合上（先往中間收成一條線，再收成一個點），合上時胖貓用正面圖滾出裂隙，合上後滾到畫面中間、正面躺著（Ming） */
+function closeRift(d, keep){
+  const hole=$('#hole'), cat=$('#cat'), arena=$('#arena');
+  const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);
+  let x1=-46;
+  T(1200,()=>{ const c=$('#bosscall'); if(c){ c.textContent='次元惡魔被打敗了！'; c.classList.remove('boss-call'); }   // 惡魔一消失就換字、停止震動
+    hole.classList.add('closing');   // 第一段：背影滾出裂隙
+    cat.animate([{transform:'translate(0,0) rotate(0deg)'},{transform:`translate(${x1}px,0) rotate(-720deg)`}],{duration:1400,easing:'ease-in-out',fill:'forwards'}); });   // 往外滾出裂隙
+  T(2600,()=>{ hole.classList.remove('closing'); hole.classList.add('lineclose');
+    const aw=arena.getBoundingClientRect().width, dx=Math.round(aw/2-95-14);   // 胖貓滾到畫面中間
+    cat.getAnimations().forEach(a=>a.cancel()); cat.innerHTML=spriteSVG(SPRITE_ROWS, CAT_PAL, '190px', 'aria-label="胖貓"');   // 第二段：轉成正面滾到中間
+    cat.animate([{transform:`translate(${x1}px,0) rotate(-720deg)`},{transform:`translate(${dx}px,0) rotate(0deg)`}],{duration:1300,easing:'ease-out',fill:'forwards'}); });
+  T(3950,()=>arena.animate([{height:'340px'},{height:'140px'}],{duration:450,easing:'ease-in-out',fill:'forwards'}));   // 場地收矮，胖貓停到一般圖示的位置
+  T(4450,()=>{ d.closed=true; keep(); render(); });
+}
 function bossIntro(done){
   const hole=$('#hole'), devil=$('#devil'), call=$('#bosscall'), tbox=$('#throwbox'), arena=$('#arena');
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);
@@ -1621,13 +1648,13 @@ function renderBoss(s, idx, d, k){
   const fighting=d.boss==='fight', won=d.boss==='won', intro=!fighting && !won && !d.introDone;   // 第一次進來：次元惡魔出場動畫
   main.innerHTML = ticket(s, `${steps()}
     <p class="center noglitch ${won?'':'boss-call'} ${intro?'pre-intro':''}" id="bosscall" style="font-size:20px;color:var(--red)">${won?'次元惡魔被打敗了！':'次元惡魔出現了！'}</p>
-    <div class="arena" id="arena"><div class="arena-hole hs-${CONFIG.holeStyle||'rect'} ${intro?'pre-intro':''}" id="hole"><i class="hole-edge he-p"></i><i class="hole-edge he-c"></i>${FRAME_WIRE}<div class="arena-clip"><div class="arena-bg"></div><div class="crack ${fighting||won?'':'off'}" id="crack" style="left:${crackLeft()}px;bottom:${crackBottom()}px">${crackHTML()}</div></div></div>
+    ${won?`<div class="hero" style="display:flex;justify-content:center" id="arena">${spriteSVG(SPRITE_ROWS, CAT_PAL, '190px', 'aria-label="胖貓"')}</div>`:`<div class="arena" id="arena"><div class="arena-hole hs-${CONFIG.holeStyle||'rect'} ${intro?'pre-intro':''} ${won?'shut':''}" id="hole"><i class="hole-edge he-p"></i><i class="hole-edge he-c"></i>${FRAME_WIRE}<div class="arena-clip"><div class="arena-bg"></div><div class="crack ${fighting||won?'':'off'}" id="crack" style="left:${crackLeft()}px;bottom:${crackBottom()}px">${crackHTML()}</div></div></div>
       <div class="devil ${intro?'pre-intro':''}" id="devil" ${won?'hidden':''}><div class="df1">${spriteSVG(DEVIL_ROWS, DEVIL_PAL, '112px', 'aria-label="次元惡魔"')}</div><div class="df2">${spriteSVG(DEVIL_ROWS2, DEVIL_PAL, '112px', 'aria-hidden="true"')}</div><div class="dfh">${spriteSVG(DEVIL_HIT_ROWS, DEVIL_PAL, '112px', 'aria-hidden="true"')}</div></div>
 
-      <div class="cat" id="cat" ${fighting||won?'':'hidden'}>${spriteSVG(CAT_BACK_ROWS, CAT_PAL, '150px', 'aria-label="胖貓"')}</div>
+      <div class="cat ${won?'rest':''}" id="cat" ${fighting||won?'':'hidden'}>${won?spriteSVG(SPRITE_ROWS, CAT_PAL, '190px', 'aria-label="胖貓"'):spriteSVG(CAT_BACK_ROWS, CAT_PAL, '150px', 'aria-label="胖貓"')}</div>
       <button class="fist" id="fist" ${fighting?'':'hidden'} aria-label="出拳">${FIST_SVG}</button>
-    </div>
-    ${won?`<button class="nes-btn is-success btn" id="nextboss" style="margin-top:14px">下一步</button>`
+    </div>`}
+    ${won?`<button class="nes-btn is-success btn" id="nextboss" style="margin-top:0">下一步</button>`
       :fighting?'':`<div class="throwbox noglitch ${intro?'pre-intro':''}" id="throwbox"><div class="tb-badge" id="tbadge">${badgeSVG('','56px')}</div><p class="tag center" style="margin:6px 0 0">丟出胖貓徽章。</p></div>`}
     ${backupScanBox()}${npcBox(s,idx)}`);
   bindBackupScan(s); bindNpc(s,idx);
@@ -1666,7 +1693,7 @@ function renderBoss(s, idx, d, k){
     cat.animate([{transform:'translate(0,0)'},{transform:`translate(${dx}px,${dy}px)`,offset:.4},{transform:`translate(${dx*.94}px,${dy*.94}px)`,offset:.62},{transform:'translate(0,0)'}],{duration:360,easing:'ease-out'});
     hitT=setTimeout(()=>{ fade(); devil.classList.remove('hit'); void devil.offsetWidth; devil.classList.add('hit');
       clearTimeout(devil._ht); devil._ht=setTimeout(()=>devil.classList.remove('hit'),420);
-      if(last){ d.boss='won'; keep(); fist.hidden=true; devil.classList.remove('hit'); devil.classList.add('die'); stopGlitch(); setTimeout(()=>render(),1300); } },145);
+      if(last){ d.boss='won'; keep(); fist.hidden=true; devil.classList.remove('hit'); devil.classList.add('die'); stopGlitch(); closeRift(d, keep); } },145);
     backT=setTimeout(()=>{ if(d.boss!=='won') cat.innerHTML=back; },360);
     if(last) fist.disabled=true; };
 }
