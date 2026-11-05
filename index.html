@@ -256,7 +256,7 @@
   .pg-pin{position:sticky;top:0;z-index:2;background:#fdeef3;margin:0 -14px;padding:12px 14px 6px}   /* 標題列＋站點列／按鈕列釘在視窗最上面，只有下面的內容捲（Ming 2026-11-06） */
   .pg-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
   .pg-x{border:0;background:none;font:inherit;font-size:20px;cursor:pointer;padding:0 4px}
-  .pg-track{position:relative;display:flex;overflow-x:auto;padding:0 4px 30px;scroll-behavior:smooth;scrollbar-width:none}
+  .pg-track{position:relative;display:flex;overflow-x:auto;padding:14px 4px 30px;scroll-behavior:smooth;scrollbar-width:none}
   .pg-track::-webkit-scrollbar{display:none}   /* 不顯示捲動條 */
   .pg-line{display:none}
   .pg-node::before{content:'';position:absolute;top:53px;left:0;right:0;height:4px;background:#c9bda6}   /* 節點之間的線 */
@@ -268,7 +268,7 @@
   .pg-top{height:42px;display:flex;align-items:flex-end;justify-content:center}
   .pg-top svg{display:block}
   .pg-px svg{width:30px!important;height:auto}
-  .pg-candle{display:block;transform:scale(.6);transform-origin:50% 100%;height:42px}
+  .pg-candle{display:block;transform:scale(.75);transform-origin:50% 100%;height:60px}   /* 盒子跟蠟燭一樣高（60px），底部才會對齊其他圖示，不會掉到圓點下面（Ming 2026-11-06） */
   .pg-dot{display:block;width:20px;height:20px;border-radius:50%;border:4px solid var(--lc);background:#fdeef3;margin-top:2px;z-index:1}
   .pg-node.tr .pg-dot{width:14px;height:14px;margin-top:5px;border-width:3px}
   .pg-node.done .pg-dot{background:var(--lc)}
@@ -283,6 +283,7 @@
   .pg-tip{margin:0 0 4px;color:var(--red)}
   .pg-tips{margin:0;padding-left:1.2em}
   .pg-tips li{margin:2px 0}
+  .pg-tiphead{margin:0 0 2px;color:var(--red)}   /* 提示列表上面那行紅字「提示：」 */
   .go-train{display:flex;justify-content:center;margin:24px 0 0}
   .go-train svg{display:block}
   .chase{position:relative;width:280px;height:170px;margin:30px auto}
@@ -1322,7 +1323,7 @@ const PROG_ICON_MAP={   // 旅程進度每一站的圖示（Ming 2026-11-06 用 
   s3:{rows:"BADGE_ROWS",pal:"CAT_PAL",w:'30px'},   // 胖貓徽章
   g3:{rows:"MOMO_HUNGRY_ROWS",pal:"MOMO_HUNGRY_PAL",w:'36px'},   // 墨墨摸肚子
   s4:{rows:"window.MG_SPRITES.ICON_ART.donut.rows",pal:"window.MG_SPRITES.ICON_ART.donut.pal",w:'30px'},   // 翻牌 甜甜圈
-  g4:{rows:"window.MG_SPRITES.LILY_RUN",pal:"window.MG_SPRITES.LILY_PAL",w:'34px'},   // 莉莉跑步
+  g4:{rows:"window.MG_SPRITES.LILY_RUN",pal:"window.MG_SPRITES.LILY_PAL",w:'26px',dy:6},   // 莉莉跑步（小一點、往下 6px；dy＝往下幾 px）
   s5d:{rows:"MOMO_EDITOR_ROWS",pal:"MOMO_EDITOR_PAL",w:'34px'},   // 眼鏡墨墨
   m1:{rows:"RIFT_FRAMES[0]",pal:"RIFT_PAL",w:'26px'},   // 裂縫
   s6:{rows:"DEVIL_ROWS",pal:"DEVIL_PAL",w:'26px'},   // 次元惡魔
@@ -1332,7 +1333,7 @@ const PROG_ICON_MAP={   // 旅程進度每一站的圖示（Ming 2026-11-06 用 
 };
 function progIcon(id){ const m=PROG_ICON_MAP[id]; if(!m) return '';
   try{ if(m.special==='food') return `<span class="pg-px">${FOOD}</span>`; if(m.special==='candle') return `<span class="pg-candle">${candleHTML('lit')}</span>`; if(m.special==='candle_gold') return `<span class="pg-candle">${candleHTML('lit gold')}</span>`;
-    return spriteSVG(eval(m.rows), eval(m.pal), m.w); }catch(e){ return ''; } }
+    const svg=spriteSVG(eval(m.rows), eval(m.pal), m.w); return m.dy?`<span style="display:block;transform:translateY(${m.dy}px)">${svg}</span>`:svg; }catch(e){ return ''; } }
 /* 每一站的回顧（旅程進度點已完成的站看到的）：Ming 用 回顧編輯器.html 填；沒填的站照下面自動組 */
 const STAGE_REVIEWS={   // 2026-11-05 Ming 用 回顧編輯器.html 填的；「{heart}」＝像素愛心
   s0:"出發後拍了一張可愛的合照，列車長用魔力幫妳點燃了 1 根蠟燭。",
@@ -1364,10 +1365,11 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   'g1:arrive':['要貓毛過敏了'],
   's1:go':['圖書館內請輕聲細語'],
   's1:sit':['找個地方坐下解謎'],
-  's1:code':['翻譯文學'],
-  's1:code_ok':['翻譯文學'],
-  's1:find':['不是中文作家'],
+  's1:code':['終極密碼'],
+  's1:code_ok':['終極密碼'],
+  's1:find':['提示：不是中文作家'],
   's1:lit':['點燃蠟燭了！'],
+  's1:depart':['出發救胖貓！'],
   'g2:play':['提示：英文歌打中文翻譯也可以'],
   'g2:arrive':['街嘻黨Break it down'],
   's3:scan':['提示：左半：藏在季節內','提示：右半：藏在一朵花內'],
@@ -1390,6 +1392,11 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   'm1:next':['ㄏㄏ'],
   'm1:arrive':['趕緊前往！'],
   's6:here':['提示：在藍線 不在咖啡線'],
+  's6:scan':['提示：在藍線 不在咖啡線'],
+  's6:nextp':['提示：在藍線 不在咖啡線'],
+  's6:allclear':['空間怎麼在劇烈震盪？'],
+  's6:end':['▓▒░#@!%&*?͏҉̷̸͜ 7#x!Ωæ∑ß∆ ░▒▓'],   // 惡魔出現時提示故意變亂碼（Ming）
+  's6:nextboss':['惡魔也扛不住這沈（肥）重（胖）的力量...'],
   's6:lit':['點燃蠟燭了！'],
   's6:go':['踏上歸途'],
   'g5:play':['秘密任務進行中'],
@@ -1405,13 +1412,13 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   's9:cert':['{heart}'],
   's9:end':['{heart}'],
 };
-function tipHTML(t){ return t.replace('{heart}', ()=>spriteSVG(HEART_ROWS,{R:'#e63946'},'26px','style="vertical-align:middle"')); }
+function tipHTML(t){ return t.replace(/^提示：/,'').replace('{heart}', ()=>spriteSVG(HEART_ROWS,{R:'#e63946'},'26px','style="vertical-align:middle"')); }   // 開頭的「提示：」用紅字（Ming 2026-11-06）
 function pageKey(){ const s=CONFIG.stages[state.stage], m=document.querySelector('#main'); if(!m) return s.id+':-';
   // 先認「通用頁型」：同一種頁可能由不同程式畫（按鈕名稱不一樣），用畫面特徵認才穩
   if(m.querySelector('.is-arrive') && s.type!=='library') return s.id+':arrive';   // 已抵達 X
   if(m.querySelector('.secret')) return s.id+':number';                            // 秘密數字
   if(/成功點亮第/.test(m.textContent)) return s.id+':lit';                           // 點亮蠟燭
-  if(m.querySelector('.go-train')) return s.id+':go';                              // 請前往 X 並在路上進行秘密任務
+  if(m.querySelector('.go-train')) return s.id+(s.type==='library'?':depart':':go');   // 請前往 X 並在路上進行秘密任務（圖書館關的第一頁已經叫 go，出發頁改叫 depart 才不會撞到）
   if(m.querySelector('input[type=file]#file')) return s.id+':photo';               // 拍合照（上傳前後同一頁）
   if(s.type==='library') return s.id+':'+(state.extra[s.id+'_lib']||'go');         // 圖書館：照解謎步驟分頁
   if(s.type==='game' && m.querySelector('#gamebox')) return s.id+':play';           // 小遊戲畫面（打贏前後同一頁）
@@ -1443,7 +1450,7 @@ function progPanel(){
   const sel=progSel!=null?CONFIG.stages[progSel]:null;
   return `<div class="pg-pin"><div class="pg-head"><div><b style="display:inline-flex;align-items:center;gap:6px">${spriteSVG(MRT_LOGO_ROWS,{P:'#ff5c9a'},'24px')}旅程進度</b><p class="tag" style="margin:0">可點選已完成的站點回顧，點選捷運回到當前進度</p></div><button class="pg-x" id="pgx" aria-label="關閉">✕</button></div>
     <div class="pg-track" id="pgtrack"><i class="pg-line"></i>${nodes}<i class="pg-rail" style="width:${CONFIG.stages.length*64}px"></i><span class="pg-train" style="left:${4+cur*64+32-30}px">${spriteSVG(TRAIN_ROWS,TRAIN_PAL,'60px')}</span></div></div>
-    <div class="pg-brief">${sel?`<p class="pg-bt" style="color:${LINE[sel.line]}">${sel.name}</p><p class="tag" style="margin:0 0 6px">${sel.sub||''}</p>${progSel===cur?(pageTips()?`<ul class="pg-tips">${pageTips().map(t=>`<li>${tipHTML(t)}</li>`).join('')}</ul>`:''):`<p style="margin:0;white-space:pre-wrap">${tipHTML(stageBrief(sel))}</p>`}`:'<p class="tag" style="margin:0">點節點看那一站發生的事。</p>'}</div>`; }
+    <div class="pg-brief">${sel?`<p class="pg-bt" style="color:${LINE[sel.line]}">${sel.name}</p><p class="tag" style="margin:0 0 6px">${sel.sub||''}</p>${progSel===cur?(pageTips()?`${pageTips().some(t=>/^提示：/.test(t))?'<p class="pg-tiphead">提示：</p>':''}<ul class="pg-tips">${pageTips().map(t=>`<li${t.trim()==='{heart}'?' style="list-style:none"':''}>${tipHTML(t)}</li>`).join('')}</ul>`:''):`<p style="margin:0;white-space:pre-wrap">${tipHTML(stageBrief(sel))}</p>`}`:'<p class="tag" style="margin:0">點節點看那一站發生的事。</p>'}</div>`; }
 function openProgress(keep){ let p=document.getElementById('progpanel'); if(!p){ p=document.createElement('div'); p.id='progpanel'; p.className='nes-container is-rounded'; document.body.appendChild(p); }
   if(progSel==null) progSel=state.stage;
   const top=p.scrollTop, ot=p.querySelector('#pgtrack'), sl=ot?ot.scrollLeft:0;
@@ -1469,7 +1476,7 @@ function openBackup(keep){ let p=document.getElementById('bkpanel'); if(!p){ p=d
   if(keep===true && mode==='pin' && p.dataset.mode==='pin') return;   // 密碼打到一半不重畫
   const idx=state.stage, s=CONFIG.stages[idx];
   if(mode==='npc'){
-    if(p.dataset.mode!=='npc'){ p.innerHTML=`<div class="pg-pin"><div class="pg-head"><div><b style="display:inline-flex;align-items:center;gap:6px">${ic}控制者介面</b></div><button class="pg-x" id="bkx" aria-label="關閉">✕</button></div><div class="npc" id="bksim"></div><div id="bkrows"></div></div><div id="bknpc"></div>`; p.querySelector('#bkx').onclick=()=>{ p.hidden=true; }; }
+    if(p.dataset.mode!=='npc'){ p.innerHTML=`<div class="pg-pin"><div class="pg-head"><div><b style="display:inline-flex;align-items:center;gap:6px">${ic}控制者介面</b></div><button class="pg-x" id="bkx" aria-label="關閉">✕</button></div><div id="bkrows"></div><div class="npc" id="bksim"></div></div><div id="bknpc"></div>`; p.querySelector('#bkx').onclick=()=>{ p.hidden=true; }; }
     { const sim=p.querySelector('#bksim'), pk=pageKey(); if(sim && sim.dataset.pk!==pk){ sim.innerHTML=''; sim.dataset.pk=pk; } }   // 換到別頁才清掉上一頁搬進來的「控制者：模擬…」鈕（同一頁重畫不清，鈕已經搬進來了）
     p.querySelector('#bknpc').innerHTML=npcInner(s, idx); { const rows=p.querySelector('#bknpc .npc-rows'), host=p.querySelector('#bkrows'); if(rows&&host){ host.innerHTML=''; host.appendChild(rows); } } p.dataset.mode='npc'; if(keep!=='quiet') p.hidden=false; bindNpcPanel(s, idx); adoptSim(); p.scrollTop=top; return; }
   p.innerHTML=`<div class="pg-head"><div><b style="display:inline-flex;align-items:center;gap:6px">${ic}機器壞了？</b><p class="tag" style="margin:0">輸入備援密碼，打開控制者介面</p></div><button class="pg-x" id="bkx" aria-label="關閉">✕</button></div>
@@ -1486,7 +1493,7 @@ function adoptSim(){
   if(!document.getElementById('bkpanel')) openBackup('quiet');
   const box=document.getElementById('bksim'); if(!box) return;
   if(btns.length) box.innerHTML='';
-  btns.forEach(b=>{ b.style.marginTop='0'; b.style.width='100%'; b.style.marginBottom='8px'; box.appendChild(b); }); }
+  btns.forEach(b=>{ b.style.marginTop='8px'; b.style.width='100%'; b.style.marginBottom='0'; box.appendChild(b); }); }   // 模擬鈕在兩排固定鈕下面，往下留 8px
 function backupButton(){ let b=document.getElementById('bkfab'); if(!b){ b=document.createElement('button'); b.id='bkfab'; b.className='bkbtn'; b.setAttribute('aria-label','備援'); b.innerHTML=spriteSVG(NUT_ROWS,{G:'#4a4a4a'},'26px'); b.onclick=openBackup; document.body.appendChild(b); }
   b.hidden=!state.started; }
 function progButton(){ let b=document.getElementById('progbtn'); if(!b){ b=document.createElement('button'); b.id='progbtn'; b.className='progbtn'; b.setAttribute('aria-label','旅程進度'); b.innerHTML=spriteSVG(MRT_LOGO_ROWS,{P:'#ff5c9a'},'38px'); b.onclick=()=>{ progSel=state.stage; openProgress(); }; document.body.appendChild(b); }
