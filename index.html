@@ -87,10 +87,12 @@
   .candle.gold{opacity:1}
   .candle.gold .stick{background:#ffd34d;box-shadow:inset -4px 0 0 #e0a800, 0 4px 0 #000}   /* 第 7 根金色蠟燭 */
   .candle.gold.lit .flame{background:#ff6b6b;box-shadow:4px 0 #ff6b6b,0 4px #e8112d,4px 4px #e8112d,8px 4px #ff6b6b,0 8px #a4001a,4px 8px #e8112d,8px 8px #a4001a,4px 12px #a4001a}   /* 赤紅色火焰 */
-  .candle.cc1 .stick{background:#ff9f43;box-shadow:inset -4px 0 0 #d97a1c,0 4px 0 #000}.candle.cc2 .stick{background:#ffe066;box-shadow:inset -4px 0 0 #d9b52e,0 4px 0 #000}
-  .candle.cc3 .stick{background:#66d678;box-shadow:inset -4px 0 0 #3fae52,0 4px 0 #000}.candle.cc4 .stick{background:#3ad1c8;box-shadow:inset -4px 0 0 #1ea69e,0 4px 0 #000}
-  .candle.cc5 .stick{background:#4c8df0;box-shadow:inset -4px 0 0 #2a64c4,0 4px 0 #000}.candle.cc6 .stick{background:#b464e6;box-shadow:inset -4px 0 0 #8a3fbc,0 4px 0 #000}
-  .candle[class*=cc] .stick{transition:background .4s}
+  .candle.cc1 .flame{background:#ffd8a8;box-shadow:4px 0 #ffd8a8,0 4px #ff9f43,4px 4px #ff9f43,8px 4px #ffd8a8,0 8px #d9681a,4px 8px #ff9f43,8px 8px #d9681a,4px 12px #d9681a;filter:drop-shadow(0 0 4px #ff9f43)}
+  .candle.cc2 .flame{background:#fff6b0;box-shadow:4px 0 #fff6b0,0 4px #ffe066,4px 4px #ffe066,8px 4px #fff6b0,0 8px #d9b21e,4px 8px #ffe066,8px 8px #d9b21e,4px 12px #d9b21e;filter:drop-shadow(0 0 4px #ffe066)}
+  .candle.cc3 .flame{background:#c4f5cb;box-shadow:4px 0 #c4f5cb,0 4px #66d678,4px 4px #66d678,8px 4px #c4f5cb,0 8px #2e9e44,4px 8px #66d678,8px 8px #2e9e44,4px 12px #2e9e44;filter:drop-shadow(0 0 4px #66d678)}
+  .candle.cc4 .flame{background:#c4f5f1;box-shadow:4px 0 #c4f5f1,0 4px #3ad1c8,4px 4px #3ad1c8,8px 4px #c4f5f1,0 8px #16968f,4px 8px #3ad1c8,8px 8px #16968f,4px 12px #16968f;filter:drop-shadow(0 0 4px #3ad1c8)}
+  .candle.cc5 .flame{background:#c9ddff;box-shadow:4px 0 #c9ddff,0 4px #4c8df0,4px 4px #4c8df0,8px 4px #c9ddff,0 8px #2459b8,4px 8px #4c8df0,8px 8px #2459b8,4px 12px #2459b8;filter:drop-shadow(0 0 4px #4c8df0)}
+  .candle.cc6 .flame{background:#ead0ff;box-shadow:4px 0 #ead0ff,0 4px #b464e6,4px 4px #b464e6,8px 4px #ead0ff,0 8px #7a32ad,4px 8px #b464e6,8px 8px #7a32ad,4px 12px #7a32ad;filter:drop-shadow(0 0 4px #b464e6)}   /* 許願頁：第 2～7 根的燭火依序變成橙黃綠青藍紫（Ming：變色的是燭火，不是蠟燭） */
   .spk{position:absolute;width:4px;height:4px;background:#ffc93c;box-shadow:4px 0 #ffc93c,-4px 0 #ffc93c,0 4px #ffc93c,0 -4px #ffc93c,0 0 6px #fff;animation:twinkle 1.2s steps(3) infinite;pointer-events:none}   /* 閃閃發光 */
   @keyframes twinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
   .gold-gift{display:flex;justify-content:center;align-items:flex-end;gap:2px}
@@ -227,32 +229,41 @@
   .pose{display:flex;justify-content:center;align-items:flex-end;margin:30px 0}
   .pose svg{display:block}
   .pose-gap{width:28px}
-  .progbtn{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:1100;width:52px;height:52px;border-radius:50%;border:4px solid #000;background:#fff9db;box-shadow:3px 3px 0 #000;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}   /* 旅程進度懸浮鈕 */
+  .progbtn{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:1100;width:52px;height:52px;border-radius:50%;border:4px solid #000;background:#fdeef3;box-shadow:3px 3px 0 #000;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}   /* 旅程進度懸浮鈕 */
   .progbtn svg{display:block}
-  #progpanel{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:1200;background:#fdf6e3;max-height:72vh;overflow:auto;padding:12px 14px;margin:0}
-  .pg-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .progbtn{background:#fff}
+  .bkbtn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:1100;width:52px;height:52px;border-radius:50%;border:4px solid #000;background:#eceef0;box-shadow:3px 3px 0 #000;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}   /* 右下角備援扳手鈕 */
+  #bkpanel{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:1200;background:#fdeef3;height:40vh;overflow-y:auto;overscroll-behavior:contain;padding:12px 14px;margin:0}
+  #progpanel{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:1200;background:#fdeef3;height:40vh;overflow-y:auto;overscroll-behavior:contain;padding:12px 14px;margin:0}   /* 左下、右下展開固定同一個高度，太長在裡面上下捲（Ming） */
+  .pg-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
   .pg-x{border:0;background:none;font:inherit;font-size:20px;cursor:pointer;padding:0 4px}
-  .pg-track{position:relative;display:flex;overflow-x:auto;padding:4px 4px 8px;scroll-behavior:smooth}
+  .pg-track{position:relative;display:flex;overflow-x:auto;padding:0 4px 30px;scroll-behavior:smooth;scrollbar-width:none}
+  .pg-track::-webkit-scrollbar{display:none}   /* 不顯示捲動條 */
   .pg-line{display:none}
   .pg-node::before{content:'';position:absolute;top:53px;left:0;right:0;height:4px;background:#c9bda6}   /* 節點之間的線 */
   .pg-node:first-of-type::before{left:50%}.pg-node:last-of-type::before{right:50%}
   .pg-node.done::before{background:#8a7a62}
   .pg-node{position:relative;flex:0 0 64px;display:flex;flex-direction:column;align-items:center;border:0;background:none;font:inherit;padding:0;cursor:pointer;color:inherit}
-  .pg-node:disabled{cursor:default;opacity:.55}
+  .pg-node:disabled{cursor:default;opacity:.55;pointer-events:none}   /* 還沒到的站不能點 */
+  .pg-node:disabled .pg-dot{border-color:#b8b8b8}   /* 還沒抵達的站一律灰色 */
   .pg-top{height:42px;display:flex;align-items:flex-end;justify-content:center}
   .pg-top svg{display:block}
   .pg-px svg{width:30px!important;height:auto}
   .pg-candle{display:block;transform:scale(.6);transform-origin:50% 100%;height:42px}
-  .pg-dot{display:block;width:20px;height:20px;border-radius:50%;border:4px solid var(--lc);background:#fdf6e3;margin-top:2px;z-index:1}
+  .pg-dot{display:block;width:20px;height:20px;border-radius:50%;border:4px solid var(--lc);background:#fdeef3;margin-top:2px;z-index:1}
   .pg-node.tr .pg-dot{width:14px;height:14px;margin-top:5px;border-width:3px}
   .pg-node.done .pg-dot{background:var(--lc)}
   .pg-node.here .pg-dot{background:#fff;box-shadow:0 0 0 3px #ffe066}
   .pg-node.sel .pg-name{color:var(--red)}
-  .pg-name{font-size:11px;margin-top:4px;line-height:1.2;text-align:center;width:60px}
-  .pg-train{animation:pgtrain .8s steps(2) infinite alternate}
+  .pg-name{font-size:11px;margin-top:2px;line-height:1.2;text-align:center;width:60px}
+  .pg-rail{position:absolute;left:4px;bottom:4px;height:14px;background:linear-gradient(#6b6b6b 0 3px,transparent 3px 11px,#6b6b6b 11px 14px),repeating-linear-gradient(90deg,#a3a3a3 0 5px,transparent 5px 14px)}   /* 鐵軌（全灰） */
+  .pg-train{position:absolute;bottom:12px;animation:pgtrain .8s steps(2) infinite alternate}   /* 小捷運停在鐵軌上、目前那一站的位置 */
   @keyframes pgtrain{from{transform:translateY(0)}to{transform:translateY(-2px)}}
-  .pg-brief{border-top:3px dashed #d8c9b0;margin-top:6px;padding-top:8px;font-size:15px}
+  .pg-brief{margin-top:6px;padding-top:4px;font-size:15px}
   .pg-bt{font-size:18px;margin:0}
+  .pg-tip{margin:0 0 4px;color:var(--red)}
+  .pg-tips{margin:0;padding-left:1.2em}
+  .pg-tips li{margin:2px 0}
   .go-train{display:flex;justify-content:center;margin:24px 0 0}
   .go-train svg{display:block}
   .chase{position:relative;width:280px;height:170px;margin:30px auto}
@@ -292,10 +303,10 @@
   .hungry .h-growl{position:absolute;left:0;top:0;animation:growlblink .5s steps(1) infinite}
   @keyframes growlblink{0%{opacity:1;transform:translateX(0)}50%{opacity:.25;transform:translateX(3px)}}
   .granny{position:relative;width:168px}
-  .passerby{position:relative;width:200px;height:180px;margin-top:12px}   /* 路人＋老太太原本那支望遠鏡（同樣 6px 一格），手疊在望遠鏡前面 */
+  .passerby{position:relative;width:200px;height:216px;margin-top:12px}   /* 路人＋老太太原本那支望遠鏡（同樣 6px 一格），手疊在望遠鏡前面 */
   .passerby svg{display:block}
   .passerby .pb-guy{position:absolute;left:0;bottom:0}
-  .passerby .pb-tel{position:absolute;left:144px;top:66px}
+  .passerby .pb-tel{position:absolute;left:144px;top:90px}
   .passerby .g-edge{position:absolute;left:0;top:0;animation:teledge 1.4s steps(7) infinite}
   .granny svg{display:block}
   .granny .g-edge,.granny .g-top{position:absolute;left:0;top:0}
@@ -508,7 +519,7 @@ const CONFIG = {
   codeOrder: ['g1','g2','g3','g4','g5'],
   finalVolley: false,        // 回麟光車上的排球，先關掉
   volleyTarget: 11,          // 排球打 11 分；墨墨超強，莉莉輸了也算通關
-  codeMeaning: '莉莉我愛妳',   // 五碼的意思，開櫃畫面才揭曉
+  codeMeaning: '',   // 五碼的意思（莉莉我愛妳）；2026-11-05 Ming：開櫃頁面上不顯示，只放在旅程進度提示
 
   stages: [
     { id:'s0', name:'麟光', code:'BR03', line:'brown', type:'ticket_puzzle',
@@ -660,7 +671,7 @@ const CONFIG = {
 
     { id:'s7', name:'麟光', code:'BR03', line:'brown', type:'final',
       sub:'三十而莉',
-      intro:'5 碼都在妳手上了。轉開密碼，蠟燭會亮起來；許一個願望說給列車長聽，然後對著手機吹。',
+      intro:'到達麟光後，列車長給了妳第 7 根蠟燭，是金色的，最重要的蠟燭只能由妳自己注入魔力點燃！',
       hints:['5 碼的順序＝妳拿到的順序。','第 1 碼是在這裡拿到的。','再吹用力一點。'] },
     { id:'s9', name:'麟光', code:'BR03', line:'brown', type:'photo_task', noCandle:true, finalPhoto:true, photoPrompt:'最後的秘密任務，請拍一張合照，合照主題：',
       sub:'生日快樂！',
@@ -881,7 +892,7 @@ setInterval(()=>{
 let taps=0, tapT=0;
 $('#foot').addEventListener('click',()=>{
   const now=Date.now(); taps = (now-tapT<700)? taps+1 : 1; tapT=now;
-  if(taps>=5){ taps=0; const pin = prompt('NPC 密碼'); if(pin===CONFIG.npcPin){ state.npc=!state.npc; save(); render(); } }
+  if(taps>=5){ taps=0; const pin = prompt('NPC 密碼'); if(pin===CONFIG.npcPin){ state.npc=!state.npc; save(); render(); if(state.npc) openBackup(); else { const p=document.getElementById('bkpanel'); if(p) p.hidden=true; } } }
 });
 
 /* 像素小惡魔圖示：16×16 格，crispEdges */
@@ -1148,14 +1159,17 @@ function bindHints(s){
   const b=$('#hintbtn'); if(!b) return;
   b.onclick=()=>{ const k=s.id+'_hint'; state.extra[k]=Math.min((state.extra[k]||0)+1, s.hints.length); save(); render(); };
 }
+/* 控制者介面整個搬到右下角浮動視窗（2026-11-05 Ming）：頁面上回空，內容由 npcInner 畫進 #bkpanel */
 function npcBox(s, idx){
   if(CONFIG.testMode) state.npc=true;
-  if(!state.npc) return '';
-  return `<div class="npc nes-container is-rounded"><h3>控制者介面</h3><div class="row">
+  return '';
+}
+function npcInner(s, idx){
+  return `<div class="npc"><div class="row">
     <button class="nes-btn is-warning btn small" id="npcpass">這關直接過</button>
     <button class="nes-btn btn small" id="npcback" ${idx===0?'disabled':''}>回上一關</button>
     <button class="nes-btn btn small" id="npcredo">這關重來</button>
-    ${CONFIG.testMode?'':'<button class="nes-btn btn small" id="npcclose">關閉介面</button>'}
+    ${CONFIG.testMode?'':'<button class="nes-btn btn small" id="npcclose">鎖起頁面</button>'}
   </div><div class="row" style="margin-top:8px">
     <button class="nes-btn is-primary btn small" id="tbBack">◀ 上一頁</button>
     <button class="nes-btn is-primary btn small" id="tbNext">下一頁 ▶</button>
@@ -1164,7 +1178,7 @@ function npcBox(s, idx){
   ${s.type==='firebadge' && !(state.extra[s.id+'_fb']||{}).summoned?`<div class="row" style="margin-top:8px"><button class="nes-btn is-warning btn small" id="npcL" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('winter')?'disabled':''}>完成左半</button><button class="nes-btn is-warning btn small" id="npcR" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('flower')?'disabled':''}>完成右半</button></div>`:''}
   ${s.type==='spot' && ['look','find'].includes((state.extra[s.id+'_quiz']||{step:'look'}).step)?'<button class="nes-btn is-warning btn small" id="npcphoto" style="margin-top:8px;width:100%">完成這張圖</button>':''}
   ${s.type==='firebadge'?'<p class="tag" id="ardbg" style="margin:8px 0 0">AR：未啟動</p>':''}
-  ${answerNote(s)}<p class="tag" style="margin-top:8px">5 碼：${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}　櫃號：${CONFIG.lockerNumber}</p></div>`;
+  ${answerNote(s)}<p class="tag" style="margin-top:8px">頁面代號：${pageKey()}　5 碼：${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}　櫃號：${CONFIG.lockerNumber}</p></div>`;
 }
 /* 控制者看的解答（依關卡型別）；要輸入的答案附「複製」鈕 */
 function answerNote(s){
@@ -1183,7 +1197,8 @@ function answerNote(s){
   if(!items.length) return '';
   return `<div class="ans">${items.map(it=>`<div class="ans-row"><span class="tag">${it.label}：<b>${it.value}</b></span>${it.copy?`<button class="nes-btn btn small copy" data-copy="${it.value}">複製</button>`:''}</div>`).join('')}</div>`;
 }
-function bindNpc(s, idx){
+function bindNpc(s, idx){ if(state.npc||CONFIG.testMode) openBackup(true); adoptSim(); }
+function bindNpcPanel(s, idx){
   if(!state.npc) return;
   $('#npcpass').onclick=()=>pass(s);
   const nw=$('#npcwin'); if(nw) nw.onclick=()=>{ if(window.__MG_WIN) window.__MG_WIN(); };   // 走遊戲自己的通關畫面
@@ -1200,18 +1215,11 @@ function bindNpc(s, idx){
     // 回上一關：這一關和要回去的那一關都清乾淨，從頭開始
     clearStage(s.id); state.stage=Math.max(0,idx-1); clearStage(CONFIG.stages[state.stage].id); save(); render(); };
   $('#npcreset').onclick=()=>{ if(confirm('全部重來？')) reset(); };
-  const nc=$('#npcclose'); if(nc) nc.onclick=()=>{ state.npc=false; save(); render(); };
+  const nc=$('#npcclose'); if(nc) nc.onclick=()=>{ /* 鎖起頁面：登出，下次點螺帽要重打密碼；按 ✕ 只是收起來不登出（Ming） */ state.npc=false; save(); const p=document.getElementById('bkpanel'); if(p) p.hidden=true; render(); };
 }
-function backupScanBox(){
-  if(state.npc) return '';
-  return `<details style="margin-top:10px"><summary class="tag">▸ 機器壞了？輸入備援密碼</summary>
-    <div class="row" style="margin-top:6px;align-items:stretch"><input class="nes-input" type="password" id="bkpin" inputmode="numeric" placeholder="備援密碼" style="flex:1;font-size:18px"><button class="nes-btn btn small" id="bkbtn" style="margin:0">進入</button></div><div id="bkmsg"></div></details>`;
-}
-function bindBackupScan(s){
-  const b=$('#bkbtn'); if(!b) return;
-  const go=()=>{ if($('#bkpin').value===CONFIG.npcPin){ state.npc=true; save(); render(); } else $('#bkmsg').innerHTML=bad('密碼不對。'); };
-  b.onclick=go; $('#bkpin').onkeydown=e=>{ if(e.key==='Enter') go(); };
-}
+/* 每關卡片底下的「機器壞了？輸入備援密碼」已移到右下角扳手鈕（2026-11-05 Ming）；呼叫處保留、這裡回空 */
+function backupScanBox(){ return ''; }
+function bindBackupScan(s){}
 function clearStage(id){
   delete state.done[id]; delete state.codes[id];
   Object.keys(state.extra).forEach(k=>{ if(k===id || k.startsWith(id+'_')) delete state.extra[k]; });
@@ -1275,6 +1283,7 @@ const TRIPOD_PAL={K:'#222',G:'#5a5a64',L:'#3a78c4',W:'#dcf0ff',R:'#e63946'};
 function poseHTML(){ const {LILY,LILY_PAL,MOMO,MOMO_PAL}=window.MG_SPRITES;
   return `<div class="pose" aria-label="莉莉和墨墨準備合照">${spriteSVG(LILY, LILY_PAL, '84px')}${spriteSVG(MOMO, MOMO_PAL, '84px')}<span class="pose-gap"></span>${spriteSVG(TRIPOD_ROWS, TRIPOD_PAL, '84px')}</div>`; }
 /* 旅程進度（左下角懸浮鈕）：一條很多圓形節點的線，小捷運停在目前所在的節點，完成的節點上方有那裡劇情的小圖示，點節點在下方看事件簡報（Ming） */
+const MRT_LOGO_ROWS=['............PPPPPPPPPPP.............', '...........PPPPPPPPPPPP.............', '...........PPPP...PPPPPPP...........', '..........PPPP...PPPPPPPPP..........', '.........PPPPP..PPPPPPPPPPP.........', '........PPPPP..PPPPPPPPPPPP.........', '....PPPPPPPPPPPPP......PPPPPPPPPPPPP', '...PPPPPPPPPPPPP......PPPPPPPPPPPPP.', '..PPPPPPPPPPPPP......PPPPPPPPPPPPP..', '..PPPPPPPPPPPPP......PPPPPPPPPPPPP..', '.PPPPPPPPPPPPP......PPPPPPPPPPPPP...', 'PPPPPPPPPPPPP......PPPPPPPPPPPPP....', '.........PPPPPPPPPPPP..PPPPP........', '.........PPPPPPPPPPP..PPPPP.........', '..........PPPPPPPPP...PPPP..........', '.....................PPPP...........', '.............PPPPPPPPPPPP...........', '.............PPPPPPPPPPP............'];   // 北捷標誌（像素、粉紅色），左下角旅程進度鈕用
 function progIcon(id){ const M=window.MG_SPRITES||{}, w='30px';
   const A={ s0:()=>spriteSVG(HAIR_ROWS,HAIR_PAL,w), g1:()=>M.LILY_RUN?spriteSVG(M.LILY_RUN,M.LILY_PAL,'24px'):'', s1:()=>spriteSVG(FAIRY_ROWS,FAIRY_PAL,w), g2:()=>spriteSVG(GUY_ROWS,GUY_PAL,'26px'),
     s3:()=>badgeSVG('',w), g3:()=>spriteSVG(MOMO_HUNGRY_ROWS,MOMO_HUNGRY_PAL,'36px'), s4:()=>`<span class="pg-px">${FOOD}</span>`, g4:()=>spriteSVG(MOMO_MYSTERY_ROWS,MOMO_EDITOR_PAL,'34px'),
@@ -1283,22 +1292,143 @@ function progIcon(id){ const M=window.MG_SPRITES||{}, w='30px';
   try{ return (A[id]||(()=>''))(); }catch(e){ return ''; } }
 function stageBrief(s){ const t=[s.intro,s.story,s.arriveStory,state.done[s.id]?s.litStory:null].filter(Boolean).map(x=>String(x).replace(/<[^>]+>/g,''));
   if(s.type==='game' && !t.length) t.push(s.sub); return t.join('\n'); }
+/* 旅程進度裡「目前這一站」顯示的提示（不洩漏答案） */
+/* 每一頁自己的提示（Ming 一頁一頁填）：key＝「關卡 id:這頁主按鈕的 id」，控制者介面最下面會顯示目前這頁的代號；沒填的頁先用下面整關的 STAGE_TIPS */
+const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{heart}」＝像素愛心
+  's0:got':['可以色色'],
+  's0:photo':['GO！'],
+  's0:lit':['點燃蠟燭了！'],
+  's0:go':['貓毛想帶妳去哪裡呢？'],
+  'g1:play':['秘密任務進行中'],
+  'g1:arrive':['要貓毛過敏了'],
+  's1:go':['圖書館內請輕聲細語'],
+  's1:sit':['找個地方坐下解謎'],
+  's1:riddle':['這麼簡單的謎題不用提示'],
+  's1:riddle_ok':['這麼簡單的謎題不用提示'],
+  's1:code':['原本 9 位數都要用解的，已經放水放成海了'],
+  's1:code_ok':['原本 9 位數都要用解的，已經放水放成海了'],
+  's1:find':['不在 5 樓'],
+  's1:lit':['點燃蠟燭了！'],
+  'g2:play':['英文歌打中文翻譯也可以'],
+  'g2:arrive':['街嘻黨Break it down'],
+  's3:scan':['左半：藏在季節內','右半：藏在一朵花內'],
+  's3:summon':['左半：藏在季節內','右半：藏在一朵花內'],
+  's3:nextl':['左半：藏在季節內','右半：藏在一朵花內'],
+  's3:lit':['點燃蠟燭了！'],
+  's3:go':['肚子餓了！'],
+  'g3:play':['秘密任務進行中'],
+  'g3:arrive':['咕嚕咕嚕'],
+  's4:pre':['要好吃喔，飲料或冰也可以啦'],
+  's4:photo':['好吃！'],
+  's4:lit':['點燃蠟燭了！'],
+  's4:go':['會是誰呢？'],
+  'g4:play':['秘密任務進行中'],
+  'g4:arrive':['莉莉加油！'],
+  's5d:ok':['IG 總編：記得退追蹤'],
+  's5d:lit':['點燃蠟燭了！'],
+  's5d:go':['東區 東區'],
+  'm1:photo':['秘密任務進行中'],
+  'm1:next':['ㄏㄏ'],
+  'm1:arrive':['趕緊前往！'],
+  's6:here':['在藍線 不在咖啡線'],
+  's6:lit':['點燃蠟燭了！'],
+  's6:go':['踏上歸途'],
+  'g5:play':['秘密任務進行中'],
+  'g5:arrive':['快到家了！'],
+  's7:inject':['尊爵不凡的金色蠟燭'],
+  's7:gstart':['燃燒吧！！！'],
+  's7:goldok':['燃燒吧！！！'],
+  's7:wished':['請許下最棒的願望！'],
+  's7:gocode':['請許下最棒的願望！'],
+  's7:next':['1 1 5 2 0 莉莉我愛妳'],
+  's9:photo':['最後的秘密任務進行中'],
+  's9:openletter':['{heart}'],
+  's9:cert':['{heart}'],
+  's9:end':['生日快樂！！！'],
+};
+function tipHTML(t){ return t.replace('{heart}', ()=>spriteSVG(HEART_ROWS,{R:'#e63946'},'26px','style="vertical-align:middle"')); }
+function pageKey(){ const s=CONFIG.stages[state.stage], m=document.querySelector('#main'); if(!m) return s.id+':-';
+  // 先認「通用頁型」：同一種頁可能由不同程式畫（按鈕名稱不一樣），用畫面特徵認才穩
+  if(m.querySelector('.is-arrive') && s.type!=='library') return s.id+':arrive';   // 已抵達 X
+  if(m.querySelector('.secret')) return s.id+':number';                            // 秘密數字
+  if(/成功點亮第/.test(m.textContent)) return s.id+':lit';                           // 點亮蠟燭
+  if(m.querySelector('.go-train')) return s.id+':go';                              // 請前往 X 並在路上進行秘密任務
+  if(m.querySelector('input[type=file]#file')) return s.id+':photo';               // 拍合照（上傳前後同一頁）
+  if(s.type==='library') return s.id+':'+(state.extra[s.id+'_lib']||'go');         // 圖書館：照解謎步驟分頁
+  if(s.type==='game' && m.querySelector('#gamebox')) return s.id+':play';           // 小遊戲畫面（打贏前後同一頁）
+  const b=m.querySelector('.nes-btn[id]:not(.small)'); return s.id+':'+(b?b.id:'end'); }
+function pageTips(){ const k=pageKey(); if(PAGE_TIPS[k]) return PAGE_TIPS[k];
+  const s=CONFIG.stages[state.stage]; if(s.type==='game' && document.querySelector('#main .secret')) return [`獲得第 ${CODE_ORDER.indexOf(s.id)+1} 個秘密數字：${state.codes[s.id]}`];   // 秘密數字頁一律這樣（Ming）
+  return null; }   // 還沒填的頁不顯示提示（不再退回整關的 STAGE_TIPS，免得格式混在一起）
+/* 舊的整關提示：已不顯示，只留著當填每頁提示的參考 */
+const STAGE_TIPS={
+  s0:['莉莉加油！'],
+  g1:['秘密任務進行中。'],
+  s1:['跟著貓毛從 2 號出口出站，到台北市立圖書館總館。','找到小精靈，解開 2 道謎題。','照索書號在書架上找到那本書。'],
+  g2:['秘密任務進行中。'],
+  s3:['地點：一半在站內、一半在站外。','左半：藏在牆上的季節。','右半：藏在一朵大花內。','打開異次元觀測器，對準就會找到。'],
+  g3:['秘密任務進行中。'],
+  s4:['去妳最熟悉的地方，挑一個妳覺得好吃的食物帶列車長去吃。','列車長吃飽後，拍一張「好好吃！」合照。'],
+  g4:['秘密任務進行中。'],
+  s5d:['妳是模特兼動作指導，IG 總編只能照妳的話拍。','拍到總編給過的照片，他就會幫妳點燃蠟燭。'],
+  m1:['跟列車長拍一張「秘密任務！」合照。'],
+  s6:['依序找到 5 張照片拍的地點。','把照片跟現場對照，用眼睛準星對準不一樣的地方，按「偵查」。','全部看破後，丟出胖貓徽章打倒次元惡魔。'],
+  g5:['秘密任務進行中。'],
+  s7:['把手掌放在金色蠟燭上方，上下擺動 10 次注入魔力。','許下 3 個願望後吹熄蠟燭。','煙霧聚成的數字就是寶藏的座標。'],
+  s9:['最後的秘密任務：跟列車長拍一張「生日快樂！」合照。'] };
 let progSel=null;
 function progPanel(){
   const cur=state.stage, nodes=CONFIG.stages.map((x,i)=>{ const done=!!state.done[x.id]&&i!==cur, here=i===cur;
     return `<button class="pg-node ${done?'done':''} ${here?'here':''} ${x.transit?'tr':''} ${progSel===i?'sel':''}" data-pg="${i}" ${done||here?'':'disabled'} style="--lc:${LINE[x.line]}">
-      <span class="pg-top">${here?`<span class="pg-train">${spriteSVG(TRAIN_ROWS,TRAIN_PAL,'40px')}</span>`:done?progIcon(x.id):''}</span><i class="pg-dot"></i><span class="pg-name">${x.transit?'移動中':x.name}</span></button>`; }).join('');
+      <span class="pg-top">${done?progIcon(x.id):''}</span><i class="pg-dot"></i><span class="pg-name">${done||here?(x.transit?'移動中':x.name):''}</span></button>`; }).join('');
   const sel=progSel!=null?CONFIG.stages[progSel]:null;
-  return `<div class="pg-head"><b>旅程進度</b><button class="pg-x" id="pgx" aria-label="關閉">✕</button></div>
-    <div class="pg-track" id="pgtrack"><i class="pg-line"></i>${nodes}</div>
-    <div class="pg-brief">${sel?`<p class="pg-bt" style="color:${LINE[sel.line]}">${sel.name}</p><p class="tag" style="margin:0 0 6px">${sel.sub||''}</p><p style="margin:0;white-space:pre-wrap">${stageBrief(sel)}</p>`:'<p class="tag" style="margin:0">點節點看那一站發生的事。</p>'}</div>`; }
-function openProgress(){ let p=document.getElementById('progpanel'); if(!p){ p=document.createElement('div'); p.id='progpanel'; p.className='nes-container is-rounded'; document.body.appendChild(p); }
+  return `<div class="pg-head"><div><b style="display:inline-flex;align-items:center;gap:6px">${spriteSVG(MRT_LOGO_ROWS,{P:'#ff5c9a'},'24px')}旅程進度</b><p class="tag" style="margin:0">可點選已完成的站點回顧</p></div><button class="pg-x" id="pgx" aria-label="關閉">✕</button></div>
+    <div class="pg-track" id="pgtrack"><i class="pg-line"></i>${nodes}<i class="pg-rail" style="width:${CONFIG.stages.length*64}px"></i><span class="pg-train" style="left:${4+cur*64+32-30}px">${spriteSVG(TRAIN_ROWS,TRAIN_PAL,'60px')}</span></div>
+    <div class="pg-brief">${sel?`<p class="pg-bt" style="color:${LINE[sel.line]}">${sel.name}</p><p class="tag" style="margin:0 0 6px">${sel.sub||''}</p>${progSel===cur?(pageTips()?`<p class="pg-tip">提示</p><ul class="pg-tips">${pageTips().map(t=>`<li>${tipHTML(t)}</li>`).join('')}</ul>`:''):`<p style="margin:0;white-space:pre-wrap">${stageBrief(sel)}</p>`}`:'<p class="tag" style="margin:0">點節點看那一站發生的事。</p>'}</div>`; }
+function openProgress(keep){ let p=document.getElementById('progpanel'); if(!p){ p=document.createElement('div'); p.id='progpanel'; p.className='nes-container is-rounded'; document.body.appendChild(p); }
   if(progSel==null) progSel=state.stage;
+  const top=p.scrollTop, ot=p.querySelector('#pgtrack'), sl=ot?ot.scrollLeft:0;
   p.innerHTML=progPanel(); p.hidden=false;
   p.querySelector('#pgx').onclick=()=>{ p.hidden=true; };
-  p.querySelectorAll('[data-pg]').forEach(b=>b.onclick=()=>{ progSel=+b.dataset.pg; const sl=p.querySelector('#pgtrack').scrollLeft; openProgress(); p.querySelector('#pgtrack').scrollLeft=sl; });
-  const here=p.querySelector('.pg-node.sel')||p.querySelector('.pg-node.here'); if(here) here.scrollIntoView({inline:'center',block:'nearest'}); }
-function progButton(){ let b=document.getElementById('progbtn'); if(!b){ b=document.createElement('button'); b.id='progbtn'; b.className='progbtn'; b.setAttribute('aria-label','旅程進度'); b.innerHTML=spriteSVG(TRAIN_ROWS,TRAIN_PAL,'34px'); b.onclick=()=>{ progSel=state.stage; openProgress(); }; document.body.appendChild(b); }
+  p.querySelectorAll('[data-pg]').forEach(b=>b.onclick=()=>{ progSel=+b.dataset.pg; openProgress(true); });
+  const tr=p.querySelector('#pgtrack'); tr.style.scrollBehavior='auto';
+  if(keep){ tr.scrollLeft=sl; p.scrollTop=top; }   // 點節點、切頁重畫：上下、左右都停在原本看的位置
+  else { const n=p.querySelector('.pg-node.sel')||p.querySelector('.pg-node.here'); if(n) tr.scrollLeft=n.offsetLeft+n.offsetWidth/2-tr.clientWidth/2; }   // 打開時把目前那一站（捷運）捲到中間
+  tr.style.scrollBehavior=''; p._cur=state.stage; p._key=pageKey(); }
+/* 切頁時：展開中的旅程進度跟著更新內容但不關、位置不跑；備援小視窗原樣留著（輸入到一半的密碼也在） */
+function keepPanels(){ const p=document.getElementById('progpanel'); if(p && !p.hidden){ const moved=progSel===p._cur && p._cur!==state.stage; if(progSel===p._cur) progSel=state.stage; openProgress(true);
+    if(moved){ const tr=p.querySelector('#pgtrack'), n=p.querySelector('.pg-node.here'); if(tr&&n){ tr.style.scrollBehavior='auto'; tr.scrollLeft=n.offsetLeft+n.offsetWidth/2-tr.clientWidth/2; tr.style.scrollBehavior=''; } } }   /* 換站了 → 站點列捲到新的這站 */ if(state.npc||CONFIG.testMode) openBackup(true); adoptSim(); }
+/* 有些頁不是走 render() 換的（同一關裡直接改畫面，例：拍照 → 點亮 → 前往）：盯著 #main，頁面代號一變就更新旅程進度的提示 */
+let pgObsT=0;
+new MutationObserver(()=>{ if(pgObsT) return; pgObsT=requestAnimationFrame(()=>{ pgObsT=0; const p=document.getElementById('progpanel'); if(p && !p.hidden && p._key!==pageKey()) keepPanels(); }); }).observe(document.getElementById('main'),{childList:true,subtree:true});
+/* 右下角備援鈕（六角螺帽）：輸入備援密碼（npcPin）打開控制者介面；控制者介面開著時不顯示 */
+const NUT_ROWS=['........................', '........................', '......GGGGGGGGGGGG......', '.....GGGGGGGGGGGGGG.....', '.....GGGGGGGGGGGGGG.....', '....GGGGGGGGGGGGGGGG....', '....GGGGGGGGGGGGGGGG....', '...GGGGGGG....GGGGGGG...', '...GGGGGG......GGGGGG...', '..GGGGGG........GGGGGG..', '..GGGGGG........GGGGGG..', '.GGGGGGG........GGGGGGG.', '.GGGGGGG........GGGGGGG.', '..GGGGGG........GGGGGG..', '..GGGGGG........GGGGGG..', '...GGGGGG......GGGGGG...', '...GGGGGGG....GGGGGGG...', '....GGGGGGGGGGGGGGGG....', '....GGGGGGGGGGGGGGGG....', '.....GGGGGGGGGGGGGG.....', '.....GGGGGGGGGGGGGG.....', '......GGGGGGGGGGGG......', '........................', '........................'];   // 六角螺帽（Ming 2026-11-05 定；編輯器 像素編輯器_螺帽.html）   // 扳手：右上開口扳頭、左下圓環＋六角孔（Ming 給的參考圖）
+function openBackup(keep){ let p=document.getElementById('bkpanel'); if(!p){ p=document.createElement('div'); p.id='bkpanel'; p.className='nes-container is-rounded'; p.hidden=true; document.body.appendChild(p); }
+  const npc=!!(state.npc||CONFIG.testMode), mode=npc?'npc':'pin', ic=spriteSVG(NUT_ROWS,{G:'#4a4a4a'},'22px'), top=p.scrollTop;
+  if(keep===true && p.hidden){ if(mode==='pin') return; keep='quiet'; }   // 收起來時控制鈕也要跟著換到目前這關（不然「這關直接過」會作用在舊的那關）
+  if(keep===true && mode==='pin' && p.dataset.mode==='pin') return;   // 密碼打到一半不重畫
+  const idx=state.stage, s=CONFIG.stages[idx];
+  if(mode==='npc'){
+    if(p.dataset.mode!=='npc'){ p.innerHTML=`<div class="pg-head"><div><b style="display:inline-flex;align-items:center;gap:6px">${ic}控制者介面</b></div><button class="pg-x" id="bkx" aria-label="關閉">✕</button></div><div class="npc" id="bksim"></div><div id="bknpc"></div>`; p.querySelector('#bkx').onclick=()=>{ p.hidden=true; }; }
+    p.querySelector('#bknpc').innerHTML=npcInner(s, idx); p.dataset.mode='npc'; if(keep!=='quiet') p.hidden=false; bindNpcPanel(s, idx); adoptSim(); p.scrollTop=top; return; }
+  p.innerHTML=`<div class="pg-head"><div><b style="display:inline-flex;align-items:center;gap:6px">${ic}機器壞了？</b><p class="tag" style="margin:0">輸入備援密碼，打開控制者介面</p></div><button class="pg-x" id="bkx" aria-label="關閉">✕</button></div>
+    <div class="row" style="margin-top:6px;align-items:stretch"><input class="nes-input" type="password" id="fbkpin" inputmode="numeric" placeholder="備援密碼" style="flex:1;font-size:18px"><button class="nes-btn btn small" id="fbkgo" style="margin:0">進入</button></div><div id="fbkmsg"></div>`;
+  p.dataset.mode='pin'; p.hidden=false;
+  const go=()=>{ if(p.querySelector('#fbkpin').value===CONFIG.npcPin){ state.npc=true; save(); render(); openBackup(); } else p.querySelector('#fbkmsg').innerHTML=bad('密碼不對。'); };   // 登入後留在浮動視窗裡，直接換成控制者介面
+  p.querySelector('#bkx').onclick=()=>{ p.hidden=true; }; p.querySelector('#fbkgo').onclick=go; p.querySelector('#fbkpin').onkeydown=e=>{ if(e.key==='Enter') go(); };
+  p.querySelector('#fbkpin').focus(); }
+/* 頁面上的「控制者：模擬…」鈕（各關自己綁好事件）搬進浮動視窗最上面；結尾頁的「全部重來」視窗裡已有，頁面那顆拿掉 */
+function adoptSim(){
+  const btns=[...document.querySelectorAll('button[id^="sim"]')].filter(b=>!b.closest('#bkpanel'));
+  const dupe=[...document.querySelectorAll('#npcreset')].filter(b=>!b.closest('#bkpanel')); dupe.forEach(b=>b.remove());
+  if(!(state.npc||CONFIG.testMode)){ btns.forEach(b=>b.remove()); return; }
+  if(!document.getElementById('bkpanel')) openBackup('quiet');
+  const box=document.getElementById('bksim'); if(!box) return;
+  if(btns.length) box.innerHTML='';
+  btns.forEach(b=>{ b.style.marginTop='0'; b.style.width='100%'; b.style.marginBottom='8px'; box.appendChild(b); }); }
+function backupButton(){ let b=document.getElementById('bkfab'); if(!b){ b=document.createElement('button'); b.id='bkfab'; b.className='bkbtn'; b.setAttribute('aria-label','備援'); b.innerHTML=spriteSVG(NUT_ROWS,{G:'#4a4a4a'},'26px'); b.onclick=openBackup; document.body.appendChild(b); }
+  b.hidden=!state.started; }
+function progButton(){ let b=document.getElementById('progbtn'); if(!b){ b=document.createElement('button'); b.id='progbtn'; b.className='progbtn'; b.setAttribute('aria-label','旅程進度'); b.innerHTML=spriteSVG(MRT_LOGO_ROWS,{P:'#ff5c9a'},'38px'); b.onclick=()=>{ progSel=state.stage; openProgress(); }; document.body.appendChild(b); }
   b.hidden=!state.started || document.body.classList.contains('noprog'); }
 /* 「請前往」上方的捷運（跟拍貼最底下同一台） */
 function goTrain(s){ if(s&&s.goHair) return `<div class="go-train hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '96px', 'class="mx" aria-label="發光的貓毛"')}</div>`;   // 有貓毛的那頁：貓毛放在捷運的位置
@@ -1332,11 +1462,11 @@ const MOMO_EDITOR_PAL={B:'#111',G:'#5a4a40',S:'#dcb48e',E:'#222',M:'#8a5a44',R:'
 const RIFT_FRAMES=[['...........PVC..........', '............PVC.........', '...........PVVVC........', '..........PVVVC.........', '........PPVVVC..........', '.......PVVVVVC..........', '.......PVVVVVCC.........', '.......PVVVVVVVC........', '........PVVVVVVVC.......', '.........PVVWVVVVCC.....', '.........PVVVVVVVVVC....', '.........PVVVVWVVVVC....', '........PVVVVVVVVVC.....', '.......PVVVVVWVVVC......', '......PVVVVVVVVVC.......', '......PVVVVVVVCC........', '......PVVVVWVVC.........', '.......PVVVVVVVC........', '........PPVVVVVC........', '..........PVWVVVC.......', '..........PVVVVVC.......', '..........PVVVCC........', '..........PVVVC.........', '.........PVVVC..........', '..........PVC...........', '...........PVC..........'], ['...........PVC..........', '............PVC.........', '............PVC.........', '...........PVC..........', '.........PPVC...........', '........PVVVC...........', '........PVVVCC..........', '........PVVVVVC.........', '.........PVVVVVC........', '..........PVVVVVC.......', '...........PVVVVVC......', '...........PVVVVVC......', '..........PVVVVVC.......', '.........PVVVVVC........', '........PVVVVVC.........', '.......PVVVVVC..........', '.......PVVVVVC..........', '........PVVVVVC.........', '.........PPVVVC.........', '...........PVVVC........', '...........PVVVC........', '...........PVCC.........', '...........PVC..........', '..........PVC...........', '..........PVC...........', '...........PVC..........'], ['........................', '............PPC.........', '.............PC.........', '............PCC.........', '...........PCC..........', '..........PCC...........', '..........PC............', '..........PPC...........', '...........PPC..........', '............PPC.........', '.............PPC........', '..............PC........', '.............PCC........', '............PCC.........', '...........PCC..........', '..........PCC...........', '..........PC............', '..........PPC...........', '...........PPC..........', '............PPC.........', '.............PC.........', '............PCC.........', '............PC..........', '...........PCC..........', '...........PC...........', '........................']];   // 空間裂縫三幀：張開／半開／合成紅藍一條線（24×26）
 const RIFT_SHARDS=['........................', '........................', '........................', '........................', '....................C...', '...PP...................', '....P...................', '........................', '...................CC...', '........................', '........................', '........................', '........................', '........................', '........................', '..C.....................', '........................', '.....................PP.', '........................', '........................', '........................', '.....P..................', '..................CC....', '...................C....', '........................', '........................'];   // 裂縫旁漂浮的碎片（另一層）
 const RIFT_PAL={V:'#140a22',P:'#ff2a6d',C:'#05d9e8',W:'#fff'};
-const GUY_ROWS=['...HHhHHHH...', '..HHhHHhHHH..', '.HHSHHHHhHHH.', '.HSSSSSSSHHH.', 'SKKKKSSKKKKS.', 'SKSEKKKKESKS.', 'SKKKKSSKKKKS.', '.SSSSMMSSSS..', '..SSSSSSSS...', '..TTTTTTTT...', '.TTTTTTTTTTSS', '.STTTTTTTT.S.', '..JJJJJJJJ...', '..JJJ..JJJ...', '..BBB..BBB...'];   // 好心的路人：微捲三七分油頭、黑框眼鏡、深灰素 T、牛仔褲，拿直立望遠鏡（17×15，比墨墨矮）
+const GUY_ROWS=['.............', '.............', '......HHH....', '...HHhHhHH...', '..HHhHHhHHH..', '.HHSHHHHhHHH.', '.HSSSSSSSHHH.', 'SKKKKSSKKKKS.', 'SKSEKKKKESKS.', 'SKKKKSSKKKKS.', '.SSSSMMSSSS..', '..SSSSSSSS...', '.TTTTTTTTTTSS', '.STTTTTTTT...', '.STTTTTTTT...', '..JJJJJJJJ...', '..JJJ..JJJ...', '..BBB..BBB...'];   // 好心的路人：微捲三七分油頭、黑框眼鏡、深灰素 T、牛仔褲，拿直立望遠鏡（17×15，比墨墨矮）
 const GUY_TEL=['KKKKKKK', 'K.....K', 'KWTTTTK', 'KWTTTTK', 'KWTTTTK', '.KWTTK.', '.KWTTK.', '.KtttK.', '.KWTTK.', '.KtttK.', '.KWTTK.', '.KWTTK.', '..KTK..', '..KTK..', '..KTK..', '..KKK..'];   // 望遠鏡：直接用老太太原本那支（一模一樣）
 const GUY_TEL_LENS=['.......', '.ROYGB.', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......'];
 const GUY_LENS_UNUSED=['KKKKKKK', 'K.....K', 'KWTTTTK', 'KWTTTTK', 'KWTTTTK', '.KWTTK.', '.KWTTK.', '.KtttK.', '.KWTTK.', '.KtttK.', '.KWTTK.', '.KWTTK.', '..KTK..', '..KTK..', '..KTK..', '..KKK..'];   // 望遠鏡鏡頭：七彩、會變色發光
-const GUY_PAL={H:'#2b2220',h:'#55443a',S:'#e8c19a',K:'#111',E:'#3a2a2a',M:'#a0654f',T:'#4a4a50',J:'#3d5a8a',B:'#222',G:'#cfd3da',D:'#8a8f99'};
+const GUY_PAL={H:'#2b2220',h:'#55443a',S:'#e8c19a',K:'#111',E:'#3a2a2a',M:'#a0654f',T:'#4a4a50',J:'#c9c9c9',B:'#222',G:'#cfd3da',D:'#8a8f99'};
 const ARRIVE_ART={ passerby:()=>`<div class="passerby" aria-label="拿著七彩望遠鏡的路人"><div class="pb-tel">${spriteSVG(GUY_TEL, GRANNY_PAL, '42px', 'aria-hidden="true"')}<div class="g-edge">${spriteSVG(GUY_TEL_LENS, RAINBOW_PAL, '42px', 'aria-hidden="true"')}</div></div><div class="pb-guy">${spriteSVG(GUY_ROWS, GUY_PAL, '156px', 'aria-hidden="true"')}</div></div>`,
   rainbowCandle:()=>`<div class="rc" aria-label="散發七彩光暈的蠟燭"><div class="rc-candle">${candleHTML('lit')}</div></div>`,
   rift:()=>`<div class="rift" aria-label="空間裂縫"><div class="rf-body">${RIFT_FRAMES.map((f,i)=>`<div class="rf-f rf-f${i}">${spriteSVG(f, RIFT_PAL, '168px', 'aria-hidden="true"')}</div>`).join('')}</div><div class="rf-shards">${spriteSVG(RIFT_SHARDS, RIFT_PAL, '168px', 'aria-hidden="true"')}</div></div>`,
@@ -1465,7 +1595,7 @@ function render(){
   if(gameCleanup){ gameCleanup(); gameCleanup=null; }
   if(state.done[s.id] && s.type!=='final' && !((s.type==='game'||s.type==='firebadge'||s.type==='photo_task') && !state.extra[s.id+'_left']) && !s.finalPhoto){ state.stage=Math.min(idx+1, CONFIG.stages.length-1); save(); return render(); }
   const r = { photo_task:renderPhotoTask, firebadge:renderFireBadge, game:renderGame, library:renderLibrary, ticket_puzzle:renderTicketPuzzle, spot:renderSpot, gps_qr:renderGpsQr, ar:renderAR, compass_color:renderCompassColor, food:renderFood, sound_puzzle:renderSoundPuzzle, rainbow:renderRainbow, director:renderDirector, final:renderFinal }[s.type];
-  const y=window.scrollY; r(s, idx); replayBar(); progButton();
+  const y=window.scrollY; r(s, idx); replayBar(); progButton(); backupButton(); keepPanels();
   window.scrollTo(0, Math.min(y, Math.max(0, document.documentElement.scrollHeight-window.innerHeight)));   // 按按鈕換頁後維持原本的捲動位置（Ming）；新頁比較短就停在最底
 }
 
@@ -2226,7 +2356,7 @@ function renderFireBadge(s, idx){
     :`<div class="fb-slots"><div class="fb-slot L ${has('winter')?'got':''}">${has('winter')?badgeSVG('L','64px'):'?'}</div><div class="fb-slot R ${has('flower')?'got':''}">${has('flower')?badgeSVG('R','64px'):'?'}</div></div>
       <div class="frame" id="cam" style="margin-top:14px"></div>
       <button class="nes-btn is-primary btn" id="scan" style="margin-top:14px">開啟異次元觀測器</button>`}
-    <div class="letter nes-container is-rounded" style="font-size:17px;margin-top:14px">${(s.hints||[]).join('\n')}</div>   <!-- 提示直接全部顯示，放在按鈕下方（Ming） -->
+    <!-- 頁面上的地點提示已拿掉（2026-11-05 Ming），改放旅程進度的每頁提示 -->
     ${backupScanBox()}${npcBox(s,idx)}`);
   const perm=$('#perm'); if(perm) perm.onclick=async()=>{
     try{ if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission==='function'){ const r=await DeviceOrientationEvent.requestPermission(); if(r!=='granted') throw new Error('沒有允許'); }
