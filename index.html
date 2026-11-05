@@ -257,7 +257,7 @@
   .pg-node.sel .pg-name{color:var(--red)}
   .pg-name{font-size:11px;margin-top:2px;line-height:1.2;text-align:center;width:60px}
   .pg-rail{position:absolute;left:4px;bottom:4px;height:14px;background:linear-gradient(#6b6b6b 0 3px,transparent 3px 11px,#6b6b6b 11px 14px),repeating-linear-gradient(90deg,#a3a3a3 0 5px,transparent 5px 14px)}   /* 鐵軌（全灰） */
-  .pg-train{position:absolute;bottom:12px;animation:pgtrain .8s steps(2) infinite alternate}   /* 小捷運停在鐵軌上、目前那一站的位置 */
+  .pg-train{position:absolute;bottom:12px;animation:pgtrain .8s steps(2) infinite alternate;cursor:pointer;z-index:2}   /* 小捷運停在鐵軌上、目前那一站的位置 */
   @keyframes pgtrain{from{transform:translateY(0)}to{transform:translateY(-2px)}}
   .pg-brief{margin-top:6px;padding-top:4px;font-size:15px}
   .pg-bt{font-size:18px;margin:0}
@@ -1290,7 +1290,25 @@ function progIcon(id){ const M=window.MG_SPRITES||{}, w='30px';
     s5d:()=>spriteSVG(MOMO_EDITOR_ROWS,MOMO_EDITOR_PAL,'34px'), m1:()=>spriteSVG(RIFT_FRAMES[0],RIFT_PAL,'26px'), s6:()=>spriteSVG(DEVIL_ROWS,DEVIL_PAL,'26px'), g5:()=>`<span class="pg-candle">${candleHTML('lit')}</span>`,
     s7:()=>`<span class="pg-candle">${candleHTML('lit gold')}</span>`, s9:()=>spriteSVG(ENVELOPE_ROWS,{K:'#000',W:'#fff8e8',S:'#e8d6b6',F:'#f0e2c6',R:'#e03131',H:'#ffaaaa'},'32px') };
   try{ return (A[id]||(()=>''))(); }catch(e){ return ''; } }
-function stageBrief(s){ const t=[s.intro,s.story,s.arriveStory,state.done[s.id]?s.litStory:null].filter(Boolean).map(x=>String(x).replace(/<[^>]+>/g,''));
+/* 每一站的回顧（旅程進度點已完成的站看到的）：Ming 用 回顧編輯器.html 填；沒填的站照下面自動組 */
+const STAGE_REVIEWS={   // 2026-11-05 Ming 用 回顧編輯器.html 填的；「{heart}」＝像素愛心
+  s0:"出發後拍了一張可愛的合照，列車長用魔力幫妳點燃了 1 根蠟燭。",
+  g1:"跟列車長打了一場頂尖對決...嗎？",
+  s1:"跟隨貓毛前往圖書館，破解謎題後，小精靈幫妳點燃了 1 根蠟燭，並告訴妳，原來胖貓被封印在大安森林公園，胖貓可以幫妳點燃蠟燭。",
+  g2:"莉莉呀～幸福不在遠方～\n在路途上，遇到 E 姓路人，獲得異次元觀測器，出發解救胖貓。",
+  s3:"成功找到徽章，解封了胖貓，胖貓幫妳點燃 1 根蠟燭，並告訴妳，危急時刻丟出徽章，會有好事發生。",
+  g3:"30 歲了，記憶莉還是沒問題的，但列車長肚子餓了。",
+  s4:"吃了好吃的食物，列車長再次幫妳點燃了 1 根蠟燭。",
+  g4:"成為超級莉莉了！",
+  s5d:"拍了一張絕世美照， IG 總編替妳點燃了蠟燭，同時也得知，忠孝復興出現一隻邪惡的惡魔。",
+  m1:"跟列車長拍了合照，空間已經開始不穩定了！",
+  s6:"次元惡魔想用虛假的空間替換現實，但是被妳阻止了，召喚胖貓爆揍了惡魔，成功點燃蠟燭。",
+  g5:"隨著麟光越來越近，蠟燭的魔力越來越強了。",
+  s7:"得到金色的蠟燭，只能由妳自己注入魔力點燃！",
+  s9:"{heart}",
+};
+function stageBrief(s){ if(STAGE_REVIEWS[s.id]!=null) return STAGE_REVIEWS[s.id]; return autoBrief(s); }
+function autoBrief(s){ const t=[s.intro,s.story,s.arriveStory,state.done[s.id]?s.litStory:null].filter(Boolean).map(x=>String(x).replace(/<[^>]+>/g,''));
   if(s.type==='game' && !t.length) t.push(s.sub); return t.join('\n'); }
 /* 旅程進度裡「目前這一站」顯示的提示（不洩漏答案） */
 /* 每一頁自己的提示（Ming 一頁一頁填）：key＝「關卡 id:這頁主按鈕的 id」，控制者介面最下面會顯示目前這頁的代號；沒填的頁先用下面整關的 STAGE_TIPS */
@@ -1382,15 +1400,16 @@ function progPanel(){
     return `<button class="pg-node ${done?'done':''} ${here?'here':''} ${x.transit?'tr':''} ${progSel===i?'sel':''}" data-pg="${i}" ${done||here?'':'disabled'} style="--lc:${LINE[x.line]}">
       <span class="pg-top">${done?progIcon(x.id):''}</span><i class="pg-dot"></i><span class="pg-name">${done||here?(x.transit?'移動中':x.name):''}</span></button>`; }).join('');
   const sel=progSel!=null?CONFIG.stages[progSel]:null;
-  return `<div class="pg-head"><div><b style="display:inline-flex;align-items:center;gap:6px">${spriteSVG(MRT_LOGO_ROWS,{P:'#ff5c9a'},'24px')}旅程進度</b><p class="tag" style="margin:0">可點選已完成的站點回顧</p></div><button class="pg-x" id="pgx" aria-label="關閉">✕</button></div>
+  return `<div class="pg-head"><div><b style="display:inline-flex;align-items:center;gap:6px">${spriteSVG(MRT_LOGO_ROWS,{P:'#ff5c9a'},'24px')}旅程進度</b><p class="tag" style="margin:0">可點選已完成的站點回顧，點選捷運回到當前進度</p></div><button class="pg-x" id="pgx" aria-label="關閉">✕</button></div>
     <div class="pg-track" id="pgtrack"><i class="pg-line"></i>${nodes}<i class="pg-rail" style="width:${CONFIG.stages.length*64}px"></i><span class="pg-train" style="left:${4+cur*64+32-30}px">${spriteSVG(TRAIN_ROWS,TRAIN_PAL,'60px')}</span></div>
-    <div class="pg-brief">${sel?`<p class="pg-bt" style="color:${LINE[sel.line]}">${sel.name}</p><p class="tag" style="margin:0 0 6px">${sel.sub||''}</p>${progSel===cur?(pageTips()?`<p class="pg-tip">提示</p><ul class="pg-tips">${pageTips().map(t=>`<li>${tipHTML(t)}</li>`).join('')}</ul>`:''):`<p style="margin:0;white-space:pre-wrap">${stageBrief(sel)}</p>`}`:'<p class="tag" style="margin:0">點節點看那一站發生的事。</p>'}</div>`; }
+    <div class="pg-brief">${sel?`<p class="pg-bt" style="color:${LINE[sel.line]}">${sel.name}</p><p class="tag" style="margin:0 0 6px">${sel.sub||''}</p>${progSel===cur?(pageTips()?`<ul class="pg-tips">${pageTips().map(t=>`<li>${tipHTML(t)}</li>`).join('')}</ul>`:''):`<p style="margin:0;white-space:pre-wrap">${tipHTML(stageBrief(sel))}</p>`}`:'<p class="tag" style="margin:0">點節點看那一站發生的事。</p>'}</div>`; }
 function openProgress(keep){ let p=document.getElementById('progpanel'); if(!p){ p=document.createElement('div'); p.id='progpanel'; p.className='nes-container is-rounded'; document.body.appendChild(p); }
   if(progSel==null) progSel=state.stage;
   const top=p.scrollTop, ot=p.querySelector('#pgtrack'), sl=ot?ot.scrollLeft:0;
   p.innerHTML=progPanel(); p.hidden=false;
   p.querySelector('#pgx').onclick=()=>{ p.hidden=true; };
   p.querySelectorAll('[data-pg]').forEach(b=>b.onclick=()=>{ progSel=+b.dataset.pg; openProgress(true); });
+  p.querySelector('.pg-train').onclick=()=>{ progSel=state.stage; openProgress(); };   // 點捷運：回到當前進度（站點列捲回目前這站）
   const tr=p.querySelector('#pgtrack'); tr.style.scrollBehavior='auto';
   if(keep){ tr.scrollLeft=sl; p.scrollTop=top; }   // 點節點、切頁重畫：上下、左右都停在原本看的位置
   else { const n=p.querySelector('.pg-node.sel')||p.querySelector('.pg-node.here'); if(n) tr.scrollLeft=n.offsetLeft+n.offsetWidth/2-tr.clientWidth/2; }   // 打開時把目前那一站（捷運）捲到中間
