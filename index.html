@@ -136,10 +136,10 @@
   .npc.nes-container{margin-top:10px;background:#fff3cd;padding:.8rem}
   .npc h3{margin:0 0 8px;font-size:13px;color:#8a5a00}
   .npc .row{display:flex;gap:6px}
-  .npc .ans{margin-top:8px}
-  .npc .ans-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
-  .npc .ans-row .tag{margin:0;word-break:break-all}
-  .npc .ans-row .copy{flex:0 0 auto;margin:0;font-size:12px;padding:2px 8px}
+  .npc .ans,.replay-bar .ans{margin-top:8px}
+  .npc .ans-row,.replay-bar .ans-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+  .npc .ans-row .tag,.replay-bar .ans-row .tag{margin:0;word-break:break-all}
+  .npc .ans-row .copy,.replay-bar .ans-row .copy{flex:0 0 auto;margin:0;font-size:12px;padding:2px 8px}
   .npc .row .btn.small{flex:1;margin:0;font-size:12px;padding:4px 2px;white-space:nowrap;text-align:center}
   .photo{width:100%;display:block;border:4px solid #000}
   /* 可拖曳調整位置的照片框（4:3，跟拍貼每格一樣） */
@@ -150,6 +150,11 @@
   .stripwrap .slot{position:absolute;border:0;outline:2px dashed #fff;outline-offset:-2px}
   .stripwrap .slot.pframe{border:0}
   .stripwrap .slot.empty{background:rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .replay-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .replay-list .nes-btn{margin:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;padding:6px 12px}
+  .replay-list .rl-name{font-size:16px}
+  .replay-list .tag{margin:0}
+  .replay-bar{margin-top:14px;background:#fff8e1}
   .slot .px{position:absolute;top:-8px;right:-8px;width:26px;height:26px;padding:0;border:3px solid #000;background:#e76e55;color:#fff;font:inherit;font-size:16px;line-height:18px;cursor:pointer;z-index:2}
   .nes-progress{height:14px;margin:4px 0 8px}
   .steps{display:flex;gap:4px;margin:0 0 10px}
@@ -171,17 +176,63 @@
   #testbar{position:fixed;left:0;right:0;bottom:0;z-index:50;display:flex;gap:8px;align-items:center;padding:8px 12px calc(env(safe-area-inset-bottom) + 8px);background:#f7d51d;border-top:4px solid #000}
   #testbar b{font-size:13px;white-space:nowrap}
   #testbar .nes-btn{flex:1;margin:0;font-size:14px;padding:4px 6px}
-  .fb-slots{display:flex;justify-content:center;gap:0;margin:10px 0}
-  .fb-slot{box-sizing:content-box;width:64px;height:128px;border:4px dashed #b9a98f;display:flex;align-items:center;justify-content:center;background:#fff9db}
+  /* 徽章區固定 128×128：左右半片各佔一半、中間不留縫，跟合成後的整枚徽章位置完全一樣（Ming） */
+  .fb-slots{position:relative;width:128px;height:128px;margin:14px auto}
+  .fb-slot{position:absolute;top:0;width:64px;height:128px;outline:4px dashed #b9a98f;outline-offset:-4px;display:flex;align-items:center;justify-content:center;background:#fff9db}
   .fb-slot svg{flex:none}   /* 槽內半片徽章要剛好是完整 128px 的一半（64×128），不被擠扁 */
-  .fb-slot.got{border-style:solid;border-color:#000}
-  .fb-slot.L{border-right-width:2px}.fb-slot.R{border-left-width:2px}
+  .fb-slot.L{left:0}.fb-slot.R{left:64px}
+  .fb-slot.got{outline:0;background:none}
+  .fb-slots .fb-whole{position:absolute;left:0;top:0;animation:fbglow .5s steps(4) infinite alternate}   /* 合成後只發光、不飄動，位置不變 */
   .fb-merge{display:flex;justify-content:center;margin:10px 0;animation:fbglow 1s steps(4) infinite alternate}
   .fb-tap{cursor:pointer;animation:fbglow .5s steps(4) infinite alternate, fbfloat 1.2s steps(6) infinite alternate}
   @keyframes fbfloat{from{transform:translateY(-8px)}to{transform:translateY(8px)}}   /* 合成後的徽章發光＋上下浮動，點它解封 */
   .hero{margin:30px 0}
   .hero>svg.mx{margin-left:auto;margin-right:auto}
   .hair-glow svg{animation:hairglow .9s steps(3) infinite alternate}
+  /* 抵達科技大樓：貓毛往前飛、莉莉在後面追（兩幀跑步交替） */
+  .pose{display:flex;justify-content:center;align-items:flex-end;margin:30px 0}
+  .pose svg{display:block}
+  .pose-gap{width:28px}
+  .go-train{display:flex;justify-content:center;margin:24px 0 0}
+  .go-train svg{display:block}
+  .chase{position:relative;width:280px;height:170px;margin:30px auto}
+  .chase .ch-lily{position:absolute;left:18px;bottom:0;animation:chbob .3s steps(1) infinite}
+  .chase .ch-lily svg{display:block}
+  .chase .ch-lily .f2{position:absolute;left:0;top:0;visibility:hidden;animation:devflip .3s steps(1) infinite}
+  .chase .ch-lily .f1{animation:devflip .3s steps(1) infinite reverse}
+  @keyframes chbob{0%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .chase .ch-hair{position:absolute;left:170px;top:6px;animation:chfly 1.2s steps(6) infinite alternate}
+  @keyframes chfly{from{transform:translate(0,6px)}to{transform:translate(18px,-6px)}}
+  .chase .ch-dash{position:absolute;height:4px;background:#e8d6b6;animation:chdash .6s steps(3) infinite}
+  @keyframes chdash{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-24px)}}
+  .rift{position:relative;width:168px}
+  .rift svg{display:block}
+  .rift .rf-body{position:relative}
+  .rift .rf-f{position:absolute;left:0;top:0}.rift .rf-f0{position:relative}
+  .rift .rf-f0{animation:rf0 4s step-end infinite}.rift .rf-f1{animation:rf1 4s step-end infinite}.rift .rf-f2{animation:rf2 4s step-end infinite}   /* 張開 → 半開 → 合成一條線 → 半開 → 張開 */
+  @keyframes rf0{0%{visibility:visible}40%{visibility:hidden}87%{visibility:visible}}
+  @keyframes rf1{0%{visibility:hidden}40%{visibility:visible}47%{visibility:hidden}80%{visibility:visible}87%{visibility:hidden}}
+  @keyframes rf2{0%{visibility:hidden}47%{visibility:visible}80%{visibility:hidden}}
+  .rift .rf-body{animation:riftglow 1.4s steps(4) infinite alternate, riftjolt 2.6s steps(1) infinite}   /* 裂縫：邊緣發光脈動＋偶爾錯位 */
+  @keyframes riftglow{from{filter:drop-shadow(0 0 2px #ff2a6d) drop-shadow(0 0 2px #05d9e8)}to{filter:drop-shadow(0 0 8px #ff2a6d) drop-shadow(0 0 6px #05d9e8)}}
+  @keyframes riftjolt{0%,86%{transform:translate(0,0)}88%{transform:translate(-4px,1px)}92%{transform:translate(3px,-2px)}96%{transform:translate(-1px,0)}}
+  .rift .rf-shards{position:absolute;left:0;top:0;animation:shardfloat 1.8s steps(6) infinite alternate}
+  @keyframes shardfloat{from{transform:translate(0,3px) scale(.96);opacity:.7}to{transform:translate(0,-5px) scale(1.04);opacity:1}}
+  .editor-momo{position:relative;width:216px}
+  .editor-momo svg{display:block}
+  .editor-momo .em-spark{position:absolute;left:180px;top:48px;width:36px;height:36px;animation:emspark 1.6s steps(8) infinite}   /* 眼鏡旁的黃色十字閃光：在第 15～17 欄、第 4～6 列，繞自己中心旋轉＋閃 */
+  @keyframes emspark{0%{transform:rotate(0deg) scale(1);opacity:1;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 2px #ffe066)}50%{transform:rotate(90deg) scale(.6);opacity:.35}100%{transform:rotate(180deg) scale(1);opacity:1;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 2px #ffe066)}}
+  .hungry{position:relative;width:200px}
+  .hungry svg{display:block}
+  .hungry .h-body{animation:growlshake .5s steps(2) infinite}   /* 肚子咕嚕叫：身體抖 */
+  @keyframes growlshake{0%{transform:translateX(0)}50%{transform:translateX(3px)}}
+  .hungry .h-growl{position:absolute;left:0;top:0;animation:growlblink .5s steps(1) infinite}
+  @keyframes growlblink{0%{opacity:1;transform:translateX(0)}50%{opacity:.25;transform:translateX(3px)}}
+  .granny{position:relative;width:168px}
+  .granny svg{display:block}
+  .granny .g-edge,.granny .g-top{position:absolute;left:0;top:0}
+  .granny .g-edge{animation:teledge 1.4s steps(7) infinite}   /* 只有鏡頭散發七彩：變色＋向四周發光 */
+  @keyframes teledge{0%{filter:hue-rotate(0deg) drop-shadow(0 0 2px #ff4d6d) drop-shadow(0 0 5px #ff4d6d) drop-shadow(0 0 9px #ffb000) drop-shadow(0 0 14px #b464e6)}100%{filter:hue-rotate(360deg) drop-shadow(0 0 2px #ff4d6d) drop-shadow(0 0 5px #ff4d6d) drop-shadow(0 0 9px #ffb000) drop-shadow(0 0 14px #b464e6)}}
   .pin-orbit{position:relative;height:196px;display:flex;align-items:center;justify-content:center}   /* 軌道直徑 184，地標置中 */
   .po-pin{position:relative;z-index:1}
   .po-ring{position:absolute;left:50%;top:50%;width:184px;height:184px;margin:-92px 0 0 -92px;animation:orbit 3.2s steps(48) infinite;z-index:2;pointer-events:none}
@@ -200,6 +251,9 @@
   body.glitch::after{content:'';position:fixed;left:0;right:0;height:14px;background:rgba(255,42,109,.38);pointer-events:none;z-index:999;animation:gl-bar .7s steps(5) infinite}
   body.glitch h1,body.glitch .ticket .station .name,body.glitch .ticket .sub{text-shadow:2px 0 #ff2a6d,-2px 0 #05d9e8}
   body.glitch main *:not(svg):not(svg *):not(.noglitch):not(.noglitch *){text-shadow:var(--gx,2px) 0 rgba(255,42,109,.8),calc(var(--gx,2px) * -1) 0 rgba(5,217,232,.8)}   /* 全頁 RGB 重影 */
+  .noglitch.boss-call{text-shadow:3px 0 rgba(230,57,70,.35),-3px 1px rgba(230,57,70,.25)!important;animation:bosscall 1.6s steps(1) infinite, bossnoise 3.2s steps(1) infinite}   /* 次元惡魔出現了：淡紅重影＋輕微震動＋偶爾閃雜訊 */
+  @keyframes bosscall{0%{transform:translate(0,0)}25%{transform:translate(-1px,0)}50%{transform:translate(0,1px)}75%{transform:translate(1px,0)}}
+  @keyframes bossnoise{0%,84%{clip-path:none;filter:none}86%{clip-path:inset(0 0 55% 0);filter:none;text-shadow:5px 0 rgba(255,42,109,.7),-5px 0 rgba(5,217,232,.7)}88%{clip-path:inset(40% 0 0 0);transform:translateX(4px)}90%{clip-path:none;filter:contrast(1.5)}92%,100%{clip-path:none;filter:none}}
   .noglitch{position:relative;z-index:1000;text-shadow:none!important}   /* 召喚胖貓那行：不受雜訊影響 */
   .gl-layer{position:fixed;inset:0;pointer-events:none;z-index:998;overflow:hidden}
   .gl-layer i{position:absolute;display:block;mix-blend-mode:screen}
@@ -207,10 +261,65 @@
   @keyframes gl-scan{to{background-position:0 40px,0 0}}
   @keyframes gl-bar{0%{top:10%}30%{top:62%}60%{top:35%}100%{top:85%}}
   @keyframes gl-slice{0%{clip-path:inset(0)}33%{clip-path:inset(10% -4px 55% 4px)}66%{clip-path:inset(60% 4px 0 -4px)}100%{clip-path:inset(0)}}
-  .arena{position:relative;z-index:1000;height:340px;margin:14px 0 0;border:4px solid #000;background:#140a22;box-shadow:var(--px) var(--px) 0 #000;overflow:hidden}   /* 疊在全頁雜訊上面：惡魔、胖貓不受影響 */
+  html,body{overflow-x:clip}   /* 裂痕、掉落的胖貓可以超出場地，但不能讓整頁變寬、出現左右捲動 */
+  .arena{position:relative;z-index:1000;height:340px;margin:14px 0 0}   /* 疊在全頁雜訊上面：惡魔、胖貓不受影響；不裁切，胖貓可以從畫面上方掉進來、裂痕可以裂出去 */
+  .arena-hole{position:absolute;inset:-12px -14px;animation:holeflick .3s steps(1) infinite}   /* 方框改成裂開的次元裂縫：鋸齒邊＋洋紅青色光 */
+  @keyframes holeflick{0%{filter:drop-shadow(-4px 0 10px #ff2a6d) drop-shadow(4px 0 10px #05d9e8) drop-shadow(0 0 4px #fff)}35%{filter:drop-shadow(-2px 0 4px #ff2a6d) drop-shadow(2px 0 4px #05d9e8)}65%{filter:drop-shadow(-6px 0 14px #ff2a6d) drop-shadow(6px 0 14px #05d9e8)}}   /* 裂隙光暈：不斷閃爍 */
+  @keyframes holeglow{from{filter:drop-shadow(0 0 3px #ff2a6d) drop-shadow(0 0 2px #05d9e8)}to{filter:drop-shadow(0 0 9px #ff2a6d) drop-shadow(0 0 6px #05d9e8)}}
+  .pre-intro{visibility:hidden}
+  .devil.pre-intro{opacity:0}   /* 惡魔裡的輪替動畫會強制顯示，所以用透明度藏 */
+  .arena-hole.line{animation:none}   /* 一開始只是一條線（光由 .rift-glow 閃） */
+  .arena-hole.line .hole-edge{visibility:hidden}   /* 一條線時不要紅藍實線，只有閃爍的紅藍光（Ming） */
+  @keyframes holeburst{from{filter:drop-shadow(-6px 0 6px #ff2a6d) drop-shadow(6px 0 6px #05d9e8)}to{filter:drop-shadow(-14px 0 14px #ff2a6d) drop-shadow(14px 0 14px #05d9e8) drop-shadow(0 0 4px #fff)}}
+  .rift-glow{position:absolute;top:-12px;bottom:-12px;transform-origin:50% 50%;left:49%;width:2%;z-index:1;pointer-events:none;box-sizing:border-box;animation:riftblink .32s steps(1) infinite, glowgrow 1.5s steps(16) both}
+  @keyframes glowgrow{from{transform:scaleY(.01)}to{transform:scaleY(1)}}   /* 光也跟著從一個點拉長 */   /* 一條線時：沒有實線，只有紅藍光不斷交替閃爍 */
+  @keyframes riftblink{0%{box-shadow:0 0 26px 10px #ff2a6d}25%{box-shadow:0 0 10px 4px #ff2a6d}50%{box-shadow:0 0 26px 10px #05d9e8}75%{box-shadow:0 0 10px 4px #05d9e8}}
+  .rift-glow.open{box-shadow:none;animation:riftopen 1.4s steps(10) both}   /* 裂開時：左紅右藍的邊線＋光暈 */
+  .rift-glow .rg-line{display:none}   /* 拉開時中間直接透出裂隙本身（上下緣才是鋸齒，跟打開後接得上） */
+  .rift-glow .rg-lw,.rift-glow .rg-rw{position:absolute;top:0;bottom:0;width:8px;visibility:hidden}   /* 光暈包在外層，跟著扭曲的帶子形狀走，不會有直的邊 */
+  .rift-glow .rg-lw{left:0}
+  .rift-glow .rg-rw{right:0}   /* 拉開時沒有光暈，才能跟打開後的狀態接上（Ming） */
+  .rift-glow .rg-l,.rift-glow .rg-r{position:absolute;inset:0;animation:bandwarp .9s linear infinite}
+  .rift-glow .rg-l{background:#ff2a6d}.rift-glow .rg-r{background:#05d9e8;animation-delay:-.45s}
+  .rift-glow.open .rg-line,.rift-glow.open .rg-lw,.rift-glow.open .rg-rw{visibility:visible}
+  @keyframes bandwarp{0%{clip-path:polygon(5px 0.0%,5px 5.6%,1px 11.1%,1px 16.7%,5px 22.2%,1px 27.8%,0px 33.3%,5px 38.9%,0px 44.4%,0px 50.0%,1px 55.6%,0px 61.1%,3px 66.7%,1px 72.2%,3px 77.8%,0px 83.3%,5px 88.9%,5px 94.4%,3px 100.0%,calc(100% - 3px) 100.0%,calc(100% - 0px) 94.4%,calc(100% - 3px) 88.9%,calc(100% - 0px) 83.3%,calc(100% - 5px) 77.8%,calc(100% - 1px) 72.2%,calc(100% - 5px) 66.7%,calc(100% - 5px) 61.1%,calc(100% - 1px) 55.6%,calc(100% - 0px) 50.0%,calc(100% - 0px) 44.4%,calc(100% - 1px) 38.9%,calc(100% - 5px) 33.3%,calc(100% - 0px) 27.8%,calc(100% - 3px) 22.2%,calc(100% - 0px) 16.7%,calc(100% - 5px) 11.1%,calc(100% - 1px) 5.6%,calc(100% - 5px) 0.0%)}25%{clip-path:polygon(5px 0.0%,3px 5.6%,5px 11.1%,3px 16.7%,3px 22.2%,1px 27.8%,1px 33.3%,3px 38.9%,3px 44.4%,0px 50.0%,0px 55.6%,5px 61.1%,0px 66.7%,1px 72.2%,5px 77.8%,0px 83.3%,1px 88.9%,1px 94.4%,1px 100.0%,calc(100% - 0px) 100.0%,calc(100% - 0px) 94.4%,calc(100% - 3px) 88.9%,calc(100% - 5px) 83.3%,calc(100% - 5px) 77.8%,calc(100% - 0px) 72.2%,calc(100% - 0px) 66.7%,calc(100% - 0px) 61.1%,calc(100% - 3px) 55.6%,calc(100% - 1px) 50.0%,calc(100% - 1px) 44.4%,calc(100% - 1px) 38.9%,calc(100% - 5px) 33.3%,calc(100% - 0px) 27.8%,calc(100% - 5px) 22.2%,calc(100% - 5px) 16.7%,calc(100% - 0px) 11.1%,calc(100% - 1px) 5.6%,calc(100% - 3px) 0.0%)}50%{clip-path:polygon(3px 0.0%,1px 5.6%,1px 11.1%,1px 16.7%,0px 22.2%,3px 27.8%,5px 33.3%,0px 38.9%,1px 44.4%,3px 50.0%,5px 55.6%,3px 61.1%,1px 66.7%,5px 72.2%,5px 77.8%,0px 83.3%,3px 88.9%,1px 94.4%,5px 100.0%,calc(100% - 1px) 100.0%,calc(100% - 5px) 94.4%,calc(100% - 5px) 88.9%,calc(100% - 3px) 83.3%,calc(100% - 3px) 77.8%,calc(100% - 3px) 72.2%,calc(100% - 5px) 66.7%,calc(100% - 3px) 61.1%,calc(100% - 1px) 55.6%,calc(100% - 5px) 50.0%,calc(100% - 0px) 44.4%,calc(100% - 3px) 38.9%,calc(100% - 1px) 33.3%,calc(100% - 0px) 27.8%,calc(100% - 1px) 22.2%,calc(100% - 1px) 16.7%,calc(100% - 1px) 11.1%,calc(100% - 1px) 5.6%,calc(100% - 3px) 0.0%)}75%{clip-path:polygon(0px 0.0%,3px 5.6%,3px 11.1%,5px 16.7%,5px 22.2%,5px 27.8%,3px 33.3%,3px 38.9%,3px 44.4%,1px 50.0%,3px 55.6%,0px 61.1%,0px 66.7%,0px 72.2%,3px 77.8%,5px 83.3%,5px 88.9%,0px 94.4%,1px 100.0%,calc(100% - 0px) 100.0%,calc(100% - 3px) 94.4%,calc(100% - 0px) 88.9%,calc(100% - 5px) 83.3%,calc(100% - 1px) 77.8%,calc(100% - 0px) 72.2%,calc(100% - 3px) 66.7%,calc(100% - 0px) 61.1%,calc(100% - 1px) 55.6%,calc(100% - 1px) 50.0%,calc(100% - 3px) 44.4%,calc(100% - 3px) 38.9%,calc(100% - 1px) 33.3%,calc(100% - 0px) 27.8%,calc(100% - 5px) 22.2%,calc(100% - 3px) 16.7%,calc(100% - 0px) 11.1%,calc(100% - 3px) 5.6%,calc(100% - 1px) 0.0%)}100%{clip-path:polygon(5px 0.0%,5px 5.6%,1px 11.1%,1px 16.7%,5px 22.2%,1px 27.8%,0px 33.3%,5px 38.9%,0px 44.4%,0px 50.0%,1px 55.6%,0px 61.1%,3px 66.7%,1px 72.2%,3px 77.8%,0px 83.3%,5px 88.9%,5px 94.4%,3px 100.0%,calc(100% - 3px) 100.0%,calc(100% - 0px) 94.4%,calc(100% - 3px) 88.9%,calc(100% - 0px) 83.3%,calc(100% - 5px) 77.8%,calc(100% - 1px) 72.2%,calc(100% - 5px) 66.7%,calc(100% - 5px) 61.1%,calc(100% - 1px) 55.6%,calc(100% - 0px) 50.0%,calc(100% - 0px) 44.4%,calc(100% - 1px) 38.9%,calc(100% - 5px) 33.3%,calc(100% - 0px) 27.8%,calc(100% - 3px) 22.2%,calc(100% - 0px) 16.7%,calc(100% - 5px) 11.1%,calc(100% - 1px) 5.6%,calc(100% - 5px) 0.0%)}}   /* 拉開時紅藍帶內外兩側都扭曲 */
+  @keyframes riftopen{from{left:49%;width:2%}to{left:-14px;width:calc(100% + 28px)}}
+  @keyframes riftflick{from{opacity:.65}to{opacity:1}}
+  .spray{position:absolute;width:8px;height:8px;z-index:3;pointer-events:none;animation:spray .7s steps(7) forwards}
+  @keyframes spray{from{transform:translate(0,0);opacity:1}to{transform:translate(var(--sx),var(--sy));opacity:0}}
+  .arena-hole.opening{animation:holeflick .3s steps(1) infinite}   /* 拉開時也有光暈、不斷閃爍（Ming） */
+  @keyframes holeopen2{0.0%{clip-path:polygon(49.00% 2.5%,49.14% 1.5%,49.29% 4.0%,49.43% 0.0%,49.57% 0.0%,49.71% 5.0%,49.86% 0.0%,50.00% 2.5%,50.14% 5.0%,50.29% 0.0%,50.43% 5.0%,50.57% 1.5%,50.71% 0.0%,50.86% 0.0%,50.94% 0.0%,50.94% 8.3%,51.00% 16.7%,50.98% 25.0%,51.00% 33.3%,50.92% 41.7%,50.94% 50.0%,51.00% 58.3%,50.92% 66.7%,51.00% 75.0%,50.98% 83.3%,50.92% 91.7%,51.00% 100.0%,50.86% 95.0%,50.71% 95.0%,50.57% 96.0%,50.43% 100.0%,50.29% 98.5%,50.14% 100.0%,50.00% 95.0%,49.86% 98.5%,49.71% 97.5%,49.57% 96.0%,49.43% 98.5%,49.29% 95.0%,49.14% 100.0%,49.08% 100.0%,49.04% 91.7%,49.08% 83.3%,49.02% 75.0%,49.00% 66.7%,49.08% 58.3%,49.08% 50.0%,49.02% 41.7%,49.04% 33.3%,49.00% 25.0%,49.08% 16.7%,49.00% 8.3%)}8.3%{clip-path:polygon(44.92% 1.5%,45.64% 4.0%,46.37% 4.0%,47.09% 2.5%,47.82% 4.0%,48.55% 1.5%,49.28% 4.0%,50.00% 5.0%,50.72% 1.5%,51.45% 5.0%,52.18% 5.0%,52.91% 1.5%,53.63% 0.0%,54.36% 0.0%,54.88% 0.0%,54.68% 8.3%,54.76% 16.7%,55.08% 25.0%,54.96% 33.3%,54.96% 41.7%,54.96% 50.0%,55.08% 58.3%,54.76% 66.7%,54.76% 75.0%,54.68% 83.3%,54.76% 91.7%,55.08% 100.0%,54.36% 97.5%,53.63% 95.0%,52.91% 96.0%,52.18% 100.0%,51.45% 97.5%,50.72% 100.0%,50.00% 98.5%,49.28% 100.0%,48.55% 100.0%,47.82% 100.0%,47.09% 96.0%,46.37% 98.5%,45.64% 95.0%,45.12% 100.0%,45.24% 91.7%,45.24% 83.3%,45.04% 75.0%,45.04% 66.7%,44.92% 58.3%,45.24% 50.0%,45.04% 41.7%,44.92% 33.3%,45.04% 25.0%,45.04% 16.7%,45.32% 8.3%)}16.7%{clip-path:polygon(40.83% 5.0%,42.13% 1.5%,43.45% 1.5%,44.76% 2.5%,46.08% 4.0%,47.38% 5.0%,48.70% 5.0%,50.00% 1.5%,51.30% 5.0%,52.62% 5.0%,53.92% 2.5%,55.24% 5.0%,56.55% 4.0%,57.87% 4.0%,58.80% 0.0%,59.17% 8.3%,58.80% 16.7%,58.58% 25.0%,58.80% 33.3%,58.43% 41.7%,58.58% 50.0%,59.17% 58.3%,58.43% 66.7%,58.58% 75.0%,58.80% 83.3%,58.80% 91.7%,59.17% 95.0%,57.87% 98.5%,56.55% 100.0%,55.24% 100.0%,53.92% 97.5%,52.62% 97.5%,51.30% 98.5%,50.00% 100.0%,48.70% 97.5%,47.38% 100.0%,46.08% 97.5%,44.76% 98.5%,43.45% 95.0%,42.13% 97.5%,41.20% 100.0%,40.83% 91.7%,41.20% 83.3%,41.57% 75.0%,41.20% 66.7%,41.57% 58.3%,41.42% 50.0%,41.42% 41.7%,41.05% 33.3%,40.83% 25.0%,40.83% 16.7%,41.20% 8.3%)}25.0%{clip-path:polygon(36.75% 5.0%,38.63% 2.5%,40.54% 1.5%,42.42% 5.0%,44.33% 5.0%,46.21% 2.5%,48.12% 5.0%,50.00% 1.5%,51.88% 4.0%,53.79% 1.5%,55.67% 1.5%,57.58% 0.0%,59.46% 4.0%,61.37% 1.5%,62.93% 0.0%,62.19% 8.3%,62.19% 16.7%,62.19% 25.0%,62.93% 33.3%,62.40% 41.7%,62.93% 50.0%,63.25% 58.3%,63.25% 66.7%,62.40% 75.0%,63.25% 83.3%,62.93% 91.7%,63.25% 96.0%,61.37% 98.5%,59.46% 98.5%,57.58% 100.0%,55.67% 95.0%,53.79% 97.5%,51.88% 97.5%,50.00% 97.5%,48.12% 100.0%,46.21% 98.5%,44.33% 97.5%,42.42% 97.5%,40.54% 100.0%,38.63% 95.0%,37.28% 100.0%,37.07% 91.7%,37.28% 83.3%,37.60% 75.0%,37.07% 66.7%,37.07% 58.3%,37.60% 50.0%,37.81% 41.7%,37.28% 33.3%,36.75% 25.0%,37.28% 16.7%,36.75% 8.3%)}33.3%{clip-path:polygon(32.67% 2.5%,35.13% 1.5%,37.62% 4.0%,40.09% 0.0%,42.58% 0.0%,45.04% 5.0%,47.54% 0.0%,50.00% 2.5%,52.46% 5.0%,54.96% 0.0%,57.42% 5.0%,59.91% 1.5%,62.38% 0.0%,64.87% 0.0%,66.22% 0.0%,66.22% 8.3%,67.33% 16.7%,66.92% 25.0%,67.33% 33.3%,65.95% 41.7%,66.22% 50.0%,67.33% 58.3%,65.95% 66.7%,67.33% 75.0%,66.92% 83.3%,65.95% 91.7%,67.33% 100.0%,64.87% 95.0%,62.38% 95.0%,59.91% 96.0%,57.42% 100.0%,54.96% 98.5%,52.46% 100.0%,50.00% 95.0%,47.54% 98.5%,45.04% 97.5%,42.58% 96.0%,40.09% 98.5%,37.62% 95.0%,35.13% 100.0%,34.05% 100.0%,33.36% 91.7%,34.05% 83.3%,33.08% 75.0%,32.67% 66.7%,34.05% 58.3%,34.05% 50.0%,33.08% 41.7%,33.36% 33.3%,32.67% 25.0%,34.05% 16.7%,32.67% 8.3%)}41.7%{clip-path:polygon(28.58% 1.5%,31.62% 4.0%,34.71% 4.0%,37.75% 2.5%,40.83% 4.0%,43.87% 1.5%,46.96% 4.0%,50.00% 5.0%,53.04% 1.5%,56.13% 5.0%,59.17% 5.0%,62.25% 1.5%,65.29% 0.0%,68.38% 0.0%,70.56% 0.0%,69.70% 8.3%,70.05% 16.7%,71.42% 25.0%,70.90% 33.3%,70.90% 41.7%,70.90% 50.0%,71.42% 58.3%,70.05% 66.7%,70.05% 75.0%,69.70% 83.3%,70.05% 91.7%,71.42% 100.0%,68.38% 97.5%,65.29% 95.0%,62.25% 96.0%,59.17% 100.0%,56.13% 97.5%,53.04% 100.0%,50.00% 98.5%,46.96% 100.0%,43.87% 100.0%,40.83% 100.0%,37.75% 96.0%,34.71% 98.5%,31.62% 95.0%,29.44% 100.0%,29.95% 91.7%,29.95% 83.3%,29.10% 75.0%,29.10% 66.7%,28.58% 58.3%,29.95% 50.0%,29.10% 41.7%,28.58% 33.3%,29.10% 25.0%,29.10% 16.7%,30.30% 8.3%)}50.0%{clip-path:polygon(24.50% 5.0%,28.12% 1.5%,31.79% 1.5%,35.41% 2.5%,39.09% 4.0%,42.71% 5.0%,46.38% 5.0%,50.00% 1.5%,53.62% 5.0%,57.29% 5.0%,60.91% 2.5%,64.59% 5.0%,68.21% 4.0%,71.88% 4.0%,74.48% 0.0%,75.50% 8.3%,74.48% 16.7%,73.87% 25.0%,74.48% 33.3%,73.46% 41.7%,73.87% 50.0%,75.50% 58.3%,73.46% 66.7%,73.87% 75.0%,74.48% 83.3%,74.48% 91.7%,75.50% 95.0%,71.88% 98.5%,68.21% 100.0%,64.59% 100.0%,60.91% 97.5%,57.29% 97.5%,53.62% 98.5%,50.00% 100.0%,46.38% 97.5%,42.71% 100.0%,39.09% 97.5%,35.41% 98.5%,31.79% 95.0%,28.12% 97.5%,25.52% 100.0%,24.50% 91.7%,25.52% 83.3%,26.54% 75.0%,25.52% 66.7%,26.54% 58.3%,26.13% 50.0%,26.13% 41.7%,25.11% 33.3%,24.50% 25.0%,24.50% 16.7%,25.52% 8.3%)}58.3%{clip-path:polygon(20.42% 5.0%,24.62% 2.5%,28.88% 1.5%,33.08% 5.0%,37.34% 5.0%,41.54% 2.5%,45.80% 5.0%,50.00% 1.5%,54.20% 4.0%,58.46% 1.5%,62.66% 1.5%,66.92% 0.0%,71.12% 4.0%,75.38% 1.5%,78.87% 0.0%,77.22% 8.3%,77.22% 16.7%,77.22% 25.0%,78.87% 33.3%,77.69% 41.7%,78.87% 50.0%,79.58% 58.3%,79.58% 66.7%,77.69% 75.0%,79.58% 83.3%,78.87% 91.7%,79.58% 96.0%,75.38% 98.5%,71.12% 98.5%,66.92% 100.0%,62.66% 95.0%,58.46% 97.5%,54.20% 97.5%,50.00% 97.5%,45.80% 100.0%,41.54% 98.5%,37.34% 97.5%,33.08% 97.5%,28.88% 100.0%,24.62% 95.0%,21.60% 100.0%,21.13% 91.7%,21.60% 83.3%,22.31% 75.0%,21.13% 66.7%,21.13% 58.3%,22.31% 50.0%,22.78% 41.7%,21.60% 33.3%,20.42% 25.0%,21.60% 16.7%,20.42% 8.3%)}66.7%{clip-path:polygon(16.33% 2.5%,21.11% 1.5%,25.96% 4.0%,30.74% 0.0%,35.59% 0.0%,40.37% 5.0%,45.22% 0.0%,50.00% 2.5%,54.78% 5.0%,59.63% 0.0%,64.41% 5.0%,69.26% 1.5%,74.04% 0.0%,78.89% 0.0%,81.51% 0.0%,81.51% 8.3%,83.67% 16.7%,82.86% 25.0%,83.67% 33.3%,80.97% 41.7%,81.51% 50.0%,83.67% 58.3%,80.97% 66.7%,83.67% 75.0%,82.86% 83.3%,80.97% 91.7%,83.67% 100.0%,78.89% 95.0%,74.04% 95.0%,69.26% 96.0%,64.41% 100.0%,59.63% 98.5%,54.78% 100.0%,50.00% 95.0%,45.22% 98.5%,40.37% 97.5%,35.59% 96.0%,30.74% 98.5%,25.96% 95.0%,21.11% 100.0%,19.03% 100.0%,17.68% 91.7%,19.03% 83.3%,17.14% 75.0%,16.33% 66.7%,19.03% 58.3%,19.03% 50.0%,17.14% 41.7%,17.68% 33.3%,16.33% 25.0%,19.03% 16.7%,16.33% 8.3%)}75.0%{clip-path:polygon(12.25% 1.5%,17.61% 4.0%,23.05% 4.0%,28.41% 2.5%,33.84% 4.0%,39.20% 1.5%,44.64% 4.0%,50.00% 5.0%,55.36% 1.5%,60.80% 5.0%,66.16% 5.0%,71.59% 1.5%,76.95% 0.0%,82.39% 0.0%,86.24% 0.0%,84.73% 8.3%,85.33% 16.7%,87.75% 25.0%,86.84% 33.3%,86.84% 41.7%,86.84% 50.0%,87.75% 58.3%,85.33% 66.7%,85.33% 75.0%,84.73% 83.3%,85.33% 91.7%,87.75% 100.0%,82.39% 97.5%,76.95% 95.0%,71.59% 96.0%,66.16% 100.0%,60.80% 97.5%,55.36% 100.0%,50.00% 98.5%,44.64% 100.0%,39.20% 100.0%,33.84% 100.0%,28.41% 96.0%,23.05% 98.5%,17.61% 95.0%,13.76% 100.0%,14.67% 91.7%,14.67% 83.3%,13.16% 75.0%,13.16% 66.7%,12.25% 58.3%,14.67% 50.0%,13.16% 41.7%,12.25% 33.3%,13.16% 25.0%,13.16% 16.7%,15.27% 8.3%)}83.3%{clip-path:polygon(8.17% 5.0%,14.11% 1.5%,20.13% 1.5%,26.07% 2.5%,32.10% 4.0%,38.04% 5.0%,44.06% 5.0%,50.00% 1.5%,55.94% 5.0%,61.96% 5.0%,67.90% 2.5%,73.93% 5.0%,79.87% 4.0%,85.89% 4.0%,90.16% 0.0%,91.83% 8.3%,90.16% 16.7%,89.16% 25.0%,90.16% 33.3%,88.49% 41.7%,89.16% 50.0%,91.83% 58.3%,88.49% 66.7%,89.16% 75.0%,90.16% 83.3%,90.16% 91.7%,91.83% 95.0%,85.89% 98.5%,79.87% 100.0%,73.93% 100.0%,67.90% 97.5%,61.96% 97.5%,55.94% 98.5%,50.00% 100.0%,44.06% 97.5%,38.04% 100.0%,32.10% 97.5%,26.07% 98.5%,20.13% 95.0%,14.11% 97.5%,9.84% 100.0%,8.17% 91.7%,9.84% 83.3%,11.51% 75.0%,9.84% 66.7%,11.51% 58.3%,10.84% 50.0%,10.84% 41.7%,9.17% 33.3%,8.17% 25.0%,8.17% 16.7%,9.84% 8.3%)}91.7%{clip-path:polygon(4.08% 5.0%,10.60% 2.5%,17.22% 1.5%,23.74% 5.0%,30.35% 5.0%,36.87% 2.5%,43.48% 5.0%,50.00% 1.5%,56.52% 4.0%,63.13% 1.5%,69.65% 1.5%,76.26% 0.0%,82.78% 4.0%,89.40% 1.5%,94.81% 0.0%,92.24% 8.3%,92.24% 16.7%,92.24% 25.0%,94.81% 33.3%,92.98% 41.7%,94.81% 50.0%,95.92% 58.3%,95.92% 66.7%,92.98% 75.0%,95.92% 83.3%,94.81% 91.7%,95.92% 96.0%,89.40% 98.5%,82.78% 98.5%,76.26% 100.0%,69.65% 95.0%,63.13% 97.5%,56.52% 97.5%,50.00% 97.5%,43.48% 100.0%,36.87% 98.5%,30.35% 97.5%,23.74% 97.5%,17.22% 100.0%,10.60% 95.0%,5.92% 100.0%,5.19% 91.7%,5.92% 83.3%,7.02% 75.0%,5.19% 66.7%,5.19% 58.3%,7.02% 50.0%,7.76% 41.7%,5.92% 33.3%,4.08% 25.0%,5.92% 16.7%,4.08% 8.3%)}100.0%{clip-path:polygon(0.00% 2.5%,7.10% 1.5%,14.30% 4.0%,21.40% 0.0%,28.60% 0.0%,35.70% 5.0%,42.90% 0.0%,50.00% 2.5%,57.10% 5.0%,64.30% 0.0%,71.40% 5.0%,78.60% 1.5%,85.70% 0.0%,92.90% 0.0%,96.80% 0.0%,96.80% 8.3%,100.00% 16.7%,98.80% 25.0%,100.00% 33.3%,96.00% 41.7%,96.80% 50.0%,100.00% 58.3%,96.00% 66.7%,100.00% 75.0%,98.80% 83.3%,96.00% 91.7%,100.00% 100.0%,92.90% 95.0%,85.70% 95.0%,78.60% 96.0%,71.40% 100.0%,64.30% 98.5%,57.10% 100.0%,50.00% 95.0%,42.90% 98.5%,35.70% 97.5%,28.60% 96.0%,21.40% 98.5%,14.30% 95.0%,7.10% 100.0%,4.00% 100.0%,2.00% 91.7%,4.00% 83.3%,1.20% 75.0%,0.00% 66.7%,4.00% 58.3%,4.00% 50.0%,1.20% 41.7%,2.00% 33.3%,0.00% 25.0%,4.00% 16.7%,0.00% 8.3%)}}   /* 拉開：一邊撐開一邊扭動，最後停在跟打開後第一格一樣的形狀 */
+  .arena-hole.line .hole-edge,.arena-hole.line .arena-clip{animation:holeline 1.5s steps(16) both}
+  @keyframes holeline{from{clip-path:polygon(49.00% 49.52%,49.14% 49.52%,49.29% 49.54%,49.43% 49.50%,49.57% 49.50%,49.71% 49.55%,49.86% 49.50%,50.00% 49.52%,50.14% 49.55%,50.29% 49.50%,50.43% 49.55%,50.57% 49.52%,50.71% 49.50%,50.86% 49.50%,50.94% 49.50%,50.94% 49.58%,51.00% 49.67%,50.98% 49.75%,51.00% 49.83%,50.92% 49.92%,50.94% 50.00%,51.00% 50.08%,50.92% 50.17%,51.00% 50.25%,50.98% 50.33%,50.92% 50.42%,51.00% 50.50%,50.86% 50.45%,50.71% 50.45%,50.57% 50.46%,50.43% 50.50%,50.29% 50.48%,50.14% 50.50%,50.00% 50.45%,49.86% 50.48%,49.71% 50.48%,49.57% 50.46%,49.43% 50.48%,49.29% 50.45%,49.14% 50.50%,49.08% 50.50%,49.04% 50.42%,49.08% 50.33%,49.02% 50.25%,49.00% 50.17%,49.08% 50.08%,49.08% 50.00%,49.02% 49.92%,49.04% 49.83%,49.00% 49.75%,49.08% 49.67%,49.00% 49.58%)}to{clip-path:polygon(49.00% 2.50%,49.14% 1.50%,49.29% 4.00%,49.43% 0.00%,49.57% 0.00%,49.71% 5.00%,49.86% 0.00%,50.00% 2.50%,50.14% 5.00%,50.29% 0.00%,50.43% 5.00%,50.57% 1.50%,50.71% 0.00%,50.86% 0.00%,50.94% 0.00%,50.94% 8.30%,51.00% 16.70%,50.98% 25.00%,51.00% 33.30%,50.92% 41.70%,50.94% 50.00%,51.00% 58.30%,50.92% 66.70%,51.00% 75.00%,50.98% 83.30%,50.92% 91.70%,51.00% 100.00%,50.86% 95.00%,50.71% 95.00%,50.57% 96.00%,50.43% 100.00%,50.29% 98.50%,50.14% 100.00%,50.00% 95.00%,49.86% 98.50%,49.71% 97.50%,49.57% 96.00%,49.43% 98.50%,49.29% 95.00%,49.14% 100.00%,49.08% 100.00%,49.04% 91.70%,49.08% 83.30%,49.02% 75.00%,49.00% 66.70%,49.08% 58.30%,49.08% 50.00%,49.02% 41.70%,49.04% 33.30%,49.00% 25.00%,49.08% 16.70%,49.00% 8.30%)}}   /* 一條裂痕：從一個點往上下拉長 */
+  .arena-hole.opening .hole-edge,.arena-hole.opening .arena-clip{animation:holeopen2 1.4s linear both}
+  @keyframes holeopen{from{transform:scaleX(.02)}to{transform:scaleX(1)}}
+  .devil-ghost{position:absolute;right:40px;top:40px;width:112px;mix-blend-mode:screen;z-index:3;pointer-events:none}
+  .devil-ghost svg{display:block}
+  .dg0{animation:ghostL 1.4s steps(14) both}.dg1{animation:ghostR 1.4s steps(14) both}
+  @keyframes ghostL{0%{transform:translate(-70px,20px) skewX(30deg) scale(1.3);opacity:0}15%{opacity:.9}30%{opacity:.2}45%{opacity:.9;transform:translate(-40px,-10px) skewX(-25deg) scaleY(1.4)}60%{opacity:.3}75%{opacity:1;transform:translate(-12px,4px) skewX(12deg)}100%{transform:translate(0,0) skewX(0);opacity:.9}}
+  @keyframes ghostR{0%{transform:translate(70px,-20px) skewX(-30deg) scale(1.3);opacity:0}15%{opacity:.3}30%{opacity:.9}45%{opacity:.3;transform:translate(40px,10px) skewX(25deg) scaleY(.7)}60%{opacity:1}75%{opacity:.4;transform:translate(12px,-4px) skewX(-12deg)}100%{transform:translate(0,0) skewX(0);opacity:.9}}
+  .devil.born{animation:devilborn .6s steps(6) both}
+  @keyframes devilborn{0%{filter:brightness(4) saturate(0);transform:scale(1.15)}50%{filter:brightness(2)}100%{filter:none;transform:scale(1)}}
+  #bosscall.pop{animation:callpop .4s steps(4) both}
+  @keyframes callpop{from{transform:scale(1.6);opacity:0}to{transform:scale(1);opacity:1}}
+  .arena-hole{--hole:polygon(0.0% 5.0%,7.1% 2.5%,14.3% 1.5%,21.4% 0.0%,28.6% 0.0%,35.7% 4.0%,42.9% 0.0%,50.0% 5.0%,57.1% 4.0%,64.3% 0.0%,71.4% 4.0%,78.6% 2.5%,85.7% 0.0%,92.9% 0.0%,98.8% 0.0%,98.8% 8.3%,100.0% 16.7%,98.0% 25.0%,100.0% 33.3%,96.8% 41.7%,98.8% 50.0%,100.0% 58.3%,96.8% 66.7%,100.0% 75.0%,98.0% 83.3%,96.8% 91.7%,100.0% 100.0%,92.9% 96.0%,85.7% 96.0%,78.6% 98.5%,71.4% 100.0%,64.3% 97.5%,57.1% 100.0%,50.0% 96.0%,42.9% 97.5%,35.7% 95.0%,28.6% 98.5%,21.4% 97.5%,14.3% 96.0%,7.1% 100.0%,3.2% 100.0%,4.0% 91.7%,3.2% 83.3%,2.0% 75.0%,0.0% 66.7%,3.2% 58.3%,3.2% 50.0%,2.0% 41.7%,4.0% 33.3%,0.0% 25.0%,3.2% 16.7%,0.0% 8.3%)}
+  .arena-hole.hs-radial{--hole:polygon(50.0% -2.0%,56.6% 12.3%,66.8% 3.7%,69.3% 16.6%,82.6% 11.1%,77.1% 27.2%,95.9% 23.5%,87.6% 36.3%,97.8% 41.6%,86.4% 50.0%,102.0% 59.2%,85.5% 62.9%,95.9% 76.5%,79.0% 74.3%,82.7% 88.9%,68.0% 81.1%,67.4% 97.7%,57.0% 89.6%,50.0% 102.0%,43.2% 88.8%,32.5% 98.0%,32.3% 80.6%,16.9% 89.5%,20.5% 74.8%,4.1% 76.5%,16.9% 62.0%,-1.4% 59.1%,12.2% 50.0%,-0.5% 41.1%,12.2% 36.2%,4.1% 23.5%,19.0% 24.0%,18.3% 12.2%,30.1% 15.5%,33.0% 3.3%,42.9% 10.0%)}   /* 圓形輻射 */
+  .arena-hole.hs-tear{--hole:polygon(50.0% 0.0%,42.1% 6.2%,24.5% 12.5%,20.9% 18.8%,14.8% 25.0%,14.1% 31.2%,6.7% 37.5%,6.7% 43.8%,6.0% 50.0%,0.7% 56.2%,4.7% 62.5%,10.1% 68.8%,14.8% 75.0%,20.9% 81.2%,30.5% 87.5%,38.1% 93.8%,50.0% 100.0%,50.0% 100.0%,61.9% 93.8%,73.5% 87.5%,77.1% 81.2%,89.2% 75.0%,91.9% 68.8%,89.3% 62.5%,95.3% 56.2%,96.0% 50.0%,99.3% 43.8%,95.3% 37.5%,91.9% 31.2%,89.2% 25.0%,83.1% 18.8%,73.5% 12.5%,59.9% 6.2%,50.0% 0.0%)}   /* 直向撕裂（像裂縫圖示） */
+  .hole-edge{position:absolute;inset:0;clip-path:var(--hole)}
+  .frame-wire{position:absolute;left:0;right:0;top:0;bottom:0;z-index:1;pointer-events:none}   /* 四邊一圈線框，自己扭動 */
+  .frame-wire svg{display:block;width:100%;height:100%;overflow:visible}
+  .arena-hole.line .frame-wire{display:none}
+  .arena-hole.opening .frame-wire{animation:fwopen 1.4s linear both}
+  @keyframes fwopen{from{left:49%;right:49%}to{left:0;right:0}}
+  .hs-rect .hole-edge,.hs-rect .arena-clip{animation:holewarp 1.6s linear infinite}
+  @keyframes holewarp{0%{clip-path:polygon(0.0% 2.5%,7.1% 1.5%,14.3% 4.0%,21.4% 0.0%,28.6% 0.0%,35.7% 5.0%,42.9% 0.0%,50.0% 2.5%,57.1% 5.0%,64.3% 0.0%,71.4% 5.0%,78.6% 1.5%,85.7% 0.0%,92.9% 0.0%,96.8% 0.0%,96.8% 8.3%,100.0% 16.7%,98.8% 25.0%,100.0% 33.3%,96.0% 41.7%,96.8% 50.0%,100.0% 58.3%,96.0% 66.7%,100.0% 75.0%,98.8% 83.3%,96.0% 91.7%,100.0% 100.0%,92.9% 95.0%,85.7% 95.0%,78.6% 96.0%,71.4% 100.0%,64.3% 98.5%,57.1% 100.0%,50.0% 95.0%,42.9% 98.5%,35.7% 97.5%,28.6% 96.0%,21.4% 98.5%,14.3% 95.0%,7.1% 100.0%,4.0% 100.0%,2.0% 91.7%,4.0% 83.3%,1.2% 75.0%,0.0% 66.7%,4.0% 58.3%,4.0% 50.0%,1.2% 41.7%,2.0% 33.3%,0.0% 25.0%,4.0% 16.7%,0.0% 8.3%)}25%{clip-path:polygon(0.0% 1.5%,7.1% 4.0%,14.3% 4.0%,21.4% 2.5%,28.6% 4.0%,35.7% 1.5%,42.9% 4.0%,50.0% 5.0%,57.1% 1.5%,64.3% 5.0%,71.4% 5.0%,78.6% 1.5%,85.7% 0.0%,92.9% 0.0%,98.0% 0.0%,96.0% 8.3%,96.8% 16.7%,100.0% 25.0%,98.8% 33.3%,98.8% 41.7%,98.8% 50.0%,100.0% 58.3%,96.8% 66.7%,96.8% 75.0%,96.0% 83.3%,96.8% 91.7%,100.0% 100.0%,92.9% 97.5%,85.7% 95.0%,78.6% 96.0%,71.4% 100.0%,64.3% 97.5%,57.1% 100.0%,50.0% 98.5%,42.9% 100.0%,35.7% 100.0%,28.6% 100.0%,21.4% 96.0%,14.3% 98.5%,7.1% 95.0%,2.0% 100.0%,3.2% 91.7%,3.2% 83.3%,1.2% 75.0%,1.2% 66.7%,0.0% 58.3%,3.2% 50.0%,1.2% 41.7%,0.0% 33.3%,1.2% 25.0%,1.2% 16.7%,4.0% 8.3%)}50%{clip-path:polygon(0.0% 5.0%,7.1% 1.5%,14.3% 1.5%,21.4% 2.5%,28.6% 4.0%,35.7% 5.0%,42.9% 5.0%,50.0% 1.5%,57.1% 5.0%,64.3% 5.0%,71.4% 2.5%,78.6% 5.0%,85.7% 4.0%,92.9% 4.0%,98.0% 0.0%,100.0% 8.3%,98.0% 16.7%,96.8% 25.0%,98.0% 33.3%,96.0% 41.7%,96.8% 50.0%,100.0% 58.3%,96.0% 66.7%,96.8% 75.0%,98.0% 83.3%,98.0% 91.7%,100.0% 95.0%,92.9% 98.5%,85.7% 100.0%,78.6% 100.0%,71.4% 97.5%,64.3% 97.5%,57.1% 98.5%,50.0% 100.0%,42.9% 97.5%,35.7% 100.0%,28.6% 97.5%,21.4% 98.5%,14.3% 95.0%,7.1% 97.5%,2.0% 100.0%,0.0% 91.7%,2.0% 83.3%,4.0% 75.0%,2.0% 66.7%,4.0% 58.3%,3.2% 50.0%,3.2% 41.7%,1.2% 33.3%,0.0% 25.0%,0.0% 16.7%,2.0% 8.3%)}75%{clip-path:polygon(0.0% 5.0%,7.1% 2.5%,14.3% 1.5%,21.4% 5.0%,28.6% 5.0%,35.7% 2.5%,42.9% 5.0%,50.0% 1.5%,57.1% 4.0%,64.3% 1.5%,71.4% 1.5%,78.6% 0.0%,85.7% 4.0%,92.9% 1.5%,98.8% 0.0%,96.0% 8.3%,96.0% 16.7%,96.0% 25.0%,98.8% 33.3%,96.8% 41.7%,98.8% 50.0%,100.0% 58.3%,100.0% 66.7%,96.8% 75.0%,100.0% 83.3%,98.8% 91.7%,100.0% 96.0%,92.9% 98.5%,85.7% 98.5%,78.6% 100.0%,71.4% 95.0%,64.3% 97.5%,57.1% 97.5%,50.0% 97.5%,42.9% 100.0%,35.7% 98.5%,28.6% 97.5%,21.4% 97.5%,14.3% 100.0%,7.1% 95.0%,2.0% 100.0%,1.2% 91.7%,2.0% 83.3%,3.2% 75.0%,1.2% 66.7%,1.2% 58.3%,3.2% 50.0%,4.0% 41.7%,2.0% 33.3%,0.0% 25.0%,2.0% 16.7%,0.0% 8.3%)}100%{clip-path:polygon(0.0% 2.5%,7.1% 1.5%,14.3% 4.0%,21.4% 0.0%,28.6% 0.0%,35.7% 5.0%,42.9% 0.0%,50.0% 2.5%,57.1% 5.0%,64.3% 0.0%,71.4% 5.0%,78.6% 1.5%,85.7% 0.0%,92.9% 0.0%,96.8% 0.0%,96.8% 8.3%,100.0% 16.7%,98.8% 25.0%,100.0% 33.3%,96.0% 41.7%,96.8% 50.0%,100.0% 58.3%,96.0% 66.7%,100.0% 75.0%,98.8% 83.3%,96.0% 91.7%,100.0% 100.0%,92.9% 95.0%,85.7% 95.0%,78.6% 96.0%,71.4% 100.0%,64.3% 98.5%,57.1% 100.0%,50.0% 95.0%,42.9% 98.5%,35.7% 97.5%,28.6% 96.0%,21.4% 98.5%,14.3% 95.0%,7.1% 100.0%,4.0% 100.0%,2.0% 91.7%,4.0% 83.3%,1.2% 75.0%,0.0% 66.7%,4.0% 58.3%,4.0% 50.0%,1.2% 41.7%,2.0% 33.3%,0.0% 25.0%,4.0% 16.7%,0.0% 8.3%)}}   /* 裂隙外框一直扭曲 */
+  @keyframes linewarp{0%{clip-path:polygon(2px 0.0%,4px 6.2%,6px 12.5%,6px 18.8%,2px 25.0%,6px 31.2%,6px 37.5%,0px 43.8%,4px 50.0%,0px 56.2%,0px 62.5%,0px 68.8%,6px 75.0%,6px 81.2%,2px 87.5%,6px 93.8%,4px 100.0%,calc(100% - 2px) 100.0%,calc(100% - 2px) 93.8%,calc(100% - 6px) 87.5%,calc(100% - 0px) 81.2%,calc(100% - 2px) 75.0%,calc(100% - 0px) 68.8%,calc(100% - 0px) 62.5%,calc(100% - 4px) 56.2%,calc(100% - 2px) 50.0%,calc(100% - 6px) 43.8%,calc(100% - 6px) 37.5%,calc(100% - 0px) 31.2%,calc(100% - 0px) 25.0%,calc(100% - 6px) 18.8%,calc(100% - 6px) 12.5%,calc(100% - 0px) 6.2%,calc(100% - 0px) 0.0%)}25%{clip-path:polygon(0px 0.0%,0px 6.2%,2px 12.5%,4px 18.8%,0px 25.0%,6px 31.2%,4px 37.5%,4px 43.8%,0px 50.0%,6px 56.2%,6px 62.5%,2px 68.8%,2px 75.0%,0px 81.2%,4px 87.5%,2px 93.8%,2px 100.0%,calc(100% - 6px) 100.0%,calc(100% - 4px) 93.8%,calc(100% - 2px) 87.5%,calc(100% - 2px) 81.2%,calc(100% - 2px) 75.0%,calc(100% - 2px) 68.8%,calc(100% - 6px) 62.5%,calc(100% - 4px) 56.2%,calc(100% - 4px) 50.0%,calc(100% - 0px) 43.8%,calc(100% - 6px) 37.5%,calc(100% - 6px) 31.2%,calc(100% - 2px) 25.0%,calc(100% - 2px) 18.8%,calc(100% - 4px) 12.5%,calc(100% - 4px) 6.2%,calc(100% - 0px) 0.0%)}50%{clip-path:polygon(2px 0.0%,4px 6.2%,0px 12.5%,6px 18.8%,2px 25.0%,6px 31.2%,6px 37.5%,2px 43.8%,6px 50.0%,0px 56.2%,0px 62.5%,0px 68.8%,6px 75.0%,6px 81.2%,6px 87.5%,4px 93.8%,0px 100.0%,calc(100% - 2px) 100.0%,calc(100% - 0px) 93.8%,calc(100% - 2px) 87.5%,calc(100% - 6px) 81.2%,calc(100% - 6px) 75.0%,calc(100% - 4px) 68.8%,calc(100% - 4px) 62.5%,calc(100% - 2px) 56.2%,calc(100% - 0px) 50.0%,calc(100% - 2px) 43.8%,calc(100% - 2px) 37.5%,calc(100% - 6px) 31.2%,calc(100% - 2px) 25.0%,calc(100% - 4px) 18.8%,calc(100% - 0px) 12.5%,calc(100% - 6px) 6.2%,calc(100% - 2px) 0.0%)}75%{clip-path:polygon(2px 0.0%,0px 6.2%,6px 12.5%,0px 18.8%,0px 25.0%,4px 31.2%,2px 37.5%,4px 43.8%,0px 50.0%,2px 56.2%,4px 62.5%,2px 68.8%,4px 75.0%,4px 81.2%,4px 87.5%,2px 93.8%,2px 100.0%,calc(100% - 6px) 100.0%,calc(100% - 2px) 93.8%,calc(100% - 6px) 87.5%,calc(100% - 0px) 81.2%,calc(100% - 4px) 75.0%,calc(100% - 2px) 68.8%,calc(100% - 4px) 62.5%,calc(100% - 0px) 56.2%,calc(100% - 4px) 50.0%,calc(100% - 2px) 43.8%,calc(100% - 4px) 37.5%,calc(100% - 0px) 31.2%,calc(100% - 6px) 25.0%,calc(100% - 0px) 18.8%,calc(100% - 2px) 12.5%,calc(100% - 6px) 6.2%,calc(100% - 4px) 0.0%)}100%{clip-path:polygon(2px 0.0%,4px 6.2%,6px 12.5%,6px 18.8%,2px 25.0%,6px 31.2%,6px 37.5%,0px 43.8%,4px 50.0%,0px 56.2%,0px 62.5%,0px 68.8%,6px 75.0%,6px 81.2%,2px 87.5%,6px 93.8%,4px 100.0%,calc(100% - 2px) 100.0%,calc(100% - 2px) 93.8%,calc(100% - 6px) 87.5%,calc(100% - 0px) 81.2%,calc(100% - 2px) 75.0%,calc(100% - 0px) 68.8%,calc(100% - 0px) 62.5%,calc(100% - 4px) 56.2%,calc(100% - 2px) 50.0%,calc(100% - 6px) 43.8%,calc(100% - 6px) 37.5%,calc(100% - 0px) 31.2%,calc(100% - 0px) 25.0%,calc(100% - 6px) 18.8%,calc(100% - 6px) 12.5%,calc(100% - 0px) 6.2%,calc(100% - 0px) 0.0%)}}   /* 拉開時的紅藍邊線一直扭曲 */   /* 跟裂縫圖示一樣：左緣洋紅、右緣青色（同形狀往左上／右下錯開） */
+  .he-p{background:#ff2a6d;transform:translate(-6px,-3px)}
+  .he-c{background:#05d9e8;transform:translate(6px,3px)}
+  .arena-clip{position:absolute;inset:0;overflow:hidden;clip-path:var(--hole);background:#140a22}   /* 底色：背景雜訊錯位時不會露出底下的紅藍邊 */
   .arena-bg{position:absolute;inset:0;background:#140a22}
   body.glitch .arena-bg{background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 2px,transparent 2px 4px),linear-gradient(90deg,rgba(255,42,109,.25),transparent 35%,transparent 65%,rgba(5,217,232,.25)),#140a22}
-  .devil{position:absolute;right:16px;top:14px;width:112px;z-index:2;animation:devilbob .9s steps(2) infinite alternate}
+  .devil{position:absolute;right:40px;top:40px;width:112px;z-index:2;animation:devilbob .9s steps(2) infinite alternate}
   .devil svg{display:block}
   .devil .df2{position:absolute;left:0;top:0;visibility:hidden;animation:devflip .5s steps(1) infinite}
   .devil .df1{animation:devflip .5s steps(1) infinite reverse}
@@ -224,8 +333,18 @@
   @keyframes devilbob{from{transform:translateY(0)}to{transform:translateY(-8px)}}
   @keyframes devilhit{0%{transform:translate(-10px,4px) rotate(-8deg)}100%{transform:translate(8px,-2px) rotate(6deg)}}
   @keyframes devildie{0%{opacity:1;transform:rotate(0) scale(1)}25%{opacity:.2;transform:translateY(10px) rotate(20deg)}50%{opacity:1;transform:translateY(40px) rotate(-30deg) scale(.8)}75%{opacity:.2;transform:translateY(120px) rotate(60deg) scale(.5)}100%{opacity:0;transform:translateY(240px) rotate(180deg) scale(.1)}}
-  .cat{position:absolute;left:8px;bottom:8px;width:150px;z-index:3}
-  .cat.rollin{animation:catout 1.1s steps(7) both}
+  .cat{position:absolute;left:14px;bottom:14px;width:150px;z-index:3}
+  .crack{position:absolute;bottom:2px;z-index:2;filter:drop-shadow(0 0 3px #b9a6ff)}   /* 地面裂痕：胖貓屁股正下方往兩側裂開 */
+  .crack svg{display:block}
+  .crack.off{visibility:hidden}
+  .crack.grow{animation:crackgrow .35s steps(4) both}
+  @keyframes crackgrow{from{clip-path:inset(0 50% 0 50%)}to{clip-path:inset(0 0 0 0)}}
+  body.quake{animation:quake .7s steps(14) 1}   /* 砸到地上：整個畫面大地震 */
+  @keyframes quake{0%{transform:translate(0,0)}10%{transform:translate(-10px,6px)}20%{transform:translate(9px,-7px)}30%{transform:translate(-8px,-4px)}40%{transform:translate(7px,5px)}50%{transform:translate(-6px,3px)}60%{transform:translate(5px,-3px)}70%{transform:translate(-3px,2px)}80%{transform:translate(2px,-1px)}100%{transform:translate(0,0)}}
+  .dust{position:absolute;bottom:4px;width:12px;height:12px;background:#d8c9b0;box-shadow:12px -6px 0 #e8dcc6,-10px -8px 0 #c8b898;animation:dust .6s steps(4) forwards;z-index:4}
+  @keyframes dust{from{opacity:1;transform:translateX(0) scale(1)}to{opacity:0;transform:translateX(var(--dx)) translateY(-14px) scale(1.6)}}
+  .cat.land{animation:catland .3s steps(3) 1}   /* 落地：壓扁一下再彈回 */
+  @keyframes catland{0%{transform:scale(1.08,.9)}100%{transform:scale(1,1)}}
   .fist{position:absolute;right:12px;bottom:12px;z-index:4;width:84px;height:84px;padding:0;border:0;background:none;cursor:pointer;touch-action:manipulation}   /* 圓形拳頭鈕（整顆是像素圖） */
   .sunset-btn.nes-btn,.sunset-btn.nes-btn:hover{color:#fff;text-shadow:2px 2px 0 #4a2a8f;background-color:#7b3fb0}   /* 領取通關證明：拍貼的紫色 */
   .sunset-btn.nes-btn::after{box-shadow:inset -4px -4px #4a2a8f}
@@ -299,6 +418,8 @@ const CONFIG = {
   openLetterColors: { '[麟光捷運站]': 'var(--brown)' },   // 麟光＝文湖線咖啡色
   openPassword: 'ILOVEMOMO',                  // 開頭密碼（大小寫不分、忽略空白）
   endLetter: '親愛的莉莉：\n\n恭喜妳進化成 30 歲的輕熟女了，不論妳過去一年經歷了什麼，遇到什麼討厭的人事物，接下來都將開啟新的人生旅程，那就是：有我相伴的未來。\n我會陪妳踩過一切不順遂，牽著妳不斷前行，持續創造美好的回憶，30 歲生日快樂！\n\n墨墨',      // 生日快樂合照之後的信；按「領取通關證明」才到最後一頁
+  crackStyle: 'radial',     // 胖貓砸地裂痕樣式：radial 圓形輻射（壓扁成地面透視，Ming 選）／branch 分岔／crater 撞擊坑
+  holeStyle: 'rect',        // 魔王戰裂隙樣式：rect 鋸齒方框／radial 圓形輻射／tear 直向撕裂
   testMode: false,          // 測試模式：控制者介面常開＋底部上一頁／下一頁。正式版 false（控制者介面要備援密碼或頁尾連點 5 下才開、可關閉）；網址加 ?test 可暫時打開
   npcPin: '0501',            // 備援密碼＝控制者介面密碼（每關「機器壞了？」輸入，或頁尾連點 5 下）
   lockerNumber: '30',        // 麟光站置物櫃號碼，開局放禮物後填
@@ -343,8 +464,8 @@ const CONFIG = {
       callTail:'.57 7760',     // 題目上直接給的後半
       hints:[] },
 
-    { id:'g2', name:'科技大樓 >> 大安森林公園', code:'移動中', line:'red', transit:true, type:'game', game:'song',
-      arriveStory:'妳在前往的路途上，遇到好心的老太太，她告訴妳，想解除胖貓的封印必須要有徽章。但解封的徽章碎成 2 半，被藏在 2 個地方。',   // 抵達頁上方的敘述（貓毛已失去魔力）
+    { id:'g2', name:'科技大樓 >> 大安森林公園', code:'移動中', line:'red', transit:true, type:'game', game:'song', arriveArt:'granny',
+      arriveStory:'妳在路途上，遇到好心的老太太，她告訴妳，想解除胖貓的封印必須要有徽章。但解封的徽章碎成 2 半，被藏進不同地點的異次元夾縫，老太太給了妳異次元觀測器後就消失了。',   // 抵達頁上方的敘述（貓毛已失去魔力）
       sub:'秘密任務 2 · 莉莉之歌',
       intro:'這 4 句歌詞裡都藏著莉莉。聽一聽，把歌名填進來。',
       // 歌詞是莉莉諧音版；yt＝YouTube 影片 id，start／end＝播放起訖秒數（估的，試聽後校正）
@@ -369,7 +490,7 @@ const CONFIG = {
       hints:['地點：一半在站內、一半在站外。','左半：藏在牆上的季節。','右半：藏在一朵大花內。'],
       nextText:'' },
 
-    { id:'g3', name:'大安森林公園 >> 東門', code:'移動中', line:'red', transit:true, type:'game', game:'memory',
+    { id:'g3', name:'大安森林公園 >> 東門', code:'移動中', line:'red', transit:true, type:'game', arriveArt:'momoHungry', game:'memory',
       arriveStory:'列車長的肚子咕嚕咕嚕叫。',   // 抵達頁（往東門）地標上方的敘述
       sub:'秘密任務 3 · 記憶莉考驗',
       intro:'翻開 2 張一樣的牌。翻錯會蓋回去。',
@@ -384,7 +505,7 @@ const CONFIG = {
       preStep:{ button:'列車長滿意', icon:'food' },   // 按了才進合照；icon 畫在說明下面
       theme:'好好吃！' },
 
-    { id:'g4', name:'東門 >> 忠孝新生', code:'移動中', line:'orange', transit:true, type:'game', game:'mario', arriveStory:'好好喘口氣，接下來有艱難的任務在等著妳。',
+    { id:'g4', name:'東門 >> 忠孝新生', code:'移動中', line:'orange', transit:true, type:'game', game:'mario', arriveArt:'momoMystery', arriveStory:'好好喘口氣，接下來有艱難的任務在等著妳。',
       sub:'秘密任務 4 · 超級莉莉',
       intro:'左右走、按「跳」。走到墨墨那裡就過關。',
       nextText:'' },
@@ -406,7 +527,7 @@ const CONFIG = {
       cardSub:'三十而莉 · 生日列車',  // 小字；想放日期就改這裡
       hints:['抬頭看天花板和光從哪來。','紅磚牆、鐵門、玻璃反射都是好背景。','讓列車長趴下來拍。'] },
 
-    { id:'m1', name:'忠孝新生 >> 忠孝復興', code:'移動中', line:'blue', type:'photo_task', transit:true, noCandle:true,
+    { id:'m1', name:'忠孝新生 >> 忠孝復興', code:'移動中', line:'blue', type:'photo_task', transit:true, noCandle:true, arriveArt:'rift',
       arriveStory:'空間已經開始不穩定了，還被列車長拖了一下台錢，趕緊前往忠孝復興！',   // 抵達頁（往忠孝復興）地標上方的敘述
       noCandleText:'列車長說：「這次只是拍爽的，其實拿不到任何東西，ㄏㄏ」', goBtn:'ㄏㄏ',   // 拍完後的黑字＋按鈕字（Ming）
       sub:'路途中 · 金牌特務',
@@ -578,12 +699,12 @@ function load(){
 }
 function save(){ try{ localStorage.setItem('mrt-state', JSON.stringify(state)); }catch(e){} updateBar(); }
 let gameCleanup=null;
-/* 測試模式：每換一頁記一筆快照，上一頁＝還原上一筆 */
+/* 測試模式或控制者介面打開時：每換一頁記一筆快照，上一頁＝還原上一筆（照片不放進快照，省空間、上一頁也不會把照片退掉） */
 let HIST=[], REDO=[], restoring=false;
 try{ HIST=JSON.parse(sessionStorage.getItem('mrt-hist')||'[]'); }catch(e){}
-function snapState(){ const c=JSON.parse(JSON.stringify(state)); delete c.npc; return JSON.stringify(c); }
-function recordPage(){ if(!CONFIG.testMode || restoring) return; const sn=snapState(); if(HIST[HIST.length-1]!==sn){ HIST.push(sn); if(HIST.length>80) HIST.shift(); REDO=[]; try{ sessionStorage.setItem('mrt-hist', JSON.stringify(HIST)); }catch(e){} } }
-function restoreSnap(sn){ const o=JSON.parse(sn); Object.keys(state).forEach(k=>{ if(k!=='npc') delete state[k]; }); Object.assign(state,o); restoring=true; save();
+function snapState(){ const c=JSON.parse(JSON.stringify({...state, extra:{...state.extra, strip:undefined}})); delete c.npc; return JSON.stringify(c); }
+function recordPage(){ if(!(CONFIG.testMode||state.npc) || restoring) return; const sn=snapState(); if(HIST[HIST.length-1]!==sn){ HIST.push(sn); if(HIST.length>80) HIST.shift(); REDO=[]; try{ sessionStorage.setItem('mrt-hist', JSON.stringify(HIST)); }catch(e){} } }
+function restoreSnap(sn){ const o=JSON.parse(sn), strip=state.extra.strip; Object.keys(state).forEach(k=>{ if(k!=='npc') delete state[k]; }); Object.assign(state,o); if(strip) state.extra.strip=strip; restoring=true; save();
   const st=CONFIG.stages[state.stage];
   if(st && state.done[st.id] && !['game','firebadge','photo_task','final'].includes(st.type)){ stopCamera(); showLetter(st,true); }   // 過關畫面那一頁
   else if(!state.started) render(); else render();
@@ -821,6 +942,8 @@ const CAMERA = pxIcon([
   '................',
   '................'],
   {K:'#222',W:'#fff',G:'#4a6fa5',L:'#9bd1ff'}, 16, 12, '相機', '1.2em');
+const PHOTO_ICON = pxIcon(['KKKKKKKKKKKKKKKK', 'KWWWWWWWWWWWWWWK', 'KWLLLLLLLLLYYLWK', 'KWLLLLLLLLLYYLWK', 'KWLLLLLLLLLLLLWK', 'KWLLLLGLLLLLLLWK', 'KWLLLGGGLLLGLLWK', 'KWLLGGGGGLGGGLWK', 'KWLGGGGGGGGGGGWK', 'KWWWWWWWWWWWWWWK', 'KKKKKKKKKKKKKKKK', '................'],
+  {K:'#222',W:'#fff',L:'#9bd1ff',G:'#3fa34d',Y:'#ffd166'}, 16, 12, '照片', '1.2em');   // 上傳照片按鈕用（Ming：相機改成照片圖示）
 const PARTY = pxIcon([
   '..........Y...P.',
   '.......B.....Y..',
@@ -1022,17 +1145,24 @@ function arrivePage(s, idx){                   // 「已抵達 X」頁：大紅�
   const nx=CONFIG.stages[idx+1];
   main.innerHTML = ticket(s, `${steps()}
     ${s.arriveStory?`<p>${s.arriveStory}</p>`:''}${s.arriveHair?`<p class="center" style="font-size:20px;margin:16px 0 0">跟隨貓毛前往 <span class="big">${nx.name}</span></p>`:''}
-    ${s.arriveHair?`<div class="hero pin-orbit"><div class="po-pin">${PIN_BIG}</div><div class="po-ring"><div class="po-hair hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '44px', 'aria-label="發光的貓毛"')}</div></div></div>`:`<div class="hero" style="display:flex;justify-content:center">${PIN_BIG}</div>`}   <!-- 貓毛只在第一段（圖書館之後貓毛失去魔力） -->
-    <button class="nes-btn is-arrive btn" id="next" style="--arrive:${LINE[nx.line]}">已抵達 ${nx.name}</button>
+    ${s.arriveHair?chaseHTML():`<div class="hero" style="display:flex;justify-content:center">${s.arriveArt&&ARRIVE_ART[s.arriveArt]?ARRIVE_ART[s.arriveArt]():PIN_BIG}</div>`}   <!-- 貓毛只在第一段（圖書館之後貓毛失去魔力） -->
+    <button class="nes-btn is-arrive btn" id="next" style="--arrive:${LINE[nx.line]}">${PIN} 已抵達 ${nx.name}</button>
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#next').onclick=()=>{ state.extra[s.id+'_left']=true; state.stage=Math.min(idx+1,CONFIG.stages.length-1); save(); render(); };
   bindBackupScan(s); bindNpc(s,idx);
 }
+const TRIPOD_ROWS=['............', '...LLLLLL...', '...LKLLLL...', '...LLLLLL...', '...LKLLLL...', '...LLLLLL...', '...LLLLLL...', '...LLLLLL...', '...LLLLLL...', '...LLLLLL...', '....KKKK....', '.....KK.....', '.....KK.....', '....KKKK....', '...K.KK.K...', '..K..KK..K..', '.K...KK...K.'];   // 架在三腳架上的手機（背面朝外：沒有邊框、兩顆黑色鏡頭）
+const TRIPOD_PAL={K:'#222',G:'#5a5a64',L:'#3a78c4',W:'#dcf0ff',R:'#e63946'};
+/* 合照頁：莉莉和墨墨站在一起，前面架一台相機（還沒上傳照片時顯示） */
+function poseHTML(){ const {LILY,LILY_PAL,MOMO,MOMO_PAL}=window.MG_SPRITES;
+  return `<div class="pose" aria-label="莉莉和墨墨準備合照">${spriteSVG(LILY, LILY_PAL, '84px')}${spriteSVG(MOMO, MOMO_PAL, '84px')}<span class="pose-gap"></span>${spriteSVG(TRIPOD_ROWS, TRIPOD_PAL, '84px')}</div>`; }
+/* 「請前往」上方的捷運（跟拍貼最底下同一台） */
+function goTrain(){ return `<div class="go-train">${spriteSVG(TRAIN_ROWS, TRAIN_PAL, '168px', 'aria-label="捷運"')}</div>`; }
 function goNextHTML(s, idx){
   const nx=CONFIG.stages[idx+1]; if(!nx) return '<button class="nes-btn is-primary btn" id="next" style="margin-top:14px">完成</button>';
   if(!nx.transit) return `${s.nextText?`<p style="margin-top:14px;font-size:18px">${s.nextText}</p>`:''}<button class="nes-btn is-success btn" id="next">${s.goBtn||'下一步'}</button>`;
   const dest=CONFIG.stages.slice(idx+1).find(x=>!x.transit)||nx;
-  return `${s.goStory?`<p>${s.goStory}</p>`:''}<p class="center" style="font-size:${s.goLines?16:20}px;margin:16px 0">${s.goLines?s.goLines.join('<br>'):`${s.nextText||`${s.goVerb||'請前往'} <span class="big">${dest.name}</span>`}<br>並在路上進行秘密任務`}</p>
+  return `${s.goStory?`<p>${s.goStory}</p>`:''}${goTrain()}<p class="center" style="font-size:${s.goLines?16:20}px;margin:16px 0">${s.goLines?s.goLines.join('<br>'):`${s.nextText||`${s.goVerb||'請前往'} <span class="big">${dest.name}</span>`}<br>並在路上進行秘密任務`}</p>
     ${s.goHair?`<div class="hero hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '96px', 'class="mx" aria-label="發光的貓毛"')}</div>`:''}
     <button class="nes-btn is-primary btn" id="next">進行秘密任務</button>`;
 }
@@ -1041,6 +1171,32 @@ const FAIRY_ROWS=['...........................S....', '.........................
 const FAIRY_PAL={C:'#b39ddb',D:'#8e72c4',E:'#ead9c8',T:'#d8cdee',R:'#e98fbf',W:'#fff9f0',F:'#f4f4f8',L:'#c9cfee',P:'#efc3de',Q:'#d98bc0',S:'#efc3de',V:'#b78fe0',U:'#dcc9f2'};
 // 一根發光的淺橘貓毛（麟光出發頁用）
 const HAIR_ROWS=['...........*..', '............L.', '...........L..', '..........OL..', '.........OL...', '........OL....', '.......OL.....', '......OL......', '.....OL.......', '....OL........', '...OL.........', '..L...........', '.L.........*..', '..............'];   // 直直一根、斜放、兩端收尖，旁邊兩顆亮點（Ming：不要 S 形、不要像熱狗）
+const GRANNY_ROWS=['......KKKKK.................', '.....KHHHHHK................', '.....KHhHHHK................', '....KKKHHHKKK...............', '...KHHHHHHHHHK..............', '..KHHHhHHHHhHHK.............', '..KHHSSSSSSSSHHK............', '..KHSSSSSSSSSSHK............', '..KHSAAASSAAASHK............', '..KHSASAAAASASHK............', '..KHSAEASSAEASHK............', '..KHPAAASSAAAPHK............', '...KSSSSMMSSSSK.............', '....KSSSSSSSSK..............', '...KKWWKKKKWWKK..K..........', '..KCCWWWWWWWWCCKKCSSS.......', '.KCCCCWWWWWWCCCCKCSSK.......', '.KCCcCCCCCCCCcCCKC..........', '.KCCcCCCCCCCCcCCKK..........', '.KCCcCCCOCCCCcCK............', '.KSSCCCCCCCCCCCK............', '.KSSCCCCOCCCCCCK............', '..KKCCCCCCCCCCK.............', '...KDDDDDDDDDDK.............', '...KDDDdDDDdDDK.............', '...KDDDdDDDdDDK.............', '....KKKKKKKKKK..............', '.....KSSK.KSSK..............', '....KBBBK.KBBBK.............', '....KKKKK.KKKKK.............'];   // 好心的老太太（含握望遠鏡的手），28×30
+const GRANNY_TEL_ROWS=['............................', '............................', '............................', '............................', '............................', '.................KKKKKKK....', '.................K.....K....', '.................KWTTTTK....', '.................KWTTTTK....', '.................KWTTTTK....', '..................KWTTK.....', '..................KWTTK.....', '..................KtttK.....', '..................KWTTK.....', '..................KtttK.....', '..................KWTTK.....', '..................KWTTK.....', '...................KTK......', '...................KTK......', '...................KTK......', '...................KKK......', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................'];   // 直立的銀色單筒望遠鏡本體（深色外框）
+const GRANNY_TEL_LENS=['............................', '............................', '............................', '............................', '............................', '............................', '..................ROYGB.....', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................', '............................'];   // 鏡頭：七彩、會變色並向四周發光
+const GRANNY_PAL={K:'#3a2a2a',H:'#d6d6dc',h:'#a0a0aa',S:'#f3d2b3',A:'#b08850',E:'#222',P:'#f0a0aa',M:'#c85a64',W:'#fffaf0',C:'#8e6bbf',c:'#6d4f99',O:'#ffd166',D:'#5b4a7a',d:'#463860',T:'#cdd2da',t:'#828892',L:'#9fd8ff',B:'#3a2a2a'};
+/* 抵達頁的劇情圖（取代大紅地標）：s.arriveArt 指定 */
+const RAINBOW_PAL={R:'#ff4d6d',O:'#ff9f43',Y:'#ffe066',G:'#66d678',B:'#4cc9f0',I:'#5b6ee6',V:'#b464e6'};
+const MOMO_HUNGRY_ROWS=['.......BBBBBB.......', '......BBBBBBBB......', '.....BBBBBBBBBB.....', '.....GBBBBBBBBG.....', '.....GSBBBBBBSG.....', '.....SSSSSSSSSS.....', '.....MSEESSEESM.....', '......SSSSSSSS......', '.......SMMMMS.......', '......BBBBBBBB......', '.....BBBBBBBBBB.....', '.....BBSSBBSSBB.....', '.....BBSSBBSSBB.....', '......BBBBBBBB......', '......BBB..BBB......', '.....BBBB..BBBB.....', '.....BBBB..BBBB.....'];   // 墨墨摸肚子（20×17，墨墨置中、兩手摸肚子、嘴巴張開）
+const MOMO_GROWL_ROWS=['....................', '....................', '....................', '....................', '....................', '....................', '....................', '....................', '....................', 'Y..................Y', '.Y...............Y..', '..Y...............Y.', '.Y...............Y..', '..Y...............Y.', '....................', '....................', '....................'];   // 肚子咕嚕叫的聲音線（另一層，會閃）
+const MOMO_HUNGRY_PAL={B:'#111',G:'#5a4a40',S:'#dcb48e',E:'#222',M:'#8a5a44',A:'#46464e',Y:'#ff9f43'};
+const MOMO_EDITOR_ROWS=['......BBBBBB......', '.....BBBBBBBB.....', '....BBBBBBBBBB....', '....GBBBBBBBBG....', '....GSBBBBBBSG....', '....RRRLSSRRLR....', '....MRLRRRRLRM....', '.....LRRSSLRR.....', '......SSMMSS......', '.....BBBBBBBB.....', '....BBBBBBBBBB....', '....BBBBBBBBBB....', '....BBBBBBBBBB....', '....SBBBBBBBBS....', '.....BBB..BBB.....', '....BBBB..BBBB....', '....BBBB..BBBB....'];   // IG 總編＝戴灰色眼鏡的墨墨（12×17）
+const MOMO_MYSTERY_ROWS=['......XXXXXX......', '.....XXXXXXXX.....', '....XXXXXXXXXX....', '....XXXXQQXXXX....', '....XXXQXXQXXX....', '....XXXXXXQXXX....', '....XXXXXQXXXX....', '.....XXXXXXXX.....', '......XXXQXX......', '.....XXXXXXXX.....', '....XXXXXXXXXX....', '....XXXXXXXXXX....', '....XXXXXXXXXX....', '....XXXXXXXXXX....', '.....XXX..XXX.....', '....XXXX..XXXX....', '....XXXX..XXXX....'];
+const MOMO_EDITOR_SPARK=['..................', '..................', '..................', '..................', '................L.', '...............LLL', '................L.', '..................', '..................', '..................', '..................', '..................', '..................', '..................', '..................', '..................', '..................'];   // 眼鏡右邊的＋十字閃光（另一層，會閃）   // 同一張的剪影＋臉上問號（抵達忠孝新生前）
+const MOMO_EDITOR_PAL={B:'#111',G:'#5a4a40',S:'#dcb48e',E:'#222',M:'#8a5a44',R:'#e6e6ea',L:'#ffffff',X:'#3a3a4a',Q:'#fff'};
+const RIFT_FRAMES=[['...........PVC..........', '............PVC.........', '...........PVVVC........', '..........PVVVC.........', '........PPVVVC..........', '.......PVVVVVC..........', '.......PVVVVVCC.........', '.......PVVVVVVVC........', '........PVVVVVVVC.......', '.........PVVWVVVVCC.....', '.........PVVVVVVVVVC....', '.........PVVVVWVVVVC....', '........PVVVVVVVVVC.....', '.......PVVVVVWVVVC......', '......PVVVVVVVVVC.......', '......PVVVVVVVCC........', '......PVVVVWVVC.........', '.......PVVVVVVVC........', '........PPVVVVVC........', '..........PVWVVVC.......', '..........PVVVVVC.......', '..........PVVVCC........', '..........PVVVC.........', '.........PVVVC..........', '..........PVC...........', '...........PVC..........'], ['...........PVC..........', '............PVC.........', '............PVC.........', '...........PVC..........', '.........PPVC...........', '........PVVVC...........', '........PVVVCC..........', '........PVVVVVC.........', '.........PVVVVVC........', '..........PVVVVVC.......', '...........PVVVVVC......', '...........PVVVVVC......', '..........PVVVVVC.......', '.........PVVVVVC........', '........PVVVVVC.........', '.......PVVVVVC..........', '.......PVVVVVC..........', '........PVVVVVC.........', '.........PPVVVC.........', '...........PVVVC........', '...........PVVVC........', '...........PVCC.........', '...........PVC..........', '..........PVC...........', '..........PVC...........', '...........PVC..........'], ['........................', '............PPC.........', '.............PC.........', '............PCC.........', '...........PCC..........', '..........PCC...........', '..........PC............', '..........PPC...........', '...........PPC..........', '............PPC.........', '.............PPC........', '..............PC........', '.............PCC........', '............PCC.........', '...........PCC..........', '..........PCC...........', '..........PC............', '..........PPC...........', '...........PPC..........', '............PPC.........', '.............PC.........', '............PCC.........', '............PC..........', '...........PCC..........', '...........PC...........', '........................']];   // 空間裂縫三幀：張開／半開／合成紅藍一條線（24×26）
+const RIFT_SHARDS=['........................', '........................', '........................', '........................', '....................C...', '...PP...................', '....P...................', '........................', '...................CC...', '........................', '........................', '........................', '........................', '........................', '........................', '..C.....................', '........................', '.....................PP.', '........................', '........................', '........................', '.....P..................', '..................CC....', '...................C....', '........................', '........................'];   // 裂縫旁漂浮的碎片（另一層）
+const RIFT_PAL={V:'#140a22',P:'#ff2a6d',C:'#05d9e8',W:'#fff'};
+const ARRIVE_ART={ rift:()=>`<div class="rift" aria-label="空間裂縫"><div class="rf-body">${RIFT_FRAMES.map((f,i)=>`<div class="rf-f rf-f${i}">${spriteSVG(f, RIFT_PAL, '168px', 'aria-hidden="true"')}</div>`).join('')}</div><div class="rf-shards">${spriteSVG(RIFT_SHARDS, RIFT_PAL, '168px', 'aria-hidden="true"')}</div></div>`,
+  momoMystery:()=>spriteSVG(MOMO_MYSTERY_ROWS, MOMO_EDITOR_PAL, '216px', 'aria-label="神秘人的剪影"'),
+  momoHungry:()=>`<div class="hungry" aria-label="墨墨摸著肚子"><div class="h-body">${spriteSVG(MOMO_HUNGRY_ROWS, MOMO_HUNGRY_PAL, '200px', 'aria-hidden="true"')}</div><div class="h-growl">${spriteSVG(MOMO_GROWL_ROWS, MOMO_HUNGRY_PAL, '200px', 'aria-hidden="true"')}</div></div>`,
+  granny:()=>`<div class="granny" style="margin-top:12px" aria-label="拿著七彩望遠鏡的老太太">${spriteSVG(GRANNY_TEL_ROWS, GRANNY_PAL, '168px', 'aria-hidden="true"')}<div class="g-edge">${spriteSVG(GRANNY_TEL_LENS, RAINBOW_PAL, '168px', 'aria-hidden="true"')}</div><div class="g-top">${spriteSVG(GRANNY_ROWS, GRANNY_PAL, '168px', 'aria-hidden="true"')}</div></div>` };
+function chaseHTML(){   // 貓毛往前飛、莉莉在後面跑（Ming）
+  const {LILY_RUN,LILY_MID,LILY_PAL}=window.MG_SPRITES;
+  return `<div class="chase" aria-label="莉莉追著貓毛跑">
+    <i class="ch-dash" style="left:132px;top:58px;width:22px"></i><i class="ch-dash" style="left:120px;top:84px;width:30px;animation-delay:.2s"></i><i class="ch-dash" style="left:6px;top:150px;width:18px;animation-delay:.1s"></i>
+    <div class="ch-lily"><div class="f1">${spriteSVG(LILY_RUN, LILY_PAL, '84px')}</div><div class="f2">${spriteSVG(LILY_MID, LILY_PAL, '84px')}</div></div>
+    <div class="ch-hair hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '72px')}</div></div>`; }
 const HAIR_PAL={L:'#f5c98a', O:'#d98f45', '*':'#ffc93c'};   // 淺金橘芯＋橘邊＋金亮點（米色底上看得到）   // 淺米色芯＋淡橘邊＋白亮點   // 淺橘芯＋較深的橘邊，米色底上才看得到
 function giveDigit(id){ if(CONFIG.digits[id]!=null && state.codes[id]==null){ state.codes[id]=CONFIG.digits[id]; save(); } }
 /* 不顯示過關畫面，直接進下一站 */
@@ -1053,6 +1209,7 @@ function pass(s){
   if(s.type==='firebadge'){ const k=s.id+'_fb', d=state.extra[k]||{got:[]}; d.summoned=true; state.extra[k]=d; save(); return render(); }   // 直接過也走解封頁 → 點蠟燭 → 目的地
   if(s.type==='game'){ state.extra[s.id+'_won']=true; state.extra[s.id+'_shown']=true; save(); return render(); }   // 小遊戲：直接到秘密數字頁
   save();
+  if(s.finalPhoto) return render();   // 最後合照直接過：進「獲得了一封信」
   showLetter(s, true);
 }
 function ok(msg){ return `<p class="msg nes-text is-success">★ ${msg}</p>`; }
@@ -1150,12 +1307,13 @@ function render(){
   stopCamera(); stopGlitch(); document.body.classList.remove('noprog');
   preloadAhead();
   setTimeout(recordPage,0);
+  if(state.replay && replayFinished()){ window.scrollTo(0,0); return renderReplayDone(); }
   const idx=state.stage, s=CONFIG.stages[idx];
   if(!state.started && idx===0 && !state.done.s0){ return state.extra.openLetter ? renderWelcome() : renderOpenLetter(); }
   if(gameCleanup){ gameCleanup(); gameCleanup=null; }
   if(state.done[s.id] && s.type!=='final' && !((s.type==='game'||s.type==='firebadge'||s.type==='photo_task') && !state.extra[s.id+'_left']) && !s.finalPhoto){ state.stage=Math.min(idx+1, CONFIG.stages.length-1); save(); return render(); }
   const r = { photo_task:renderPhotoTask, firebadge:renderFireBadge, game:renderGame, library:renderLibrary, ticket_puzzle:renderTicketPuzzle, spot:renderSpot, gps_qr:renderGpsQr, ar:renderAR, compass_color:renderCompassColor, food:renderFood, sound_puzzle:renderSoundPuzzle, rainbow:renderRainbow, director:renderDirector, final:renderFinal }[s.type];
-  const y=window.scrollY; r(s, idx);
+  const y=window.scrollY; r(s, idx); replayBar();
   window.scrollTo(0, Math.min(y, Math.max(0, document.documentElement.scrollHeight-window.innerHeight)));   // 按按鈕換頁後維持原本的捲動位置（Ming）；新頁比較短就停在最底
 }
 
@@ -1199,8 +1357,8 @@ function renderTicketPuzzle(s, idx){
     main.innerHTML = ticket(s, `${steps()}
       <p style="margin:4px 0 2px">請拍一張合照，合照主題：</p>
       <p class="center" style="font-size:34px;margin:0 0 12px;color:var(--red)">${s.departTheme}</p>
-      ${shot?photoFrame(s.id,'margin-bottom:14px'):''}
-      <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
+      ${shot?photoFrame(s.id,'margin-bottom:14px'):poseHTML()}
+      <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${PHOTO_ICON} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
       ${shot?'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:14px">下一步</button>':''}
       ${backupScanBox()}${npcBox(s,idx)}`);
     $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.departTheme, u); render(); }); rd.readAsDataURL(f); };
@@ -1216,7 +1374,7 @@ function renderTicketPuzzle(s, idx){
   } else if(d.step==='go'){
     const dest=CONFIG.stages.slice(idx+1).find(x=>!x.transit)||next;
     main.innerHTML = ticket(s, `${steps()}
-      ${s.goStory?`<p>${s.goStory}</p>`:''}<p class="center" style="font-size:20px;margin:16px 0">${s.goVerb||'請前往'} <span class="big">${dest.name}</span><br>${s.noPuzzle?'並在路上進行秘密任務':'並在車上完成拼圖。'}</p>
+      ${s.goStory?`<p>${s.goStory}</p>`:''}${goTrain()}<p class="center" style="font-size:20px;margin:16px 0">${s.goVerb||'請前往'} <span class="big">${dest.name}</span><br>${s.noPuzzle?'並在路上進行秘密任務':'並在車上完成拼圖。'}</p>
       ${s.goHair?`<div class="hero hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '96px', 'class="mx" aria-label="發光的貓毛"')}</div>`:''}
       ${s.noPuzzle?`<button class="nes-btn is-primary btn" id="board">進行秘密任務</button>`:`<button class="nes-btn is-primary btn" id="open">開啟拼圖</button>`}
       ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
@@ -1420,21 +1578,61 @@ function stopGlitch(){ document.body.classList.remove('glitch'); if(glitchTimer)
   document.body.style.backgroundPosition=''; document.body.style.removeProperty('--gx');
   const bg=document.querySelector('.arena-bg'); if(bg){ bg.style.transform=bg.style.clipPath=''; }
   const layer=document.querySelector('.gl-layer'); if(layer) layer.remove(); }
+const CRACKS={"branch": {"rows": ["................................................................................", "..................L.............................................................", "...................L......................L.....................................", ".........L.........L.....................L......................................", ".........L..........L...................L..........L............................", "........L...........L...................L...........L..........L................", "...L....L..........L..........L..........L..........L...........L...............", "....L....L.........L.........L...........L.........L............L..........L....", ".....L....L.........L.......L...........L.........L............L..........L.....", "....LLLLL.L...LLLL..L........L..........L..LLLL...L..LLLLL....L..LLLLL....L..LLL", "LLLL.....LLLLL....LLL..LLLLL.L...LLLLL..LLL....LLLLLL.....LLLLLLL.....LLLLLLL...", "....................LLL.....LLLLL.....LLL......................................."], "cx": 30, "k": 6}, "radial": {"rows": [".................................................LL.............................................", ".................................................L..............................................", ".................................................L..............................................", ".................................................L..............................................", "................................LL................L.............................................", "..................................LL..............L.............................................", "....................................LL............L................LLLL.........................", "...............L......................L..........L..............LLL.............................", "................LL.....................L.........L..............L...............................", "..................LL....................L.LLLLLLLLLLLL........LL................................", "....................LL...............LLLLLL.......L........LLL..................................", "......................LLLLLLLLLLL........LL.......L.......LLLLL................LLLLL............", ".................................LLLL......L......L....LLL....LL.............LL.....LLLL........", "...............................LL....L......LL...L....L.........LL.......LLLL...................", "..............................LL......LLLL....L.L...LL.......LLLLLLLLLLLL.......................", "....................LLL.......L...........LLL......LLLLLLLLLL.....L.............................", ".......................LLLLLLLLLLLLLLLLLLLLLL.......LLLL..........L.............................", "..............................L...........LLL......L....LLLLL...................................", "..............................LL.....LLLLL....L..L..LLL......LLLLLLLLLLLL.......................", ".................................LLLL.........L..L.....L........LL.......LLLLLLLLLLLL...........", "...............................LL.L..........L...L......LLL...LL.....................LLL........", ".....................LLLLLLLLLL...LLLL.....LL.....L........LLLL.................................", "................LLLLL................LLLLLL........L..LLLLLL..LLL...............................", "..............LL.........................LLLLLLLL..L..L.........L...............................", "............LL.........................LL...........L............L..............................", "......................................L.............L............LL............................."], "cx": 48, "k": 4, "bottom": -14}, "crater": {"rows": ["........................................................", "............L..............L................L...........", "............L..............L................L...........", "...........L.........LLLLLLLLLLLLLLL.........L..........", "............L..LLLLLLLLLLLLLLLLLLLLLLLLLLL..L...........", "............LLLLLLDDDDDDDDDDDDDDDDDDDDDLLLLLL...........", "..........LLLLLDDDDDDDDDDDDDDDDDDDDDDDDDDDLLLLL.........", "........LLLLDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDLLLL.......", "......LLLLDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDLLLL.....", "..L..LLLLDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDLLLL..L.", "LL.LLLLLDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDLLLLLL.", "...LLLLDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDLLLL.L", "...LLLLDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDLLLL..", "......DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD....."], "cx": 28, "k": 6}};   // 胖貓砸下來的地面裂痕三種：branch 分岔／radial 圓形輻射／crater 撞擊坑（cx＝屁股中心那一欄、k＝每格幾 px）
+function crackHTML(){ const c=CRACKS[CONFIG.crackStyle]||CRACKS.branch; return spriteSVG(c.rows, {L:'#e0d4ff',D:'#0a0512'}, (c.rows[0].length*c.k)+'px', 'aria-hidden="true"'); }
+function crackLeft(){ const c=CRACKS[CONFIG.crackStyle]||CRACKS.branch; return 89-c.cx*c.k; }
+function crackBottom(){ const c=CRACKS[CONFIG.crackStyle]||CRACKS.branch; return (c.bottom??2)+6; }
+/* 次元惡魔出場：畫面正常 → 出現紅藍一條線 → 裂隙慢慢裂開 → 畫面開始混亂 → 紅光藍光閃爍扭曲、合成次元惡魔 → 跳字「次元惡魔出現了！」（Ming） */
+/* 裂隙兩側不停噴出紅藍光點（左紅右藍）：出場時開始，打開後繼續，惡魔被打倒（畫面恢復正常）才停 */
+function startSpray(arena, hole){
+  if(arena._spray) return;
+  arena._spray=setInterval(()=>{
+    const busy=hole.classList.contains('line')||hole.classList.contains('opening');
+    if(!document.body.contains(arena) || (!busy && !document.body.classList.contains('glitch'))){ clearInterval(arena._spray); arena._spray=null; return; }
+    const hr0=hole.getBoundingClientRect(), ar=arena.getBoundingClientRect(), n=busy?4:2;
+    const f=hole.classList.contains('line')?.02:hole.classList.contains('opening')?Math.min(1,.02+.98*(Date.now()-(hole._openT||Date.now()))/1400):1;   // 裂隙目前張開多少
+    const fy=hole.classList.contains('line')?Math.min(1,.05+(Date.now()-(hole._lineT||Date.now()))/1500):1;   // 一條線還在拉長時，只從已經拉出來的範圍噴
+    const cx=(hr0.left+hr0.right)/2, cy=(hr0.top+hr0.bottom)/2, hr={left:cx-hr0.width*f/2, right:cx+hr0.width*f/2, top:cy-hr0.height*fy/2, height:Math.max(40,hr0.height*fy)};
+    for(let k=0;k<n;k++){ const left=Math.random()<.5, e=document.createElement('i'); e.className='spray';
+      e.style.background=left?'#ff2a6d':'#05d9e8'; e.style.boxShadow=`0 0 8px ${left?'#ff2a6d':'#05d9e8'}`;
+      e.style.left=((left?hr.left:hr.right)-ar.left-4)+'px'; e.style.top=(hr.top-ar.top+Math.random()*hr.height)+'px';
+      e.style.setProperty('--sx',(left?-1:1)*(30+Math.random()*70)+'px'); e.style.setProperty('--sy',(Math.random()*40-20)+'px');
+      arena.appendChild(e); setTimeout(()=>e.remove(),750); } },(hole.classList.contains('line')||hole.classList.contains('opening'))?90:140);
+}
+/* 裂隙外圍一圈扭動的線框（左紅、右藍、上下漸層），跟邊框不同步 */
+const FRAME_WIRE=`<div class="frame-wire"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="fwg" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#ff2a6d"/><stop offset=".45" stop-color="#ff2a6d"/><stop offset=".55" stop-color="#05d9e8"/><stop offset="1" stop-color="#05d9e8"/></linearGradient></defs><path d="M0.0 2.8 L7.1 2.0 L14.3 1.2 L21.4 1.2 L28.6 2.8 L35.7 3.6 L42.9 2.0 L50.0 3.6 L57.1 2.0 L64.3 2.8 L71.4 3.6 L78.6 0.4 L85.7 1.2 L92.9 0.4 L97.5 0.0 L98.9 7.1 L98.9 14.3 L98.2 21.4 L98.9 28.6 L98.2 35.7 L96.8 42.9 L96.8 50.0 L99.6 57.1 L99.6 64.3 L96.8 71.4 L99.6 78.6 L97.5 85.7 L98.2 92.9 L100.0 98.8 L92.9 99.6 L85.7 98.0 L78.6 97.2 L71.4 98.8 L64.3 96.4 L57.1 99.6 L50.0 99.6 L42.9 99.6 L35.7 98.8 L28.6 98.8 L21.4 99.6 L14.3 98.0 L7.1 98.0 L1.1 100.0 L3.2 92.9 L0.4 85.7 L3.2 78.6 L3.2 71.4 L1.1 64.3 L2.5 57.1 L0.4 50.0 L1.8 42.9 L2.5 35.7 L1.1 28.6 L0.4 21.4 L0.4 14.3 L2.5 7.1 Z" fill="none" stroke="url(#fwg)" stroke-width="3.5" vector-effect="non-scaling-stroke" stroke-linejoin="miter"><animate attributeName="d" dur=".8s" repeatCount="indefinite" values="M0.0 2.8 L7.1 2.0 L14.3 1.2 L21.4 1.2 L28.6 2.8 L35.7 3.6 L42.9 2.0 L50.0 3.6 L57.1 2.0 L64.3 2.8 L71.4 3.6 L78.6 0.4 L85.7 1.2 L92.9 0.4 L97.5 0.0 L98.9 7.1 L98.9 14.3 L98.2 21.4 L98.9 28.6 L98.2 35.7 L96.8 42.9 L96.8 50.0 L99.6 57.1 L99.6 64.3 L96.8 71.4 L99.6 78.6 L97.5 85.7 L98.2 92.9 L100.0 98.8 L92.9 99.6 L85.7 98.0 L78.6 97.2 L71.4 98.8 L64.3 96.4 L57.1 99.6 L50.0 99.6 L42.9 99.6 L35.7 98.8 L28.6 98.8 L21.4 99.6 L14.3 98.0 L7.1 98.0 L1.1 100.0 L3.2 92.9 L0.4 85.7 L3.2 78.6 L3.2 71.4 L1.1 64.3 L2.5 57.1 L0.4 50.0 L1.8 42.9 L2.5 35.7 L1.1 28.6 L0.4 21.4 L0.4 14.3 L2.5 7.1 Z;M0.0 0.4 L7.1 0.4 L14.3 2.0 L21.4 1.2 L28.6 1.2 L35.7 1.2 L42.9 0.4 L50.0 3.6 L57.1 0.4 L64.3 3.6 L71.4 2.8 L78.6 0.4 L85.7 0.4 L92.9 0.4 L98.9 0.0 L98.9 7.1 L96.8 14.3 L96.8 21.4 L99.6 28.6 L96.8 35.7 L98.9 42.9 L96.8 50.0 L97.5 57.1 L98.9 64.3 L97.5 71.4 L96.8 78.6 L98.2 85.7 L99.6 92.9 L100.0 98.8 L92.9 97.2 L85.7 98.0 L78.6 98.0 L71.4 98.8 L64.3 98.8 L57.1 98.0 L50.0 99.6 L42.9 99.6 L35.7 97.2 L28.6 99.6 L21.4 98.0 L14.3 98.0 L7.1 96.4 L1.8 100.0 L0.4 92.9 L2.5 85.7 L3.2 78.6 L0.4 71.4 L2.5 64.3 L0.4 57.1 L3.2 50.0 L1.8 42.9 L3.2 35.7 L1.8 28.6 L3.2 21.4 L1.1 14.3 L0.4 7.1 Z;M0.0 0.4 L7.1 2.0 L14.3 1.2 L21.4 2.8 L28.6 2.0 L35.7 0.4 L42.9 2.8 L50.0 3.6 L57.1 2.8 L64.3 3.6 L71.4 0.4 L78.6 3.6 L85.7 2.8 L92.9 3.6 L98.2 0.0 L96.8 7.1 L96.8 14.3 L97.5 21.4 L97.5 28.6 L98.9 35.7 L99.6 42.9 L99.6 50.0 L99.6 57.1 L97.5 64.3 L98.9 71.4 L99.6 78.6 L98.9 85.7 L96.8 92.9 L100.0 97.2 L92.9 98.8 L85.7 97.2 L78.6 96.4 L71.4 96.4 L64.3 98.0 L57.1 96.4 L50.0 98.8 L42.9 97.2 L35.7 99.6 L28.6 99.6 L21.4 96.4 L14.3 99.6 L7.1 98.8 L0.4 100.0 L1.1 92.9 L1.8 85.7 L1.8 78.6 L0.4 71.4 L3.2 64.3 L3.2 57.1 L0.4 50.0 L3.2 42.9 L0.4 35.7 L0.4 28.6 L3.2 21.4 L2.5 14.3 L1.8 7.1 Z;M0.0 2.8 L7.1 3.6 L14.3 3.6 L21.4 0.4 L28.6 1.2 L35.7 2.8 L42.9 1.2 L50.0 2.0 L57.1 0.4 L64.3 1.2 L71.4 0.4 L78.6 3.6 L85.7 0.4 L92.9 0.4 L98.9 0.0 L96.8 7.1 L98.2 14.3 L97.5 21.4 L96.8 28.6 L97.5 35.7 L98.2 42.9 L98.2 50.0 L99.6 57.1 L98.2 64.3 L98.2 71.4 L96.8 78.6 L98.9 85.7 L99.6 92.9 L100.0 96.4 L92.9 99.6 L85.7 96.4 L78.6 99.6 L71.4 98.0 L64.3 98.0 L57.1 99.6 L50.0 98.0 L42.9 99.6 L35.7 98.0 L28.6 97.2 L21.4 99.6 L14.3 97.2 L7.1 97.2 L1.1 100.0 L1.1 92.9 L1.1 85.7 L1.8 78.6 L1.1 71.4 L0.4 64.3 L0.4 57.1 L2.5 50.0 L0.4 42.9 L1.8 35.7 L1.8 28.6 L2.5 21.4 L2.5 14.3 L3.2 7.1 Z;M0.0 2.0 L7.1 2.8 L14.3 2.8 L21.4 2.0 L28.6 0.4 L35.7 2.0 L42.9 2.0 L50.0 0.4 L57.1 0.4 L64.3 2.8 L71.4 0.4 L78.6 0.4 L85.7 2.0 L92.9 0.4 L98.2 0.0 L99.6 7.1 L96.8 14.3 L99.6 21.4 L98.9 28.6 L98.2 35.7 L98.9 42.9 L98.9 50.0 L97.5 57.1 L99.6 64.3 L96.8 71.4 L97.5 78.6 L98.9 85.7 L99.6 92.9 L100.0 99.6 L92.9 98.8 L85.7 98.0 L78.6 98.0 L71.4 98.0 L64.3 98.0 L57.1 99.6 L50.0 97.2 L42.9 99.6 L35.7 99.6 L28.6 98.0 L21.4 98.0 L14.3 97.2 L7.1 96.4 L3.2 100.0 L3.2 92.9 L1.8 85.7 L3.2 78.6 L0.4 71.4 L2.5 64.3 L1.8 57.1 L1.1 50.0 L1.8 42.9 L1.1 35.7 L0.4 28.6 L1.1 21.4 L2.5 14.3 L3.2 7.1 Z;M0.0 2.8 L7.1 2.0 L14.3 1.2 L21.4 1.2 L28.6 2.8 L35.7 3.6 L42.9 2.0 L50.0 3.6 L57.1 2.0 L64.3 2.8 L71.4 3.6 L78.6 0.4 L85.7 1.2 L92.9 0.4 L97.5 0.0 L98.9 7.1 L98.9 14.3 L98.2 21.4 L98.9 28.6 L98.2 35.7 L96.8 42.9 L96.8 50.0 L99.6 57.1 L99.6 64.3 L96.8 71.4 L99.6 78.6 L97.5 85.7 L98.2 92.9 L100.0 98.8 L92.9 99.6 L85.7 98.0 L78.6 97.2 L71.4 98.8 L64.3 96.4 L57.1 99.6 L50.0 99.6 L42.9 99.6 L35.7 98.8 L28.6 98.8 L21.4 99.6 L14.3 98.0 L7.1 98.0 L1.1 100.0 L3.2 92.9 L0.4 85.7 L3.2 78.6 L3.2 71.4 L1.1 64.3 L2.5 57.1 L0.4 50.0 L1.8 42.9 L2.5 35.7 L1.1 28.6 L0.4 21.4 L0.4 14.3 L2.5 7.1 Z"/></path></svg></div>`;
+function bossIntro(done){
+  const hole=$('#hole'), devil=$('#devil'), call=$('#bosscall'), tbox=$('#throwbox'), arena=$('#arena');
+  const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);
+  let glow=null;
+  T(700,()=>{ hole.classList.remove('pre-intro'); hole.classList.add('line'); hole._lineT=Date.now(); glow=document.createElement('div'); glow.className='rift-glow'; glow.innerHTML='<i class="rg-line"></i><div class="rg-lw"><i class="rg-l"></i></div><div class="rg-rw"><i class="rg-r"></i></div>'; arena.prepend(glow);   // 紅藍一條線
+    startSpray(arena, hole); });
+  T(2500,()=>{ hole.classList.remove('line'); hole.classList.add('opening'); hole._openT=Date.now(); if(glow){ glow.remove(); glow=null; } });   // 裂隙逐漸裂開
+  T(3900,()=>{ hole.classList.remove('opening'); clearInterval(arena._spray); arena._spray=null; startSpray(arena, hole); });   // 拉開一結束就接上持續扭動（之前等到惡魔合成才切，中間會停住）
+  T(3300,()=>startGlitch());                                                                         // 畫面開始混亂
+  T(4100,()=>{ const one=c=>Object.fromEntries(Object.keys(DEVIL_PAL).map(k=>[k,c]));
+    ['#ff2a6d','#05d9e8'].forEach((c,i)=>{ const g=document.createElement('div'); g.className='devil-ghost dg'+i; g.innerHTML=spriteSVG(DEVIL_ROWS, one(c), '112px', 'aria-hidden="true"'); arena.appendChild(g); setTimeout(()=>g.remove(),1500); }); });   // 紅光、藍光閃爍扭曲
+  T(5500,()=>{ devil.classList.remove('pre-intro'); devil.classList.add('born'); if(glow) glow.remove(); setTimeout(()=>devil.classList.remove('born'),650); });   // 合成次元惡魔
+  T(6200,()=>{ call.classList.remove('pre-intro'); call.classList.add('pop'); setTimeout(()=>call.classList.remove('pop'),450); });                       // 跳字
+  T(6600,()=>{ if(tbox) tbox.classList.remove('pre-intro'); done(); });
+}
 function renderBoss(s, idx, d, k){
   const keep=()=>{ state.extra[k]=d; save(); };
-  const fighting=d.boss==='fight', won=d.boss==='won';
+  const fighting=d.boss==='fight', won=d.boss==='won', intro=!fighting && !won && !d.introDone;   // 第一次進來：次元惡魔出場動畫
   main.innerHTML = ticket(s, `${steps()}
-    <p class="center noglitch" style="font-size:20px;color:var(--red)">${won?'次元惡魔被打敗了！':'次元惡魔出現了！召喚胖貓擊敗他。'}</p>
-    <div class="arena" id="arena"><div class="arena-bg"></div>
-      <div class="devil" id="devil" ${won?'hidden':''}><div class="df1">${spriteSVG(DEVIL_ROWS, DEVIL_PAL, '112px', 'aria-label="次元惡魔"')}</div><div class="df2">${spriteSVG(DEVIL_ROWS2, DEVIL_PAL, '112px', 'aria-hidden="true"')}</div><div class="dfh">${spriteSVG(DEVIL_HIT_ROWS, DEVIL_PAL, '112px', 'aria-hidden="true"')}</div></div>
+    <p class="center noglitch ${won?'':'boss-call'} ${intro?'pre-intro':''}" id="bosscall" style="font-size:20px;color:var(--red)">${won?'次元惡魔被打敗了！':'次元惡魔出現了！'}</p>
+    <div class="arena" id="arena"><div class="arena-hole hs-${CONFIG.holeStyle||'rect'} ${intro?'pre-intro':''}" id="hole"><i class="hole-edge he-p"></i><i class="hole-edge he-c"></i>${FRAME_WIRE}<div class="arena-clip"><div class="arena-bg"></div><div class="crack ${fighting||won?'':'off'}" id="crack" style="left:${crackLeft()}px;bottom:${crackBottom()}px">${crackHTML()}</div></div></div>
+      <div class="devil ${intro?'pre-intro':''}" id="devil" ${won?'hidden':''}><div class="df1">${spriteSVG(DEVIL_ROWS, DEVIL_PAL, '112px', 'aria-label="次元惡魔"')}</div><div class="df2">${spriteSVG(DEVIL_ROWS2, DEVIL_PAL, '112px', 'aria-hidden="true"')}</div><div class="dfh">${spriteSVG(DEVIL_HIT_ROWS, DEVIL_PAL, '112px', 'aria-hidden="true"')}</div></div>
+
       <div class="cat" id="cat" ${fighting||won?'':'hidden'}>${spriteSVG(CAT_BACK_ROWS, CAT_PAL, '150px', 'aria-label="胖貓"')}</div>
       <button class="fist" id="fist" ${fighting?'':'hidden'} aria-label="出拳">${FIST_SVG}</button>
     </div>
     ${won?`<button class="nes-btn is-success btn" id="nextboss" style="margin-top:14px">下一步</button>`
-      :fighting?'':`<div class="throwbox noglitch" id="throwbox"><div class="tb-badge" id="tbadge">${badgeSVG('','56px')}</div><p class="tag center" style="margin:6px 0 0">丟出徽章召喚胖貓。</p></div>`}
+      :fighting?'':`<div class="throwbox noglitch ${intro?'pre-intro':''}" id="throwbox"><div class="tb-badge" id="tbadge">${badgeSVG('','56px')}</div><p class="tag center" style="margin:6px 0 0">丟出胖貓徽章。</p></div>`}
     ${backupScanBox()}${npcBox(s,idx)}`);
   bindBackupScan(s); bindNpc(s,idx);
-  if(!won) startGlitch();
+  if(intro) bossIntro(()=>{ d.introDone=true; keep(); });
+  else if(!won){ startGlitch(); startSpray($('#arena'), $('#hole')); }
   const nb=$('#nextboss'); if(nb){ nb.onclick=()=>pass(s); return; }
   const cat=$('#cat'), devil=$('#devil'), fist=$('#fist');
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/(s.bossHits||30))})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
@@ -1447,7 +1645,14 @@ function renderBoss(s, idx, d, k){
     const end=e=>{ if(y0==null) return; const dy=e.clientY-y0; y0=null; tb.classList.remove('drag'); tb.style.transform='';
       if(dy>-50) return;
       tb.classList.add('fly'); d.boss='fight'; keep();
-      setTimeout(()=>{ const box=$('#throwbox'); if(box) box.remove(); cat.hidden=false; cat.classList.add('rollin'); setTimeout(()=>{ cat.classList.remove('rollin'); fist.hidden=false; },1100); },500); };
+      setTimeout(()=>{ const box=$('#throwbox'); if(box) box.remove(); cat.innerHTML=spriteSVG(SPRITE_ROWS, CAT_PAL, '190px', 'aria-label="胖貓"'); cat.hidden=false;
+        const top=cat.getBoundingClientRect().bottom+40;   // 從畫面最上方外面開始掉，穿過標題文字掉進場地（慢一點：1.6 秒）
+        cat.animate([{transform:`translateY(${-top}px) rotate(-1080deg)`},{transform:'translateY(0) rotate(0)'}],{duration:1600,easing:'cubic-bezier(.45,0,.9,.55)',fill:'both'});   /* 滾出來用正面圖（同一格大小），落地停一下再轉成背影（Ming） */
+        setTimeout(()=>{ cat.getAnimations().forEach(a=>a.cancel()); cat.classList.add('land');
+          const ck=$('#crack'); ck.classList.remove('off'); ck.classList.add('grow');   // 屁股下裂開
+          const ar=$('#arena'); document.body.classList.remove('quake'); void document.body.offsetWidth; document.body.classList.add('quake'); try{ navigator.vibrate&&navigator.vibrate([90,40,140]); }catch(e){}   // 砸到地上：場地大地震＋手機震動
+          [[20,'-26px'],[180,'26px']].forEach(([x,dx])=>{ const d=document.createElement('i'); d.className='dust'; d.style.left=x+'px'; d.style.setProperty('--dx',dx); ar.appendChild(d); setTimeout(()=>d.remove(),700); });
+          setTimeout(()=>{ cat.classList.remove('land'); document.body.classList.remove('quake'); cat.innerHTML=back; fist.hidden=false; },900); },1600); },500); };
     tb.addEventListener('pointerup',end); tb.addEventListener('pointercancel',end); }
   // 出拳：每按一下胖貓揮拳、惡魔被打到；打滿就倒
   let backT=0, hitT=0;
@@ -1629,7 +1834,7 @@ function renderFood(s, idx){
     <p>${s.intro}</p><p class="center" style="font-size:22px;margin:14px 0;color:var(--red)">${s.food}</p>
     <p>吃完拍一張合照，蠟燭就會亮。</p>
     ${shot?`<img class="photo" src="${shot}" alt="">`:''}
-    <label class="nes-btn is-primary btn" style="display:block;text-align:center;margin-top:8px">${CAMERA} 拍合照<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
+    <label class="nes-btn is-primary btn" style="display:block;text-align:center;margin-top:8px">${PHOTO_ICON} 拍合照<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
     ${shot?`<p style="margin-top:12px">${s.npcTask}</p><button class="nes-btn is-primary btn" id="done" style="margin-top:6px">做完了，拿信</button>`:''}
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>{ squareCrop(rd.result, 1000, u=>{ state.extra[s.id+'_photo']=u; if(s.stripTheme) savePhoto(s.id, s.stripTheme, u); save(); render(); }); }; rd.readAsDataURL(f); };
@@ -1651,7 +1856,7 @@ function renderSoundPuzzle(s, idx){
   main.innerHTML = ticket(s, `${steps()}
     <p>${s.intro}</p>
     ${!heard?`<p>哪一段是這一站的到站音？</p><div class="row" style="flex-direction:column">${[0,1,2].map(i=>`<button class="nes-btn btn audio-btn" data-i="${i}">▶ 第 ${i+1} 段</button>`).join('')}</div><div id="res"></div>`
-    : !img?`${ok('對，就是這一段。')}<p>把站內「華山 1914」指標牌拍下來。</p><label class="nes-btn is-primary btn" style="display:block;text-align:center">${CAMERA} 拍指標牌<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>`
+    : !img?`${ok('對，就是這一段。')}<p>把站內「華山 1914」指標牌拍下來。</p><label class="nes-btn is-primary btn" style="display:block;text-align:center">${PHOTO_ICON} 拍指標牌<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>`
     : !solved?`<p class="tag">點 2 格交換，拼回原圖。</p><div class="grid" id="grid"></div>`
     : `${ok('拼好了。')}<p>牌子上的數字：<span class="big">${s.puzzleNumber}</span></p><p>照列車長運算卡上的規則算出一位數。</p><input class="nes-input" type="number" id="ans" inputmode="numeric" placeholder="一位數"><div id="res"></div><button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`}
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
@@ -1690,7 +1895,7 @@ function renderRainbow(s, idx){
     <p class="center" style="font-size:30px;margin:4px 0;color:${left<60?'var(--red)':'var(--ink)'}" id="rbclock">${fmt(left)}</p>
     <div class="candles" style="gap:6px">${rb.colors.map(ci=>{ const c=s.palette[ci], f=rb.found.includes(ci); return `<div class="center"><span class="swatch" style="background:${hsl2css(c.h)};margin:0;opacity:${f?1:.25};outline:${f?'4px solid #000':'none'}"></span><div class="tag">${c.n}${f?' ✓':''}</div></div>`; }).join('')}</div>
     ${left>0 && !done ? `<div id="cam"></div><div id="pick"></div><div id="res"></div>
-      <button class="nes-btn is-primary btn" id="open">${CAMERA} 拍一樣東西</button>
+      <button class="nes-btn is-primary btn" id="open">${PHOTO_ICON} 拍一樣東西</button>
       <div class="row"><button class="nes-btn is-warning btn small" id="buy">跟列車長買提示（已買 ${rb.bought}）</button></div><div id="tip">${rb.lastTip?`<div class="letter nes-container is-rounded">${rb.lastTip}</div>`:''}</div>`
       : left<=0 && !done ? `${bad('時間到。')}<button class="nes-btn btn" id="again">重抽顏色再來一次</button>` : ''}
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}
@@ -1722,6 +1927,7 @@ function renderRainbow(s, idx){
 /* 備案 導演關：抽風格卡 → 她指揮、NPC 用 App 相機拍三張 → 選一張套濾鏡定案 */
 function renderDirector(s, idx){                 // 2026-11-03 簡化：不上傳，列車長拍到滿意就按「IG 總編給過」
   main.innerHTML = ticket(s, `${steps()}<p>${s.intro}</p>
+    <div class="hero" style="display:flex;justify-content:center"><div class="editor-momo">${spriteSVG(MOMO_EDITOR_ROWS, MOMO_EDITOR_PAL, '216px', 'aria-label="IG 總編"')}<div class="em-spark">${spriteSVG(['.L.','LLL','.L.'], {L:MOMO_EDITOR_PAL.L}, '36px', 'aria-hidden="true"')}</div></div></div>   <!-- 上一頁剪影的真面目（Ming） -->
     <button class="nes-btn is-success btn" id="ok">IG 總編給過</button>
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#ok').onclick=()=>pass(s);
@@ -1734,7 +1940,7 @@ function renderDirectorShoot(s, idx){            // 備案：原本的拍 3 張�
     ${stage==='shoot'?`<p>${s.intro}</p>
       <p class="tag">已拍 ${d.shots.length} / 3</p>
       <div class="row">${d.shots.map(u=>`<img src="${u}" style="width:30%;border:4px solid #000" alt="">`).join('')}</div>
-      <label class="nes-btn ${d.shots.length?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${d.shots.length?'再拍一張':'把手機交給列車長拍'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
+      <label class="nes-btn ${d.shots.length?'':'is-primary'} btn" style="display:block;text-align:center">${PHOTO_ICON} ${d.shots.length?'再拍一張':'把手機交給列車長拍'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
       ${d.shots.length?'<button class="nes-btn is-primary btn" id="pickgo" style="margin-top:14px">選照片定案</button>':''}`
     : stage==='choose'?`<p>選 1 張最像妳要的。</p><div class="row">${d.shots.map((u,i)=>`<img data-i="${i}" class="pickshot" src="${u}" style="width:30%;border:4px solid #000;cursor:pointer" alt="">`).join('')}</div>`
     : `<img class="photo" id="final" src="${d.shots[d.chosen]}" style="filter:${d.filter>=0?s.styles[d.filter].filter:'none'}" alt="">
@@ -1798,8 +2004,8 @@ function renderPhotoTask(s, idx){
     ${s.intro && !s.preStep?`<p>${s.intro}</p>`:''}
     <p style="margin:4px 0 2px">${s.photoPrompt||'請拍一張合照，合照主題：'}</p>
     <p class="center" style="font-size:34px;margin:0 0 12px;color:var(--red)">${s.theme}</p>
-    ${shot?photoFrame(s.id,'margin-bottom:14px'):''}
-    <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${CAMERA} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
+    ${shot?photoFrame(s.id,'margin-bottom:14px'):poseHTML()}
+    <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${PHOTO_ICON} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
     ${shot?(s.finalPhoto?'<button class="nes-btn is-success btn" id="nextp" style="margin-top:14px">已完成最後的秘密任務</button>':'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:14px">下一步</button>'):''}
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.theme, u); render(); }); rd.readAsDataURL(f); };   // 最後合照也是上傳後按綠色按鈕才完成（Ming）
@@ -1819,7 +2025,8 @@ function renderFireBadge(s, idx){
   if(d.summoned){
     if(!state.extra[s.id+'_free']){                     // 第 1 頁：胖貓從徽章滾出來、左右晃
       main.innerHTML = ticket(s, `${steps()}
-        <div class="fb-free"><div class="fb-merge">${badgeSVG('','128px')}</div><div class="fb-cat">${SPRITE_SVG}</div></div>
+        <p>${s.story}</p>
+        <div class="fb-slots"><div class="fb-whole">${badgeSVG('','128px')}</div></div><div class="fb-free" style="margin:0 0 30px"><div class="fb-cat">${SPRITE_SVG}</div></div>   <!-- 徽章跟前一頁同位置（Ming：三個徽章位置固定） -->
         ${ok('封印解開了，胖貓自由了！')}
         <button class="nes-btn is-success btn" id="nextl" style="margin-top:16px">下一步</button>
         ${backupScanBox()}${npcBox(s,idx)}`);
@@ -1836,8 +2043,9 @@ function renderFireBadge(s, idx){
   const both=has('winter')&&has('flower');
   main.innerHTML = ticket(s, `${steps()}
     <p>${s.story}</p>
-    ${both?`<div class="fb-merge hero" style="animation:fbglow .5s steps(4) infinite alternate, fbfloat 1.2s steps(6) infinite alternate">${badgeSVG('',  '128px')}</div>
-      <button class="nes-btn is-primary btn" id="summon">解除封印</button>`   /* 兩半合起來 → 按「解除封印」才進解封動畫（Ming） */
+    ${both?`<div class="fb-slots"><div class="fb-whole">${badgeSVG('',  '128px')}</div></div>
+      <div class="frame" style="margin-top:14px"></div>
+      <button class="nes-btn is-primary btn" id="summon" style="margin-top:14px">解除封印</button>   <!-- 跟「開啟異次元觀測器」同一個位置（Ming） -->`   /* 兩半合起來 → 按「解除封印」才進解封動畫（Ming） */
     :`<div class="fb-slots"><div class="fb-slot L ${has('winter')?'got':''}">${has('winter')?badgeSVG('L','64px'):'?'}</div><div class="fb-slot R ${has('flower')?'got':''}">${has('flower')?badgeSVG('R','64px'):'?'}</div></div>
       <div class="frame" id="cam" style="margin-top:14px"></div>
       <button class="nes-btn is-primary btn" id="scan" style="margin-top:14px">開啟異次元觀測器</button>`}
@@ -2015,16 +2223,61 @@ function renderFinish(){
   stripAdj=false; showStrip();
 }
 /* 最後拍貼：「調整相片」模式＝每張照片可拖曳、右上 X 刪掉後可重新上傳；再按一次關閉 */
-let stripAdj=false;
+let stripAdj=false, replayMenu=false;
+/* 選關重玩：先把通關後的進度存起來（照片另外只備份那一關的），清掉那一關從頭玩；按「返回」整個還原 */
+function startReplay(i){
+  const st=CONFIG.stages[i]; const strip=state.extra.strip||{};
+  const snap=JSON.parse(JSON.stringify({...state, extra:{...state.extra, strip:undefined}}));
+  try{ localStorage.setItem('mrt-replay', JSON.stringify({snap, photo:strip[st.id]||null})); }catch(e){ alert('手機空間不足，沒辦法重玩。'); return; }
+  clearStage(st.id); if(st.finalPhoto){ delete state.extra.letterOpen; delete state.extra.endLetter; } if(st.type==='final') delete state.extra.s7_blown;
+  state.replay={idx:i, id:st.id}; state.stage=i; replayAns=false; save(); window.scrollTo(0,0); render();
+}
+function endReplay(){
+  let r=null; try{ r=JSON.parse(localStorage.getItem('mrt-replay')); }catch(e){}
+  const strip=state.extra.strip||{}; const id=state.replay&&state.replay.id;
+  if(r){ Object.keys(state).forEach(k=>delete state[k]); Object.assign(state, r.snap); state.extra.strip=strip; if(id){ if(r.photo) strip[id]=r.photo; else delete strip[id]; } }
+  delete state.replay; try{ localStorage.removeItem('mrt-replay'); }catch(e){} replayMenu=true; save(); render();
+}
+let replayAns=false;
+function replayFinished(){ const R=state.replay, st=CONFIG.stages[R.idx]; return state.stage!==R.idx || (st.finalPhoto && state.extra.endLetter); }
+/* 重玩中每一頁最下方：返回／看解答 */
+function replayBar(){
+  if(!state.replay) return; const st=CONFIG.stages[state.replay.idx];
+  const old=document.getElementById('replaybar'); if(old) old.remove();
+  const box=document.createElement('div'); box.id='replaybar'; box.className='nes-container is-rounded replay-bar';
+  const ans=answerNote(st);
+  box.innerHTML=`<p class="tag" style="margin:0 0 8px">重玩：${st.name}・${st.sub||''}</p>
+    <div class="row"><button class="nes-btn btn small" id="rpback" style="margin:0">返回</button><button class="nes-btn ${replayAns?'is-primary':''} btn small" id="rpans" style="margin:0">看解答</button></div>
+    ${replayAns?`<div style="margin-top:10px">${ans||'<p class="tag" style="margin:0">這關沒有固定答案。</p>'}<button class="nes-btn is-warning btn small" id="rppass" style="margin-top:8px;width:100%">這關直接過</button></div>`:''}`;
+  main.appendChild(box);
+  $('#rpback').onclick=endReplay;
+  $('#rpans').onclick=()=>{ replayAns=!replayAns; replayBar(); };
+  const pp=$('#rppass'); if(pp) pp.onclick=()=>{ if(st.type==='game' && window.__MG_WIN && !state.extra[st.id+'_won']) window.__MG_WIN(); else pass(st); };
+  box.querySelectorAll('.copy').forEach(b=>b.onclick=async()=>{ try{ await navigator.clipboard.writeText(b.dataset.copy); b.textContent='已複製'; }catch(e){} });
+}
+function renderReplayDone(){
+  const st=CONFIG.stages[state.replay.idx];
+  main.innerHTML = `<section class="ticket nes-container is-rounded with-title" style="--line-color:${LINE[st.line]}">
+    <p class="title">${st.sub||''}</p>
+    <div class="station"><span class="code">${st.code}</span><span class="name">${st.name}</span></div>
+    ${ok('重玩完成！')}
+    <button class="nes-btn is-primary btn" id="rpdone" style="margin-top:8px">返回</button></section>`;
+  $('#rpdone').onclick=endReplay;
+}
 async function showStrip(){
   const u=await makeStrip(); const b=$('#stripbox'); if(!b||!u) return;
   const G=makeStrip.geo, st=state.extra.strip||{};
   const slots=stripAdj?CONFIG.stripOrder.slice(0,4).map((k,i)=>{ const pos=`left:${G.pad/G.W*100}%;top:${(G.head+i*(G.ph+G.gap))/G.H*100}%;width:${G.pw/G.W*100}%;height:${G.ph/G.H*100}%`; const it=st[k];
     return it&&it.url?`<div class="slot pframe" data-k="${k}" style="${pos};background-image:url(${it.url});background-position:${(it.ox??.5)*100}% ${(it.oy??.5)*100}%"><button class="px" data-del="${k}" aria-label="刪掉照片">✕</button></div>`
-      :`<label class="slot empty" style="${pos}">${CAMERA}<input type="file" accept="${PHOTO_ACCEPT}" data-up="${k}" hidden></label>`; }).join(''):'';
+      :`<label class="slot empty" style="${pos}">${PHOTO_ICON}<input type="file" accept="${PHOTO_ACCEPT}" data-up="${k}" hidden></label>`; }).join(''):'';
   b.innerHTML=`<div class="stripwrap" style="margin-top:18px"><img src="${u}" alt="">${slots}</div>
-    <div class="row" style="margin-top:10px;justify-content:center"><a class="nes-btn btn small" style="display:inline-block;margin:0" download="生日列車拍貼.jpg" href="${u}">⬇ 存到手機</a><button class="nes-btn ${stripAdj?'is-primary':''} btn small" id="stripadj" style="margin:0">調整相片</button></div>`;
+    <div class="row" style="margin-top:10px;justify-content:center"><a class="nes-btn btn small" style="display:inline-block;margin:0" download="生日列車拍貼.jpg" href="${u}">⬇ 存到手機</a><button class="nes-btn ${stripAdj?'is-primary':''} btn small" id="stripadj" style="margin:0">調整相片</button></div>
+    <div class="row" style="margin-top:10px;justify-content:center"><button class="nes-btn ${replayMenu?'is-primary':''} btn small" id="replaymenu" style="margin:0">選關重玩</button><button class="nes-btn is-error btn small" id="restart" style="margin:0">從頭開始</button></div>
+    ${replayMenu?`<div class="replay-list">${CONFIG.stages.map((x,i)=>`<button class="nes-btn btn" data-replay="${i}"><span class="rl-name">${x.name}</span><span class="tag">${x.sub||''}</span></button>`).join('')}</div>`:''}`;
   $('#stripadj').onclick=()=>{ stripAdj=!stripAdj; showStrip(); };
+  $('#replaymenu').onclick=()=>{ replayMenu=!replayMenu; showStrip(); };
+  $('#restart').onclick=()=>{ if(confirm('從頭開始？目前的進度和照片都會清掉。')) reset(); };
+  b.querySelectorAll('[data-replay]').forEach(x=>x.onclick=()=>startReplay(+x.dataset.replay));
   if(!stripAdj) return;
   bindPframes(b, ()=>showStrip());
   b.querySelectorAll('[data-del]').forEach(x=>x.onclick=e=>{ e.stopPropagation(); if(!confirm('刪掉這張照片？')) return; const k=x.dataset.del; st[k]={theme:st[k].theme, url:null}; save(); showStrip(); });
@@ -2122,7 +2375,7 @@ async function makeStrip(){
   drawRows(g, MOMO_CAP, MOMO_CAP_PAL, Math.round(W/2+6-2*pk), py-(MOMO_CAP.length-LILY.length)*pk, pk);   // 拍貼用戴車長帽的墨墨（Ming：只有開頭信和拍貼戴帽）；身體左緣位置跟原本一樣、腳底對齊莉莉
   const LF=window.MG_SPRITES.LILY_FULL; drawRows(g, LF, LILY_PAL, Math.round(W/2-6-LF[0].length*pk), py-(LF.length-LILY.length)*pk, pk);   // 戴帽全身版，底部對齊墨墨
   g.textAlign='center';
-  if(CONFIG.stripTitleImg){ const ti=await load(CONFIG.stripTitleImg); const th=46, tw2=Math.round(ti.width*th/ti.height);   // 標題用 GPT 畫的像素字圖，頂端到第一張照片之間置中（Ming：再小一點）
+  if(CONFIG.stripTitleImg){ const ti=await load(CONFIG.stripTitleImg); const th=38, tw2=Math.round(ti.width*th/ti.height);   // 標題用 GPT 畫的像素字圖，頂端到第一張照片之間置中（Ming：再小一點）
     g.imageSmoothingQuality='high'; g.drawImage(ti, Math.round((W-tw2)/2), Math.round((head-th)/2), tw2, th); }
   else pixelText(g, CONFIG.stripTitle, W/2, 8, head, 4, T.title, T.shadow, CONFIG.stripTitleStyle);   // 沒有圖時改用程式畫的像素字
   const d=new Date(), ds=CONFIG.stripDate||`${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()}`; g.font=F(18); g.fillStyle=T.date; g.fillText(ds, W/2, H-18);   // 只留日期（Ming）
