@@ -179,7 +179,8 @@
   .npc .row .btn.small{flex:1;margin:0;font-size:12px;padding:4px 2px;white-space:nowrap;text-align:center}
   .photo{width:100%;display:block;border:4px solid #000}
   /* 可拖曳調整位置的照片框（4:3，跟拍貼每格一樣） */
-  .pframe{position:relative;width:100%;aspect-ratio:4/3;border:4px solid #000;background:#222 no-repeat;background-size:cover;touch-action:none;cursor:grab;user-select:none}
+  .pframe{position:relative;width:100%;aspect-ratio:4/3;border:4px solid #000;background:#222 no-repeat;background-size:cover;user-select:none}
+  .pframe.adj{touch-action:none;cursor:grab;outline:3px dashed #fff;outline-offset:-7px}   /* 只有「調整相片」模式才吃掉手指滑動，平常手指放在照片上也能捲頁面（Ming 2026-11-05） */
   .pframe.drag{cursor:grabbing}
   .stripwrap{position:relative;width:60%;margin:0 auto}
   .stripwrap img{display:block;width:100%}
@@ -233,8 +234,9 @@
   .progbtn svg{display:block}
   .progbtn{background:#fff}
   .bkbtn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:1100;width:52px;height:52px;border-radius:50%;border:4px solid #000;background:#eceef0;box-shadow:3px 3px 0 #000;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}   /* 右下角備援扳手鈕 */
-  #bkpanel{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:1200;background:#fdeef3;height:40vh;overflow-y:auto;overscroll-behavior:contain;padding:12px 14px;margin:0}
-  #progpanel{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:1200;background:#fdeef3;height:40vh;overflow-y:auto;overscroll-behavior:contain;padding:12px 14px;margin:0}   /* 左下、右下展開固定同一個高度，太長在裡面上下捲（Ming） */
+  :root{--panel-h:min(440px,calc(100dvh - 24px - env(safe-area-inset-bottom)))}
+  #bkpanel{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:1200;background:#fdeef3;height:var(--panel-h);overflow-y:auto;overscroll-behavior:contain;padding:12px 14px;margin:0}
+  #progpanel{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:1200;background:#fdeef3;height:var(--panel-h);overflow-y:auto;overscroll-behavior:contain;padding:12px 14px;margin:0}   /* 左下、右下同一個高度：在最窄 320px 量進度視窗最長內容（s6 提示）＝434px，取 440；矮螢幕不超出畫面（Ming 2026-11-05） */
   .pg-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
   .pg-x{border:0;background:none;font:inherit;font-size:20px;cursor:pointer;padding:0 4px}
   .pg-track{position:relative;display:flex;overflow-x:auto;padding:0 4px 30px;scroll-behavior:smooth;scrollbar-width:none}
@@ -541,14 +543,13 @@ const CONFIG = {
       goStory:'出發！解救胖貓，與此同時列車長給了妳第 2 個秘密任務。',   // 目的地頁跟其他站同格式（Ming）
       sub:'圖書館 · 一本書',
       intro:'跟隨貓毛從 2 號出口出站，前往台北市立圖書館總館。',
-      // 書名＝莉莉 的 相 片；相＝木＋目（木頭做的眼睛），片＝披薩沒有欺（Ming 2026-11-03 定）
-      riddle:'找一本書，書名：\n<b>XX 的 YZ</b>\n\nXX ＝ 墨墨最喜歡誰？\nY ＝ {tree} {eye}\nZ ＝ 披薩沒有欺',
-      riddleAnswer:'莉莉的相片',
-      // 北市圖館藏查詢 2026-11-03：總館 1 本（C01 總館／一般書庫區，可外借）；當天早上再查一次在不在架上
-      book:{ title:'莉莉的相片', author:'佩姬.唐恩', call:'873.57 7760', isbn:'9789869520164', where:'總館 一般書庫區' },
-      bookAnswer:'164',        // 書背 ISBN 末 3 碼（Ming 2026-11-04：要明講是 ISBN，館藏條碼會混淆）
-      callDigits:'873',        // 索書號前 3 碼，用幾A幾B（終極密碼）猜（Ming：只猜前三個數字）
-      callTail:'.57 7760',     // 題目上直接給的後半
+      // 2026-11-05 Ming 換書：拿掉猜書名，只剩一題猜索書號後 4 碼；找到書才知道書名（舊書《莉莉的相片》873.57 7760／ISBN 末 3 碼 164 留在備份）
+      // 北市圖館藏查詢 2026-11-05 逐本看過館藏地：總館／一般書庫區 2 本都在館（2017 悅佑版 ISBN 9789869462594、2015 精誠版 9789865617202），索書號相同；當天早上再查一次
+      book:{ title:'命中注定遇見你', author:'克莉絲汀.哈梅爾', call:'874.57 6841', isbn:'9789869462594', where:'總館 一般書庫區' },
+      bookAnswer:'594',        // 書背 ISBN 末 3 碼（Ming 2026-11-04：要明講是 ISBN，館藏條碼會混淆）
+      bookAnswerAlt:['202'],   // 另一個版本的 ISBN 末 3 碼，拿到哪本都算對
+      callFront:'874.57 ',     // 題目上直接給的前半
+      callDigits:'6841',       // 索書號後 4 碼，用幾A幾B（終極密碼）猜
       hints:[] },
 
     { id:'g2', name:'科技大樓 >> 大安森林公園', code:'移動中', line:'red', transit:true, type:'game', game:'song', arriveArt:'passerby',
@@ -867,7 +868,7 @@ function pageNext(){
   }
   if(s.type==='library'){                                                        // 已抵達 → 謎語 → 找書 → 過關
     const k=s.id+'_lib', st=state.extra[k]||'go';
-    const order=['go','sit','riddle','riddle_ok','code','code_ok','find']; const i=order.indexOf(st);
+    const order=['go','sit','code','code_ok','find']; const i=order.indexOf(st);
     if(i<order.length-1) return step(k,order[i+1]);
     return pass(s);
   }
@@ -1183,7 +1184,7 @@ function npcInner(s, idx){
 /* 控制者看的解答（依關卡型別）；要輸入的答案附「複製」鈕 */
 function answerNote(s){
   const items=[];                                   // {label, value, copy}
-  if(s.type==='library'){ items.push({label:'書名',value:s.riddleAnswer,copy:true},{label:`索書號前 ${s.callDigits.length} 碼`,value:s.callDigits,copy:true},{label:'ISBN 後 3 碼',value:s.bookAnswer,copy:true}); }
+  if(s.type==='library'){ items.push({label:'書名',value:s.book.title,copy:true},{label:`索書號後 ${s.callDigits.length} 碼`,value:s.callDigits,copy:true},{label:'ISBN 後 3 碼',value:s.bookAnswer,copy:true}); }
   else if(s.type==='firebadge'){ items.push({label:'線索',value:s.clue},{label:'過關',value:'掃牆上的〈四季〉＋戶外的〈大安之花〉'}); }
   else if(s.type==='spot'){ (s.photos||[{spots:s.spots}]).forEach((p,i)=>{
       if(p.spots){ items.push({label:`照片 ${i+1}`,value:`${p.spots.length} 處 ${p.spots.map(q=>`(${q.x},${q.y})`).join(' ')}`}); return; }
@@ -1228,20 +1229,24 @@ function clearStage(id){
 }
 /* 上傳照片一律從相簿選：列出明確的圖片格式（不用 image/*），Android 會直接開相簿，不會跳出相機選項（Ming：開相機再關掉會卡住） */
 const PHOTO_ACCEPT='image/jpeg,image/png,image/webp,image/heic,image/heif';
-function savePhoto(key, theme, url){ state.extra.strip = state.extra.strip||{}; state.extra.strip[key]={theme,url,ox:.5,oy:.5}; save(); }
+function savePhoto(key, theme, url){ photoAdj=null; state.extra.strip = state.extra.strip||{}; state.extra.strip[key]={theme,url,ox:.5,oy:.5}; save(); }
 /* 照片框：背景圖 cover＋位置百分比（跟拍貼 drawImage 的裁法一樣），可拖曳 */
+let photoAdj=null;   // 正在調整哪一張照片（key）；換頁或重畫別張就自動關掉
 function photoFrame(key, extra=''){ const it=(state.extra.strip||{})[key]; if(!it||!it.url) return '';
-  return `<div class="pframe" data-k="${key}" style="background-image:url(${it.url});background-position:${(it.ox??.5)*100}% ${(it.oy??.5)*100}%;${extra}"></div>`; }
+  const on=photoAdj===key;
+  return `<div class="pframe ${on?'adj':''}" data-k="${key}" style="background-image:url(${it.url});background-position:${(it.ox??.5)*100}% ${(it.oy??.5)*100}%;${extra};margin-bottom:8px"></div>
+    <div class="row" style="justify-content:center;margin:0 0 14px"><button class="nes-btn ${on?'is-primary':''} btn small" data-padj="${key}" style="margin:0">${on?'調整好了':'調整相片'}</button></div>`; }
 function bindPframes(root, onEnd){
   (root||document).querySelectorAll('.pframe[data-k]').forEach(el=>{ const key=el.dataset.k, it=(state.extra.strip||{})[key]; if(!it||!it.url) return;
     let iw=0, ih=0; const im=new Image(); im.onload=()=>{ iw=im.width; ih=im.height; }; im.src=it.url;
     let st=null;
-    el.addEventListener('pointerdown',e=>{ if(e.target.closest('.px')||!iw) return; e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.add('drag'); st={x:e.clientX,y:e.clientY,ox:it.ox??.5,oy:it.oy??.5}; });
+    el.addEventListener('pointerdown',e=>{ if(e.target.closest('.px')||!iw||!el.classList.contains('adj')) return; e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.add('drag'); st={x:e.clientX,y:e.clientY,ox:it.ox??.5,oy:it.oy??.5}; });
     el.addEventListener('pointermove',e=>{ if(!st) return; const fw=el.clientWidth, fh=el.clientHeight, r=Math.max(fw/iw, fh/ih), ovx=iw*r-fw, ovy=ih*r-fh;
       it.ox=ovx>0.5?Math.min(1,Math.max(0,st.ox-(e.clientX-st.x)/ovx)):.5; it.oy=ovy>0.5?Math.min(1,Math.max(0,st.oy-(e.clientY-st.y)/ovy)):.5;
       el.style.backgroundPosition=`${it.ox*100}% ${it.oy*100}%`; });
     const end=()=>{ if(!st) return; st=null; el.classList.remove('drag'); save(); if(onEnd) onEnd(key); };
-    el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end); }); }
+    el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end); });
+  (root||document).querySelectorAll('[data-padj]').forEach(b=>b.onclick=()=>{ photoAdj=photoAdj===b.dataset.padj?null:b.dataset.padj; render(); }); }
 function cardBlock(){
   const u=state.extra.birthdayCard; if(!u) return '';
   return `<p class="center" style="margin:12px 0 4px">今天的生日卡</p><img class="photo" src="${u}" alt=""><a class="nes-btn btn small" style="display:inline-block;margin-top:8px" download="生日卡.jpg" href="${u}">⬇ 存到手機</a>`;
@@ -1321,10 +1326,8 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   'g1:arrive':['要貓毛過敏了'],
   's1:go':['圖書館內請輕聲細語'],
   's1:sit':['找個地方坐下解謎'],
-  's1:riddle':['這麼簡單的謎題不用提示'],
-  's1:riddle_ok':['這麼簡單的謎題不用提示'],
-  's1:code':['原本 9 位數都要用解的，已經放水放成海了'],
-  's1:code_ok':['原本 9 位數都要用解的，已經放水放成海了'],
+  's1:code':['翻譯文學'],
+  's1:code_ok':['翻譯文學'],
   's1:find':['不在 5 樓'],
   's1:lit':['點燃蠟燭了！'],
   'g2:play':['英文歌打中文翻譯也可以'],
@@ -1382,7 +1385,7 @@ function pageTips(){ const k=pageKey(); if(PAGE_TIPS[k]) return PAGE_TIPS[k];
 const STAGE_TIPS={
   s0:['莉莉加油！'],
   g1:['秘密任務進行中。'],
-  s1:['跟著貓毛從 2 號出口出站，到台北市立圖書館總館。','找到小精靈，解開 2 道謎題。','照索書號在書架上找到那本書。'],
+  s1:['跟著貓毛從 2 號出口出站，到台北市立圖書館總館。','找到小精靈，解開 1 道謎題。','照索書號在書架上找到那本書。'],
   g2:['秘密任務進行中。'],
   s3:['地點：一半在站內、一半在站外。','左半：藏在牆上的季節。','右半：藏在一朵大花內。','打開異次元觀測器，對準就會找到。'],
   g3:['秘密任務進行中。'],
@@ -2042,36 +2045,28 @@ function renderLibrary(s, idx){
   const gk=s.id+'_guess'; const guesses=state.extra[gk]||[];
   let body='';
   if(step==='go') body=`<p>${s.intro}</p><div class="center hero" style="margin-bottom:24px">${SHELF}</div><button class="nes-btn is-arrive btn" id="arr" style="--arrive:#209cee">${PIN} 已抵達圖書館</button>`;
-  else if(step==='sit') body=`<p>進入圖書館，貓毛的魔力消失了，掉落在地上一動也不動，但妳遇到了圖書小精靈，她給了妳 2 道謎題，並告訴妳：「解開謎題，妳能找到一本書，給我 ISBN 的最後 3 個數字，我會幫妳點亮蠟燭並跟妳說一個秘密。」</p>
+  else if(step==='sit') body=`<p>進入圖書館，貓毛的魔力消失了，掉落在地上一動也不動，但妳遇到了圖書小精靈，她給了妳 1 道謎題，並告訴妳：「解開謎題，妳能找到一本書，給我 ISBN 的最後 3 個數字，我會幫妳點亮蠟燭並跟妳說一個秘密。」</p>
     <div class="hero">${spriteSVG(FAIRY_ROWS, FAIRY_PAL, '160px', 'class="mx" aria-label="圖書館的小精靈"')}</div>
     <button class="nes-btn is-primary btn" id="start">開始解謎</button>`;
-  else if(step==='riddle') body=`<p class="tag">謎題 1 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">${icons(s.riddle)}</div>
-    <input class="nes-input" type="text" id="ans" placeholder="書名" style="letter-spacing:.1em"><div id="res"></div>
-    <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`;
-  else if(step==='riddle_ok') body=`<p class="tag">謎題 1 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">${icons(s.riddle)}</div>
-    <input class="nes-input" type="text" value="${s.riddleAnswer}" disabled style="letter-spacing:.1em">${ok(`沒錯，就是《${s.book.title}》`)}
-    <button class="nes-btn is-success btn" id="next1" style="margin-top:8px">下一題</button>`;   // 答對不換頁：留在原頁、輸入框下接提示＋按鈕（Ming）
-  else if(step==='code') body=`<p class="tag">謎題 2 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">這本書的索書號是\n<b>${'?'.repeat(s.callDigits.length)}${s.callTail}</b>\n\n猜 ${s.callDigits.length} 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
+  else if(step==='code') body=`<p class="tag">謎題</p><div class="letter nes-container is-rounded" style="font-size:17px">有一本書的索書號是\n<b>${s.callFront}${'?'.repeat(s.callDigits.length)}</b>\n\n猜 ${s.callDigits.length} 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
     <input class="nes-input" type="text" id="ans" inputmode="numeric" maxlength="${s.callDigits.length}" placeholder="${s.callDigits.length} 碼"><div id="res"></div>
     <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>
-    ${guesses.length?`<div class="letter nes-container is-rounded" style="margin-top:14px;font-size:16px">${guesses.map(g=>`${g.v}${s.callTail}　${g.a}A${g.b}B`).join('\n')}</div>`:''}`;
-  else if(step==='code_ok') body=`<p class="tag">謎題 2 / 2</p><div class="letter nes-container is-rounded" style="font-size:17px">這本書的索書號是\n<b>${'?'.repeat(s.callDigits.length)}${s.callTail}</b>\n\n猜 ${s.callDigits.length} 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
+    ${guesses.length?`<div class="letter nes-container is-rounded" style="margin-top:14px;font-size:16px">${guesses.map(g=>`${s.callFront}${g.v}　${g.a}A${g.b}B`).join('\n')}</div>`:''}`;
+  else if(step==='code_ok') body=`<p class="tag">謎題</p><div class="letter nes-container is-rounded" style="font-size:17px">有一本書的索書號是\n<b>${s.callFront}${'?'.repeat(s.callDigits.length)}</b>\n\n猜 ${s.callDigits.length} 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
     <input class="nes-input" type="text" value="${s.callDigits}" disabled>${ok(`索書號 ${s.book.call}`)}
     <button class="nes-btn is-success btn" id="next2" style="margin-top:8px">去找書</button>`;   // 同上：答對留在原頁
-  else body=`<p>請根據索書號 <b>${s.book.call}</b> 找到《${s.book.title}》，獲得 <b>ISBN</b> 最後 3 碼。</p>
+  else body=`<p>請根據索書號 <b>${s.book.call}</b> 找到這本書，獲得 <b>ISBN</b> 最後 3 碼。</p>
     <input class="nes-input" type="text" id="ans" inputmode="numeric" maxlength="3" placeholder="3 碼"><div id="res"></div>
     <button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`;
   main.innerHTML = ticket(s, `${steps()}${body}${backupScanBox()}${npcBox(s,idx)}`);
   const arr=$('#arr'); if(arr) arr.onclick=()=>set('sit');
-  const st=$('#start'); if(st) st.onclick=()=>set('riddle');
-  const n1=$('#next1'); if(n1) n1.onclick=()=>set('code');
+  const st=$('#start'); if(st) st.onclick=()=>set('code');
   const n2=$('#next2'); if(n2) n2.onclick=()=>set('find');
   const norm=t=>t.replace(/[\s《》「」、.。]/g,'');
   const ab=(g,ans)=>{ const L=ans.length; let a=0,b=0; const used=[]; for(let i=0;i<L;i++){ if(g[i]===ans[i]){ a++; used[i]=true; } } for(let i=0;i<L;i++){ if(g[i]===ans[i]) continue; for(let j=0;j<L;j++){ if(!used[j] && g[i]===ans[j] && g[j]!==ans[j]){ b++; used[j]=true; break; } } } return {a,b}; };
   const c=$('#chk'); if(c){ const go=()=>{ const v=$('#ans').value.trim();
-    if(step==='riddle'){ if(norm(v)===norm(s.riddleAnswer)) set('riddle_ok'); else $('#res').innerHTML=bad('不是這個書名，再想想。'); }
-    else if(step==='code'){ if(!new RegExp(`^\\d{${s.callDigits.length}}$`).test(v)){ $('#res').innerHTML=bad(`要 ${s.callDigits.length} 個數字。`); return; } const r=ab(v,s.callDigits); guesses.push({v,a:r.a,b:r.b}); state.extra[gk]=guesses; save(); if(v===s.callDigits) set('code_ok'); else render(); }
-    else { if(v===s.bookAnswer) pass(s); else $('#res').innerHTML=bad('不是這本，再看一次書背的 ISBN。'); } };
+    if(step==='code'){ if(!new RegExp(`^\\d{${s.callDigits.length}}$`).test(v)){ $('#res').innerHTML=bad(`要 ${s.callDigits.length} 個數字。`); return; } const r=ab(v,s.callDigits); guesses.push({v,a:r.a,b:r.b}); state.extra[gk]=guesses; save(); if(v===s.callDigits) set('code_ok'); else render(); }
+    else { if(v===s.bookAnswer||(s.bookAnswerAlt||[]).includes(v)) pass(s); else $('#res').innerHTML=bad('不是這本，再看一次書背的 ISBN。'); } };
     c.onclick=go; $('#ans').onkeydown=e=>{ if(e.key==='Enter') go(); }; }
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
 }
@@ -2679,7 +2674,7 @@ async function showStrip(){
   const u=await makeStrip(); const b=$('#stripbox'); if(!b||!u) return;
   const G=makeStrip.geo, st=state.extra.strip||{};
   const slots=stripAdj?CONFIG.stripOrder.slice(0,4).map((k,i)=>{ const pos=`left:${G.pad/G.W*100}%;top:${(G.head+i*(G.ph+G.gap))/G.H*100}%;width:${G.pw/G.W*100}%;height:${G.ph/G.H*100}%`; const it=st[k];
-    return it&&it.url?`<div class="slot pframe" data-k="${k}" style="${pos};background-image:url(${it.url});background-position:${(it.ox??.5)*100}% ${(it.oy??.5)*100}%"><button class="px" data-del="${k}" aria-label="刪掉照片">✕</button></div>`
+    return it&&it.url?`<div class="slot pframe adj" data-k="${k}" style="${pos};background-image:url(${it.url});background-position:${(it.ox??.5)*100}% ${(it.oy??.5)*100}%"><button class="px" data-del="${k}" aria-label="刪掉照片">✕</button></div>`
       :`<label class="slot empty" style="${pos}">${PHOTO_ICON}<input type="file" accept="${PHOTO_ACCEPT}" data-up="${k}" hidden></label>`; }).join(''):'';
   b.innerHTML=`<div class="stripwrap" style="margin-top:18px"><img src="${u}" alt="">${slots}</div>
     <div class="row" style="margin-top:10px;justify-content:center"><a class="nes-btn btn small" style="display:inline-block;margin:0" download="生日列車拍貼.jpg" href="${u}">⬇ 存到手機</a><button class="nes-btn ${stripAdj?'is-primary':''} btn small" id="stripadj" style="margin:0">調整相片</button></div>
