@@ -84,6 +84,40 @@
     box-shadow:4px 0 #ffe066,0 4px #ffb703,4px 4px #ffb703,8px 4px #ffe066,0 8px #fb8500,4px 8px #ffb703,8px 8px #fb8500,4px 12px #fb8500;display:none}
   .candle.lit .flame{display:block;animation:flick .4s steps(2) infinite alternate}
   .candle.out .flame{display:none}
+  .candle.gold{opacity:1}
+  .candle.gold .stick{background:#ffd34d;box-shadow:inset -4px 0 0 #e0a800, 0 4px 0 #000}   /* 第 7 根金色蠟燭 */
+  .candle.gold.lit .flame{background:#ff6b6b;box-shadow:4px 0 #ff6b6b,0 4px #e8112d,4px 4px #e8112d,8px 4px #ff6b6b,0 8px #a4001a,4px 8px #e8112d,8px 8px #a4001a,4px 12px #a4001a}   /* 赤紅色火焰 */
+  .candle.cc1 .stick{background:#ff9f43;box-shadow:inset -4px 0 0 #d97a1c,0 4px 0 #000}.candle.cc2 .stick{background:#ffe066;box-shadow:inset -4px 0 0 #d9b52e,0 4px 0 #000}
+  .candle.cc3 .stick{background:#66d678;box-shadow:inset -4px 0 0 #3fae52,0 4px 0 #000}.candle.cc4 .stick{background:#3ad1c8;box-shadow:inset -4px 0 0 #1ea69e,0 4px 0 #000}
+  .candle.cc5 .stick{background:#4c8df0;box-shadow:inset -4px 0 0 #2a64c4,0 4px 0 #000}.candle.cc6 .stick{background:#b464e6;box-shadow:inset -4px 0 0 #8a3fbc,0 4px 0 #000}
+  .candle[class*=cc] .stick{transition:background .4s}
+  .spk{position:absolute;width:4px;height:4px;background:#ffc93c;box-shadow:4px 0 #ffc93c,-4px 0 #ffc93c,0 4px #ffc93c,0 -4px #ffc93c,0 0 6px #fff;animation:twinkle 1.2s steps(3) infinite;pointer-events:none}   /* 閃閃發光 */
+  @keyframes twinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
+  .gold-gift{display:flex;justify-content:center;align-items:flex-end;gap:2px}
+  .gg-momo svg{display:block}
+  .gg-candle{position:relative;width:70px;height:130px;margin:0 0 30px -34px}   /* 金色蠟燭握在列車長右手 */
+  .gg-candle .candle{position:absolute;left:23px;bottom:0;transform:scale(2.1);transform-origin:50% 100%;filter:drop-shadow(0 0 8px #ffd34d) drop-shadow(0 0 3px #fff)}
+  .gold-big{position:relative;width:170px;height:170px;margin-left:auto;margin-right:auto;--gp:0}
+  .gold-big .gb-candle{position:absolute;left:73px;bottom:10px;transform:scale(2.8);transform-origin:50% 100%;filter:drop-shadow(0 0 calc(4px + 14px * var(--gp)) #ffd34d)}
+  .gold-big.pulse .gb-candle{animation:gpulse .35s steps(3)}
+  @keyframes gpulse{50%{filter:drop-shadow(0 0 22px #ffe066) brightness(1.3)}}
+  .pips{display:flex;justify-content:center;gap:6px}
+  .pips i{width:16px;height:16px;border:3px solid #000;background:#fff}
+  .pips i.on{background:#ffd34d}
+  .gcam{position:absolute;width:2px;height:2px;overflow:hidden;opacity:.01;pointer-events:none}   /* 前鏡頭只用來偵測，不顯示畫面 */
+  .wish-dim{position:fixed;inset:0;background:#000;z-index:1500;opacity:0;animation:dimin 2s ease-in forwards;pointer-events:none}   /* 蠟燭以外慢慢變暗變黑 */
+  .wish-dim.leave{animation:dimout .7s ease-out forwards}
+  @keyframes dimin{to{opacity:.94}}
+  @keyframes dimout{from{opacity:.94}to{opacity:0}}
+  .wish-front{position:relative;z-index:1600}
+  .wish-row{position:relative}
+  .wish-rays{position:absolute;left:50%;top:50%;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;background:repeating-conic-gradient(#ff4d6d 0 6deg,#ff9f43 6deg 12deg,#ffe066 12deg 18deg,#66d678 18deg 24deg,#4cc9f0 24deg 30deg,#b464e6 30deg 36deg);-webkit-mask:radial-gradient(circle,#000 8%,transparent 62%);mask:radial-gradient(circle,#000 8%,transparent 62%);opacity:0;transition:opacity 1.2s;animation:raysspin 8s linear infinite;pointer-events:none}   /* 七彩輻射光 */
+  .wish-rays.on{opacity:.75}
+  @keyframes raysspin{to{transform:rotate(360deg)}}
+  .wish-row .candles{position:relative}
+  .wish-text{color:#fff;text-align:center;opacity:0;transition:opacity .8s;margin:14px 0}
+  .wish-late{visibility:hidden}
+  .wish-front.ready .wish-text{opacity:1}.wish-front.ready .wish-late{visibility:visible}
   .candle.out .smoke{position:absolute;left:10px;top:6px;width:4px;height:4px;background:#999;box-shadow:4px -6px #aaa,0 -12px #bbb;animation:rise 1.2s steps(3) infinite}
   @keyframes flick{from{transform:translateY(0)}to{transform:translateY(-2px) scaleX(1.1)}}
   @keyframes rise{to{transform:translateY(-10px);opacity:0}}
@@ -193,6 +227,32 @@
   .pose{display:flex;justify-content:center;align-items:flex-end;margin:30px 0}
   .pose svg{display:block}
   .pose-gap{width:28px}
+  .progbtn{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:1100;width:52px;height:52px;border-radius:50%;border:4px solid #000;background:#fff9db;box-shadow:3px 3px 0 #000;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}   /* 旅程進度懸浮鈕 */
+  .progbtn svg{display:block}
+  #progpanel{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:1200;background:#fdf6e3;max-height:72vh;overflow:auto;padding:12px 14px;margin:0}
+  .pg-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+  .pg-x{border:0;background:none;font:inherit;font-size:20px;cursor:pointer;padding:0 4px}
+  .pg-track{position:relative;display:flex;overflow-x:auto;padding:4px 4px 8px;scroll-behavior:smooth}
+  .pg-line{display:none}
+  .pg-node::before{content:'';position:absolute;top:53px;left:0;right:0;height:4px;background:#c9bda6}   /* 節點之間的線 */
+  .pg-node:first-of-type::before{left:50%}.pg-node:last-of-type::before{right:50%}
+  .pg-node.done::before{background:#8a7a62}
+  .pg-node{position:relative;flex:0 0 64px;display:flex;flex-direction:column;align-items:center;border:0;background:none;font:inherit;padding:0;cursor:pointer;color:inherit}
+  .pg-node:disabled{cursor:default;opacity:.55}
+  .pg-top{height:42px;display:flex;align-items:flex-end;justify-content:center}
+  .pg-top svg{display:block}
+  .pg-px svg{width:30px!important;height:auto}
+  .pg-candle{display:block;transform:scale(.6);transform-origin:50% 100%;height:42px}
+  .pg-dot{display:block;width:20px;height:20px;border-radius:50%;border:4px solid var(--lc);background:#fdf6e3;margin-top:2px;z-index:1}
+  .pg-node.tr .pg-dot{width:14px;height:14px;margin-top:5px;border-width:3px}
+  .pg-node.done .pg-dot{background:var(--lc)}
+  .pg-node.here .pg-dot{background:#fff;box-shadow:0 0 0 3px #ffe066}
+  .pg-node.sel .pg-name{color:var(--red)}
+  .pg-name{font-size:11px;margin-top:4px;line-height:1.2;text-align:center;width:60px}
+  .pg-train{animation:pgtrain .8s steps(2) infinite alternate}
+  @keyframes pgtrain{from{transform:translateY(0)}to{transform:translateY(-2px)}}
+  .pg-brief{border-top:3px dashed #d8c9b0;margin-top:6px;padding-top:8px;font-size:15px}
+  .pg-bt{font-size:18px;margin:0}
   .go-train{display:flex;justify-content:center;margin:24px 0 0}
   .go-train svg{display:block}
   .chase{position:relative;width:280px;height:170px;margin:30px auto}
@@ -206,10 +266,8 @@
   .chase .ch-dash{position:absolute;height:4px;background:#e8d6b6;animation:chdash .6s steps(3) infinite}
   @keyframes chdash{from{opacity:1;transform:translateX(0)}to{opacity:0;transform:translateX(-24px)}}
   .rc{position:relative;width:220px;height:200px}   /* 忠孝復興 >> 麟光：發光蠟燭＋七彩光波 */
-  .rc-candle{position:absolute;left:50%;bottom:22px;transform:translateX(-50%) scale(2.4);transform-origin:50% 100%;filter:drop-shadow(0 0 4px #ffe066) drop-shadow(0 0 10px #ffb000)}
-  .rc-wave{position:absolute;left:50%;top:30%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;border:5px solid #ff4d6d;box-shadow:0 0 10px currentColor,inset 0 0 8px currentColor;color:#ff4d6d;opacity:0;animation:rcwave 2.2s steps(11) infinite, rchue 1.6s linear infinite}
-  @keyframes rcwave{0%{transform:scale(.15);opacity:0}15%{opacity:1}100%{transform:scale(1.45);opacity:0}}
-  @keyframes rchue{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(360deg)}}   /* 光波顏色在彩虹之間流轉 */
+  .rc-candle{position:absolute;left:50%;bottom:22px;transform:translateX(-50%) scale(2.4);transform-origin:50% 100%;animation:rcedge 4.2s linear infinite}   /* 蠟燭邊緣的光：七彩漸變，同時一大一小像呼吸（Ming） */
+  @keyframes rcedge{0.0%{filter:drop-shadow(0 0 6px #ff4d6d) drop-shadow(0 0 16px #ff4d6d)}14.3%{filter:drop-shadow(0 0 3px #ff9f43) drop-shadow(0 0 8px #ff9f43)}28.6%{filter:drop-shadow(0 0 6px #ffe066) drop-shadow(0 0 16px #ffe066)}42.9%{filter:drop-shadow(0 0 3px #66d678) drop-shadow(0 0 8px #66d678)}57.1%{filter:drop-shadow(0 0 6px #4cc9f0) drop-shadow(0 0 16px #4cc9f0)}71.4%{filter:drop-shadow(0 0 3px #5b6ee6) drop-shadow(0 0 8px #5b6ee6)}85.7%{filter:drop-shadow(0 0 6px #b464e6) drop-shadow(0 0 16px #b464e6)}100.0%{filter:drop-shadow(0 0 3px #ff4d6d) drop-shadow(0 0 8px #ff4d6d)}}
   .rift{position:relative;width:168px}
   .rift svg{display:block}
   .rift .rf-body{position:relative}
@@ -234,6 +292,11 @@
   .hungry .h-growl{position:absolute;left:0;top:0;animation:growlblink .5s steps(1) infinite}
   @keyframes growlblink{0%{opacity:1;transform:translateX(0)}50%{opacity:.25;transform:translateX(3px)}}
   .granny{position:relative;width:168px}
+  .passerby{position:relative;width:200px;height:180px;margin-top:12px}   /* 路人＋老太太原本那支望遠鏡（同樣 6px 一格），手疊在望遠鏡前面 */
+  .passerby svg{display:block}
+  .passerby .pb-guy{position:absolute;left:0;bottom:0}
+  .passerby .pb-tel{position:absolute;left:144px;top:66px}
+  .passerby .g-edge{position:absolute;left:0;top:0;animation:teledge 1.4s steps(7) infinite}
   .granny svg{display:block}
   .granny .g-edge,.granny .g-top{position:absolute;left:0;top:0}
   .granny .g-edge{animation:teledge 1.4s steps(7) infinite}   /* 只有鏡頭散發七彩：變色＋向四周發光 */
@@ -368,6 +431,8 @@
   .tb-badge{width:56px;margin:0 auto;touch-action:none;cursor:grab;animation:fbfloat 1.2s steps(6) infinite alternate}
   .tb-badge.drag{animation:none}
   .tb-badge.fly{animation:tbfly .55s steps(6) forwards}
+  .badge-burst{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:#fff;box-shadow:0 0 0 6px #ffe066,0 0 24px 12px #fff;z-index:5;pointer-events:none;animation:burst .6s steps(6) forwards}   /* 徽章到了：閃一下 */
+  @keyframes burst{from{transform:scale(.3);opacity:1}to{transform:scale(5);opacity:0}}
   @keyframes tbfly{to{transform:translateY(-360px) rotate(720deg) scale(.3);opacity:0}}
   .dial{width:200px;height:200px;margin:34px auto 8px;position:relative;border:4px solid #000;border-radius:50%;background:radial-gradient(circle,#fff 60%,#fdf6e3 61%);box-shadow:4px 4px 0 #9a9a9a}
   .dial .mk{position:absolute;left:50%;top:50%;width:0;height:0}
@@ -475,8 +540,8 @@ const CONFIG = {
       callTail:'.57 7760',     // 題目上直接給的後半
       hints:[] },
 
-    { id:'g2', name:'科技大樓 >> 大安森林公園', code:'移動中', line:'red', transit:true, type:'game', game:'song', arriveArt:'granny',
-      arriveStory:'妳在路途上，遇到好心的老太太，她告訴妳，想解除胖貓的封印必須要有徽章。但解封的徽章碎成 2 半，被藏進不同地點的異次元夾縫，老太太給了妳異次元觀測器後就消失了。',   // 抵達頁上方的敘述（貓毛已失去魔力）
+    { id:'g2', name:'科技大樓 >> 大安森林公園', code:'移動中', line:'red', transit:true, type:'game', game:'song', arriveArt:'passerby',
+      arriveStory:'妳在路途上，遇到好心的路人，他告訴妳，想解除胖貓的封印必須要有徽章。但解封的徽章碎成 2 半，被藏進不同地點的異次元夾縫，路人給了妳異次元觀測器後就去旁邊尬舞了。',   // 抵達頁上方的敘述（貓毛已失去魔力）
       sub:'秘密任務 2 · 莉莉之歌',
       intro:'這 4 句歌詞裡都藏著莉莉。聽一聽，把歌名填進來。',
       // 歌詞是莉莉諧音版；yt＝YouTube 影片 id，start／end＝播放起訖秒數（估的，試聽後校正）
@@ -714,15 +779,43 @@ let gameCleanup=null;
 let HIST=[], REDO=[], restoring=false;
 try{ HIST=JSON.parse(sessionStorage.getItem('mrt-hist')||'[]'); }catch(e){}
 function snapState(){ const c=JSON.parse(JSON.stringify({...state, extra:{...state.extra, strip:undefined}})); delete c.npc; return JSON.stringify(c); }
-function recordPage(){ if(!(CONFIG.testMode||state.npc) || restoring) return; const sn=snapState(); if(HIST[HIST.length-1]!==sn){ HIST.push(sn); if(HIST.length>80) HIST.shift(); REDO=[]; try{ sessionStorage.setItem('mrt-hist', JSON.stringify(HIST)); }catch(e){} } }
+function recordPage(){ return; if(!(CONFIG.testMode||state.npc) || restoring) return; const sn=snapState(); if(HIST[HIST.length-1]!==sn){ HIST.push(sn); if(HIST.length>80) HIST.shift(); REDO=[]; try{ sessionStorage.setItem('mrt-hist', JSON.stringify(HIST)); }catch(e){} } }
 function restoreSnap(sn){ const o=JSON.parse(sn), strip=state.extra.strip; Object.keys(state).forEach(k=>{ if(k!=='npc') delete state[k]; }); Object.assign(state,o); if(strip) state.extra.strip=strip; restoring=true; save();
   const st=CONFIG.stages[state.stage];
   if(st && state.done[st.id] && !['game','firebadge','photo_task','final'].includes(st.type)){ stopCamera(); showLetter(st,true); }   // 過關畫面那一頁
   else if(!state.started) render(); else render();
   restoring=false; try{ sessionStorage.setItem('mrt-hist', JSON.stringify(HIST)); }catch(e){} }
-function pageBack(){ if(HIST.length<2) return; REDO.push(HIST.pop()); restoreSnap(HIST[HIST.length-1]); }
+/* 上一頁（2026-11-05 Ming：不靠紀錄，照關卡順序）：把這一關重設到開頭，用「下一頁」一路走、記下每一頁，找到現在這頁就退到前一頁；已經是第一頁就退到前一關的最後一頁 */
+function pageKey(st){ const s=CONFIG.stages[st.stage]; if(!s) return String(st.stage);
+  const ex={}; Object.keys(st.extra||{}).filter(k=>k===s.id||k.startsWith(s.id+'_')||['s7_blown','letterOpen','endLetter'].includes(k)).sort().forEach(k=>{ let v=st.extra[k];
+    if(v && typeof v==='object' && !Array.isArray(v)){ const o={}; ['step','cur','boss','summoned'].forEach(f=>{ if(v[f]!=null) o[f]=v[f]; }); if(Array.isArray(v.got)) o.got=v.got.length; v=o; }
+    else if(Array.isArray(v)) v=v.length; else if(typeof v==='string' && v.length>40) v='*'; ex[k]=v; });
+  return JSON.stringify([st.stage, !!(st.done||{})[s.id], ex]); }
+function stageStart(i){   // 回到第 i 關剛開始的狀態（後面的關全部清掉；照片不動）
+  const strip=state.extra.strip;
+  CONFIG.stages.slice(i).forEach(x=>clearStage(x.id));
+  if(i<=CONFIG.stages.findIndex(x=>x.finalPhoto)){ delete state.extra.letterOpen; delete state.extra.endLetter; }
+  state.extra.strip=strip; state.stage=i; }
+function walkStage(i){   // 第 i 關從頭走到要離開這一關為止，每一頁存一份
+  const pages=[]; stageStart(i); save(); render();
+  for(let n=0;n<80;n++){ const sn=snapState(), key=pageKey(state); if(!pages.length || pages[pages.length-1].key!==key) pages.push({sn,key});
+    const before=key; pageNext(); if(state.stage!==i) break; if(pageKey(state)===before) break; }
+  return pages; }
+let walking=false;
+function pageBack(){
+  if(walking) return; walking=true;
+  const keep=JSON.stringify(state), here=pageKey(state), i=state.stage;
+  try{
+    const pages=walkStage(i); const pos=pages.map(p=>p.key).lastIndexOf(here);
+    let target=null;
+    if(pos>0) target=pages[pos-1].sn;
+    else if(pos===-1 && pages.length) target=pages[0].sn;   // 找不到這頁（例如玩到一半）：回到這一關開頭
+    else if(i>0){ const prev=walkStage(i-1); target=prev[prev.length-1].sn; }
+    if(target){ restoreSnap(target); window.scrollTo(0,0); }
+    else { const o=JSON.parse(keep); Object.keys(state).forEach(k=>delete state[k]); Object.assign(state,o); save(); render(); }
+  } finally { walking=false; }
+}
 function pageNext(){
-  if(REDO.length){ const sn=REDO.pop(); HIST.push(sn); restoreSnap(sn); return; }
   const nx=document.getElementById('next'); if(nx){ nx.click(); return; }       // 過關畫面 → 前往下一站
   const nl=document.getElementById('nextl'); if(nl){ nl.click(); return; }     // 點亮蠟燭頁 → 目的地
   const wn=document.getElementById('won'); if(wn && wn.style.display!=='none'){ wn.click(); return; }   // 小遊戲打贏 → 看秘密數字
@@ -743,10 +836,24 @@ function pageNext(){
   }
   if(s.type==='photo_task'){ if(s.preStep && !state.extra[s.id+'_pre']){ state.extra[s.id+'_pre']=true; save(); return render(); } state.done[s.id]=true; save(); return render(); }
   if(s.type==='firebadge'){ const k=s.id+'_fb', d=state.extra[k]||{got:[]};
-    if(!d.got.includes('winter')) d.got.push('winter'); else if(!d.got.includes('flower')){ d.got.push('flower'); d.summoned=true; state.done[s.id]=true; }
+    if(!d.got.includes('winter')) d.got.push('winter'); else if(!d.got.includes('flower')) d.got.push('flower'); else { d.summoned=true; state.done[s.id]=true; }   // 左半 → 右半（兩半合成、出現解除封印）→ 解封
     state.extra[k]=d; save(); return render(); }
   if(s.type==='game'){ state.extra[s.id+'_won']=true; state.done[s.id]=true; save(); return render(); }
-  if(s.type==='final'){ if(!state.extra.s7_blown){ state.extra.s7_blown=true; save(); return render(); } state.done[s.id]=true; state.stage=CONFIG.stages.indexOf(s)+1; save(); return render(); }
+  if(s.type==='final'){ const fs=state.extra.s7_step;
+    if(!state.extra.s7_blown && !fs){ state.extra.s7_step='inject'; state.extra.s7_gold=true; save(); return render(); }
+    if(!state.extra.s7_blown && fs==='inject'){ state.extra.s7_goldLit=true; state.extra.s7_step='wish'; save(); return render(); }
+    if(!state.extra.s7_blown && fs==='wish'){ state.extra.s7_step='smoke'; save(); return render(); }
+    if(!state.extra.s7_blown){ state.extra.s7_blown=true; save(); return render(); } state.done[s.id]=true; state.stage=CONFIG.stages.indexOf(s)+1; save(); return render(); }
+  if(s.type==='spot'){                                                           // 每張圖：看圖 → 找破綻 → 看破 → 下一張…→ 已看破全部 → 魔王（出現 → 打鬥 → 打倒）
+    const k=s.id+'_quiz', d=state.extra[k]||{cur:0,step:'look'}, ph=s.photos||[s], n=ph.length;
+    if(d.step==='look') return step(k,{cur:d.cur,step:'find',got:[],open:null,seqi:0});
+    if(d.step==='find') return step(k,{cur:d.cur,step:d.cur>=n-1?'all':'ok',got:spotQs(ph[d.cur]).map((_,i)=>i),open:null,seqi:0});
+    if(d.step==='ok') return step(k,{cur:d.cur+1,step:'look',got:[],open:null,seqi:0});
+    if(d.step==='all') return step(k,{cur:d.cur,step:'boss',boss:'wait',hits:0,introDone:true});
+    if(d.step==='boss' && d.boss==='wait') return step(k,{...d,boss:'fight',introDone:true});
+    if(d.step==='boss' && d.boss==='fight') return step(k,{...d,boss:'won',hits:s.bossHits||30,closed:true});
+    return pass(s);
+  }
   if(s.type==='library'){                                                        // 已抵達 → 謎語 → 找書 → 過關
     const k=s.id+'_lib', st=state.extra[k]||'go';
     const order=['go','sit','riddle','riddle_ok','code','code_ok','find']; const i=order.indexOf(st);
@@ -758,7 +865,7 @@ function pageNext(){
 function testBar(){ if(CONFIG.testMode) document.body.classList.add('testing'); }
 function updateBar(){ const b=document.getElementById('candlebar'); if(!b || typeof MID==='undefined') return;
   const lit=litCount();
-  b.innerHTML=Array.from({length:MID},(_,i)=>candleHTML(i<lit?'lit':'')).join('');
+  b.innerHTML=(state.extra.s7_gold?candleHTML('gold'+(state.extra.s7_goldLit?' lit':'')):'')+Array.from({length:MID},(_,i)=>candleHTML(i<lit?'lit':'')).join('');   // 麟光拿到第 7 根金色蠟燭後排在最前面
   const cb=document.getElementById('codebar'); if(cb) cb.innerHTML=CODE_ORDER.map(k=>{ const v=state.codes[k]; return `<span class="${v!=null?'got':''}">${v!=null?v:'?'}</span>`; }).join(''); }
 const CODE_ORDER=CONFIG.codeOrder;
 function reset(){ try{ localStorage.removeItem('mrt-state'); }catch(e){} location.replace(location.pathname+(location.search.includes('test')?'?test':'')); }   // 全部重來；測試模式維持
@@ -1167,14 +1274,41 @@ const TRIPOD_PAL={K:'#222',G:'#5a5a64',L:'#3a78c4',W:'#dcf0ff',R:'#e63946'};
 /* 合照頁：莉莉和墨墨站在一起，前面架一台相機（還沒上傳照片時顯示） */
 function poseHTML(){ const {LILY,LILY_PAL,MOMO,MOMO_PAL}=window.MG_SPRITES;
   return `<div class="pose" aria-label="莉莉和墨墨準備合照">${spriteSVG(LILY, LILY_PAL, '84px')}${spriteSVG(MOMO, MOMO_PAL, '84px')}<span class="pose-gap"></span>${spriteSVG(TRIPOD_ROWS, TRIPOD_PAL, '84px')}</div>`; }
+/* 旅程進度（左下角懸浮鈕）：一條很多圓形節點的線，小捷運停在目前所在的節點，完成的節點上方有那裡劇情的小圖示，點節點在下方看事件簡報（Ming） */
+function progIcon(id){ const M=window.MG_SPRITES||{}, w='30px';
+  const A={ s0:()=>spriteSVG(HAIR_ROWS,HAIR_PAL,w), g1:()=>M.LILY_RUN?spriteSVG(M.LILY_RUN,M.LILY_PAL,'24px'):'', s1:()=>spriteSVG(FAIRY_ROWS,FAIRY_PAL,w), g2:()=>spriteSVG(GUY_ROWS,GUY_PAL,'26px'),
+    s3:()=>badgeSVG('',w), g3:()=>spriteSVG(MOMO_HUNGRY_ROWS,MOMO_HUNGRY_PAL,'36px'), s4:()=>`<span class="pg-px">${FOOD}</span>`, g4:()=>spriteSVG(MOMO_MYSTERY_ROWS,MOMO_EDITOR_PAL,'34px'),
+    s5d:()=>spriteSVG(MOMO_EDITOR_ROWS,MOMO_EDITOR_PAL,'34px'), m1:()=>spriteSVG(RIFT_FRAMES[0],RIFT_PAL,'26px'), s6:()=>spriteSVG(DEVIL_ROWS,DEVIL_PAL,'26px'), g5:()=>`<span class="pg-candle">${candleHTML('lit')}</span>`,
+    s7:()=>`<span class="pg-candle">${candleHTML('lit gold')}</span>`, s9:()=>spriteSVG(ENVELOPE_ROWS,{K:'#000',W:'#fff8e8',S:'#e8d6b6',F:'#f0e2c6',R:'#e03131',H:'#ffaaaa'},'32px') };
+  try{ return (A[id]||(()=>''))(); }catch(e){ return ''; } }
+function stageBrief(s){ const t=[s.intro,s.story,s.arriveStory,state.done[s.id]?s.litStory:null].filter(Boolean).map(x=>String(x).replace(/<[^>]+>/g,''));
+  if(s.type==='game' && !t.length) t.push(s.sub); return t.join('\n'); }
+let progSel=null;
+function progPanel(){
+  const cur=state.stage, nodes=CONFIG.stages.map((x,i)=>{ const done=!!state.done[x.id]&&i!==cur, here=i===cur;
+    return `<button class="pg-node ${done?'done':''} ${here?'here':''} ${x.transit?'tr':''} ${progSel===i?'sel':''}" data-pg="${i}" ${done||here?'':'disabled'} style="--lc:${LINE[x.line]}">
+      <span class="pg-top">${here?`<span class="pg-train">${spriteSVG(TRAIN_ROWS,TRAIN_PAL,'40px')}</span>`:done?progIcon(x.id):''}</span><i class="pg-dot"></i><span class="pg-name">${x.transit?'移動中':x.name}</span></button>`; }).join('');
+  const sel=progSel!=null?CONFIG.stages[progSel]:null;
+  return `<div class="pg-head"><b>旅程進度</b><button class="pg-x" id="pgx" aria-label="關閉">✕</button></div>
+    <div class="pg-track" id="pgtrack"><i class="pg-line"></i>${nodes}</div>
+    <div class="pg-brief">${sel?`<p class="pg-bt" style="color:${LINE[sel.line]}">${sel.name}</p><p class="tag" style="margin:0 0 6px">${sel.sub||''}</p><p style="margin:0;white-space:pre-wrap">${stageBrief(sel)}</p>`:'<p class="tag" style="margin:0">點節點看那一站發生的事。</p>'}</div>`; }
+function openProgress(){ let p=document.getElementById('progpanel'); if(!p){ p=document.createElement('div'); p.id='progpanel'; p.className='nes-container is-rounded'; document.body.appendChild(p); }
+  if(progSel==null) progSel=state.stage;
+  p.innerHTML=progPanel(); p.hidden=false;
+  p.querySelector('#pgx').onclick=()=>{ p.hidden=true; };
+  p.querySelectorAll('[data-pg]').forEach(b=>b.onclick=()=>{ progSel=+b.dataset.pg; const sl=p.querySelector('#pgtrack').scrollLeft; openProgress(); p.querySelector('#pgtrack').scrollLeft=sl; });
+  const here=p.querySelector('.pg-node.sel')||p.querySelector('.pg-node.here'); if(here) here.scrollIntoView({inline:'center',block:'nearest'}); }
+function progButton(){ let b=document.getElementById('progbtn'); if(!b){ b=document.createElement('button'); b.id='progbtn'; b.className='progbtn'; b.setAttribute('aria-label','旅程進度'); b.innerHTML=spriteSVG(TRAIN_ROWS,TRAIN_PAL,'34px'); b.onclick=()=>{ progSel=state.stage; openProgress(); }; document.body.appendChild(b); }
+  b.hidden=!state.started || document.body.classList.contains('noprog'); }
 /* 「請前往」上方的捷運（跟拍貼最底下同一台） */
-function goTrain(){ return `<div class="go-train">${spriteSVG(TRAIN_ROWS, TRAIN_PAL, '168px', 'aria-label="捷運"')}</div>`; }
+function goTrain(s){ if(s&&s.goHair) return `<div class="go-train hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '96px', 'class="mx" aria-label="發光的貓毛"')}</div>`;   // 有貓毛的那頁：貓毛放在捷運的位置
+  return `<div class="go-train">${spriteSVG(TRAIN_ROWS, TRAIN_PAL, '168px', 'aria-label="捷運"')}</div>`; }
 function goNextHTML(s, idx){
   const nx=CONFIG.stages[idx+1]; if(!nx) return '<button class="nes-btn is-primary btn" id="next" style="margin-top:14px">完成</button>';
   if(!nx.transit) return `${s.nextText?`<p style="margin-top:14px;font-size:18px">${s.nextText}</p>`:''}<button class="nes-btn is-success btn" id="next">${s.goBtn||'下一步'}</button>`;
   const dest=CONFIG.stages.slice(idx+1).find(x=>!x.transit)||nx;
-  return `${s.goStory?`<p>${s.goStory}</p>`:''}${goTrain()}<p class="center" style="font-size:${s.goLines?16:20}px;margin:16px 0">${s.goLines?s.goLines.join('<br>'):`${s.nextText||`${s.goVerb||'請前往'} <span class="big">${dest.name}</span>`}<br>並在路上進行秘密任務`}</p>
-    ${s.goHair?`<div class="hero hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '96px', 'class="mx" aria-label="發光的貓毛"')}</div>`:''}
+  return `${s.goStory?`<p>${s.goStory}</p>`:''}${goTrain(s)}<p class="center" style="font-size:${s.goLines?16:20}px;margin:16px 0">${s.goLines?s.goLines.join('<br>'):`${s.nextText||`${s.goVerb||'請前往'} <span class="big">${dest.name}</span>`}<br>並在路上進行秘密任務`}</p>
+
     <button class="nes-btn is-primary btn" id="next">進行秘密任務</button>`;
 }
 // 圖書館的小精靈飛在書上（科技大樓坐下解謎頁；編輯器 像素編輯器_小精靈.html）
@@ -1198,7 +1332,13 @@ const MOMO_EDITOR_PAL={B:'#111',G:'#5a4a40',S:'#dcb48e',E:'#222',M:'#8a5a44',R:'
 const RIFT_FRAMES=[['...........PVC..........', '............PVC.........', '...........PVVVC........', '..........PVVVC.........', '........PPVVVC..........', '.......PVVVVVC..........', '.......PVVVVVCC.........', '.......PVVVVVVVC........', '........PVVVVVVVC.......', '.........PVVWVVVVCC.....', '.........PVVVVVVVVVC....', '.........PVVVVWVVVVC....', '........PVVVVVVVVVC.....', '.......PVVVVVWVVVC......', '......PVVVVVVVVVC.......', '......PVVVVVVVCC........', '......PVVVVWVVC.........', '.......PVVVVVVVC........', '........PPVVVVVC........', '..........PVWVVVC.......', '..........PVVVVVC.......', '..........PVVVCC........', '..........PVVVC.........', '.........PVVVC..........', '..........PVC...........', '...........PVC..........'], ['...........PVC..........', '............PVC.........', '............PVC.........', '...........PVC..........', '.........PPVC...........', '........PVVVC...........', '........PVVVCC..........', '........PVVVVVC.........', '.........PVVVVVC........', '..........PVVVVVC.......', '...........PVVVVVC......', '...........PVVVVVC......', '..........PVVVVVC.......', '.........PVVVVVC........', '........PVVVVVC.........', '.......PVVVVVC..........', '.......PVVVVVC..........', '........PVVVVVC.........', '.........PPVVVC.........', '...........PVVVC........', '...........PVVVC........', '...........PVCC.........', '...........PVC..........', '..........PVC...........', '..........PVC...........', '...........PVC..........'], ['........................', '............PPC.........', '.............PC.........', '............PCC.........', '...........PCC..........', '..........PCC...........', '..........PC............', '..........PPC...........', '...........PPC..........', '............PPC.........', '.............PPC........', '..............PC........', '.............PCC........', '............PCC.........', '...........PCC..........', '..........PCC...........', '..........PC............', '..........PPC...........', '...........PPC..........', '............PPC.........', '.............PC.........', '............PCC.........', '............PC..........', '...........PCC..........', '...........PC...........', '........................']];   // 空間裂縫三幀：張開／半開／合成紅藍一條線（24×26）
 const RIFT_SHARDS=['........................', '........................', '........................', '........................', '....................C...', '...PP...................', '....P...................', '........................', '...................CC...', '........................', '........................', '........................', '........................', '........................', '........................', '..C.....................', '........................', '.....................PP.', '........................', '........................', '........................', '.....P..................', '..................CC....', '...................C....', '........................', '........................'];   // 裂縫旁漂浮的碎片（另一層）
 const RIFT_PAL={V:'#140a22',P:'#ff2a6d',C:'#05d9e8',W:'#fff'};
-const ARRIVE_ART={ rainbowCandle:()=>`<div class="rc" aria-label="發出七彩光波的蠟燭">${[0,1,2,3].map(i=>`<i class="rc-wave" style="animation-delay:${i*.55}s,${i*-.4}s"></i>`).join('')}<div class="rc-candle">${candleHTML('lit')}</div></div>`,
+const GUY_ROWS=['...HHhHHHH...', '..HHhHHhHHH..', '.HHSHHHHhHHH.', '.HSSSSSSSHHH.', 'SKKKKSSKKKKS.', 'SKSEKKKKESKS.', 'SKKKKSSKKKKS.', '.SSSSMMSSSS..', '..SSSSSSSS...', '..TTTTTTTT...', '.TTTTTTTTTTSS', '.STTTTTTTT.S.', '..JJJJJJJJ...', '..JJJ..JJJ...', '..BBB..BBB...'];   // 好心的路人：微捲三七分油頭、黑框眼鏡、深灰素 T、牛仔褲，拿直立望遠鏡（17×15，比墨墨矮）
+const GUY_TEL=['KKKKKKK', 'K.....K', 'KWTTTTK', 'KWTTTTK', 'KWTTTTK', '.KWTTK.', '.KWTTK.', '.KtttK.', '.KWTTK.', '.KtttK.', '.KWTTK.', '.KWTTK.', '..KTK..', '..KTK..', '..KTK..', '..KKK..'];   // 望遠鏡：直接用老太太原本那支（一模一樣）
+const GUY_TEL_LENS=['.......', '.ROYGB.', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......', '.......'];
+const GUY_LENS_UNUSED=['KKKKKKK', 'K.....K', 'KWTTTTK', 'KWTTTTK', 'KWTTTTK', '.KWTTK.', '.KWTTK.', '.KtttK.', '.KWTTK.', '.KtttK.', '.KWTTK.', '.KWTTK.', '..KTK..', '..KTK..', '..KTK..', '..KKK..'];   // 望遠鏡鏡頭：七彩、會變色發光
+const GUY_PAL={H:'#2b2220',h:'#55443a',S:'#e8c19a',K:'#111',E:'#3a2a2a',M:'#a0654f',T:'#4a4a50',J:'#3d5a8a',B:'#222',G:'#cfd3da',D:'#8a8f99'};
+const ARRIVE_ART={ passerby:()=>`<div class="passerby" aria-label="拿著七彩望遠鏡的路人"><div class="pb-tel">${spriteSVG(GUY_TEL, GRANNY_PAL, '42px', 'aria-hidden="true"')}<div class="g-edge">${spriteSVG(GUY_TEL_LENS, RAINBOW_PAL, '42px', 'aria-hidden="true"')}</div></div><div class="pb-guy">${spriteSVG(GUY_ROWS, GUY_PAL, '156px', 'aria-hidden="true"')}</div></div>`,
+  rainbowCandle:()=>`<div class="rc" aria-label="散發七彩光暈的蠟燭"><div class="rc-candle">${candleHTML('lit')}</div></div>`,
   rift:()=>`<div class="rift" aria-label="空間裂縫"><div class="rf-body">${RIFT_FRAMES.map((f,i)=>`<div class="rf-f rf-f${i}">${spriteSVG(f, RIFT_PAL, '168px', 'aria-hidden="true"')}</div>`).join('')}</div><div class="rf-shards">${spriteSVG(RIFT_SHARDS, RIFT_PAL, '168px', 'aria-hidden="true"')}</div></div>`,
   momoMystery:()=>spriteSVG(MOMO_MYSTERY_ROWS, MOMO_EDITOR_PAL, '216px', 'aria-label="神秘人的剪影"'),
   momoHungry:()=>`<div class="hungry" aria-label="墨墨摸著肚子"><div class="h-body">${spriteSVG(MOMO_HUNGRY_ROWS, MOMO_HUNGRY_PAL, '200px', 'aria-hidden="true"')}</div><div class="h-growl">${spriteSVG(MOMO_GROWL_ROWS, MOMO_HUNGRY_PAL, '200px', 'aria-hidden="true"')}</div></div>`,
@@ -1316,7 +1456,7 @@ function snapshot(v){ const c=document.createElement('canvas'); c.width=v.videoW
    各關渲染
    ========================================================= */
 function render(){
-  stopCamera(); stopGlitch(); document.body.classList.remove('noprog');
+  stopCamera(); stopGlitch(); if(state.extra.s7_step!=='wish'){ const dm=document.querySelector('.wish-dim'); if(dm) dm.remove(); } document.body.classList.remove('noprog');
   preloadAhead();
   setTimeout(recordPage,0);
   if(state.replay && replayFinished()){ window.scrollTo(0,0); return renderReplayDone(); }
@@ -1325,7 +1465,7 @@ function render(){
   if(gameCleanup){ gameCleanup(); gameCleanup=null; }
   if(state.done[s.id] && s.type!=='final' && !((s.type==='game'||s.type==='firebadge'||s.type==='photo_task') && !state.extra[s.id+'_left']) && !s.finalPhoto){ state.stage=Math.min(idx+1, CONFIG.stages.length-1); save(); return render(); }
   const r = { photo_task:renderPhotoTask, firebadge:renderFireBadge, game:renderGame, library:renderLibrary, ticket_puzzle:renderTicketPuzzle, spot:renderSpot, gps_qr:renderGpsQr, ar:renderAR, compass_color:renderCompassColor, food:renderFood, sound_puzzle:renderSoundPuzzle, rainbow:renderRainbow, director:renderDirector, final:renderFinal }[s.type];
-  const y=window.scrollY; r(s, idx); replayBar();
+  const y=window.scrollY; r(s, idx); replayBar(); progButton();
   window.scrollTo(0, Math.min(y, Math.max(0, document.documentElement.scrollHeight-window.innerHeight)));   // 按按鈕換頁後維持原本的捲動位置（Ming）；新頁比較短就停在最底
 }
 
@@ -1348,7 +1488,7 @@ function renderWelcome(){
     <p class="title">一日有效</p>
     <div class="station"><span class="code" style="background:#000;box-shadow:var(--px) var(--px) 0 #9a9a9a">MOMO</span><span class="name">${CONFIG.playerName}專屬</span></div>
     <p class="sub">三十而莉 · 生日列車</p>
-    <p>${'歡迎搭乘[三十而莉．生日列車]，30 歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，今天妳要成功點燃 6 根魔力蠟燭，並在旅途中獲得 5 個秘密數字，最終得到生日禮物的藏寶地點，如果卡關可以求助列車長-墨墨，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--pink)">${m}</span>`)}</p>
+    <p>${'歡迎搭乘[三十而莉．生日列車]，30 歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，列車長-墨墨給了妳 6 根魔力蠟燭，妳要把它們全部點燃，並在旅途中獲得 5 個秘密數字，最終才能找到藏寶地點，如果卡關可以求助列車長，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--pink)">${m}</span>`)}</p>
     ${candles()}
     <button class="nes-btn is-primary btn" id="go" style="margin-top:10px">我準備好了！</button></section>`;
   $('#go').onclick=()=>{ state.started=Date.now(); save(); render(); };
@@ -1386,8 +1526,8 @@ function renderTicketPuzzle(s, idx){
   } else if(d.step==='go'){
     const dest=CONFIG.stages.slice(idx+1).find(x=>!x.transit)||next;
     main.innerHTML = ticket(s, `${steps()}
-      ${s.goStory?`<p>${s.goStory}</p>`:''}${goTrain()}<p class="center" style="font-size:20px;margin:16px 0">${s.goVerb||'請前往'} <span class="big">${dest.name}</span><br>${s.noPuzzle?'並在路上進行秘密任務':'並在車上完成拼圖。'}</p>
-      ${s.goHair?`<div class="hero hair-glow">${spriteSVG(HAIR_ROWS, HAIR_PAL, '96px', 'class="mx" aria-label="發光的貓毛"')}</div>`:''}
+      ${s.goStory?`<p>${s.goStory}</p>`:''}${goTrain(s)}<p class="center" style="font-size:20px;margin:16px 0">${s.goVerb||'請前往'} <span class="big">${dest.name}</span><br>${s.noPuzzle?'並在路上進行秘密任務':'並在車上完成拼圖。'}</p>
+  
       ${s.noPuzzle?`<button class="nes-btn is-primary btn" id="board">進行秘密任務</button>`:`<button class="nes-btn is-primary btn" id="open">開啟拼圖</button>`}
       ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
     const ob=$('#open'); if(ob) ob.onclick=()=>{ const n=s.grid||3; state.extra[k]={step:'puzzle', order:shuffle([...Array(n*n).keys()])}; save(); render(); };
@@ -1655,7 +1795,7 @@ function renderBoss(s, idx, d, k){
       <button class="fist" id="fist" ${fighting?'':'hidden'} aria-label="出拳">${FIST_SVG}</button>
     </div>`}
     ${won?`<button class="nes-btn is-success btn" id="nextboss" style="margin-top:0">下一步</button>`
-      :fighting?'':`<div class="throwbox noglitch ${intro?'pre-intro':''}" id="throwbox"><div class="tb-badge" id="tbadge">${badgeSVG('','56px')}</div><p class="tag center" style="margin:6px 0 0">丟出胖貓徽章。</p></div>`}
+      :`<div class="throwbox noglitch ${intro?'pre-intro':''}" id="throwbox" ${fighting?'style="visibility:hidden"':''}><div class="tb-badge" id="tbadge">${badgeSVG('','56px')}</div><p class="tag center" style="margin:6px 0 0">丟出胖貓徽章。</p></div>`}
     ${backupScanBox()}${npcBox(s,idx)}`);
   bindBackupScan(s); bindNpc(s,idx);
   if(intro) bossIntro(()=>{ d.introDone=true; keep(); });
@@ -1665,21 +1805,31 @@ function renderBoss(s, idx, d, k){
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/(s.bossHits||30))})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
   fade();
   const back=spriteSVG(CAT_BACK_ROWS, CAT_PAL, '150px', 'aria-label="胖貓"'), punch=spriteSVG(CAT_PUNCH_ROWS, CAT_PAL, '170px', 'aria-label="胖貓出拳"');
-  // 丟徽章：按住往上滑超過 50px 就丟出去
-  const tb=$('#tbadge'); if(tb){ let y0=null;
-    tb.addEventListener('pointerdown',e=>{ y0=e.clientY; tb.setPointerCapture(e.pointerId); tb.classList.add('drag'); });
-    tb.addEventListener('pointermove',e=>{ if(y0==null) return; tb.style.transform=`translateY(${Math.min(0,e.clientY-y0)}px)`; });
-    const end=e=>{ if(y0==null) return; const dy=e.clientY-y0; y0=null; tb.classList.remove('drag'); tb.style.transform='';
-      if(dy>-50) return;
-      tb.classList.add('fly'); d.boss='fight'; keep();
-      setTimeout(()=>{ const box=$('#throwbox'); if(box) box.remove(); cat.innerHTML=spriteSVG(SPRITE_ROWS, CAT_PAL, '190px', 'aria-label="胖貓"'); cat.hidden=false;
+  // 丟徽章（像 Pokémon GO）：按住可以自由拖，往上甩出去才算丟；徽章畫弧線飛進裂隙、邊轉邊變小，到了閃一下才召喚胖貓；甩太輕就彈回原位
+  const tb=$('#tbadge'); if(tb){ let st=null, trail=[];
+    tb.addEventListener('pointerdown',e=>{ if(d.boss!=='wait') return; st={x:e.clientX,y:e.clientY}; trail=[{x:e.clientX,y:e.clientY,t:performance.now()}]; tb.setPointerCapture(e.pointerId); tb.classList.add('drag'); tb.getAnimations().forEach(a=>a.cancel()); });
+    tb.addEventListener('pointermove',e=>{ if(!st) return; const dx=e.clientX-st.x, dy=e.clientY-st.y; tb.style.transform=`translate(${dx}px,${dy}px) scale(1.15)`;
+      trail.push({x:e.clientX,y:e.clientY,t:performance.now()}); if(trail.length>6) trail.shift(); });
+    const end=e=>{ if(!st) return; const dx=e.clientX-st.x, dy=e.clientY-st.y; st=null; tb.classList.remove('drag');
+      const a=trail[0], b=trail[trail.length-1], dt=Math.max(16,b.t-a.t), vx=(b.x-a.x)/dt, vy=(b.y-a.y)/dt;   // 甩的速度（px/ms）
+      if(!(vy<-.5 || dy<-90)){ tb.style.transform=''; tb.animate([{transform:`translate(${dx}px,${dy}px) scale(1.15)`},{transform:'translate(0,-10px) scale(1)'},{transform:'translate(0,0)'}],{duration:350,easing:'ease-out'}); return; }   // 太輕：彈回
+      d.boss='fight'; keep();
+      const ar=$('#arena').getBoundingClientRect(), r0=tb.getBoundingClientRect();
+      const cx0=r0.left+r0.width/2-dx, cy0=r0.top+r0.height/2-dy;   // 徽章原本的中心
+      const tx=Math.max(ar.left+60,Math.min(ar.right-60, ar.left+ar.width*.45+vx*120)), ty=ar.top+ar.height*.42;   // 落點：裂隙中間，往甩的方向偏一點
+      const ex=tx-cx0, ey=ty-cy0, mx=dx+(ex-dx)*.5, my=Math.min(dy,ey)-110;   // 弧線最高點
+      tb.style.transform='';
+      tb.animate([{transform:`translate(${dx}px,${dy}px) rotate(0deg) scale(1.15)`},{transform:`translate(${mx}px,${my}px) rotate(540deg) scale(.75)`},{transform:`translate(${ex}px,${ey}px) rotate(1080deg) scale(.4)`}],{duration:700,easing:'linear',fill:'forwards'});
+      setTimeout(()=>{ const box=$('#throwbox'); if(box) box.style.visibility='hidden';   // 徽章區留著位置，底框不縮（Ming）
+        const fl=document.createElement('i'); fl.className='badge-burst'; fl.style.left=(tx-ar.left)+'px'; fl.style.top=(ty-ar.top)+'px'; $('#arena').appendChild(fl); setTimeout(()=>fl.remove(),600); },700);
+      setTimeout(()=>{ cat.innerHTML=spriteSVG(SPRITE_ROWS, CAT_PAL, '190px', 'aria-label="胖貓"'); cat.hidden=false;
         const top=cat.getBoundingClientRect().bottom+40;   // 從畫面最上方外面開始掉，穿過標題文字掉進場地（慢一點：1.6 秒）
         cat.animate([{transform:`translateY(${-top}px) rotate(-1080deg)`},{transform:'translateY(0) rotate(0)'}],{duration:1600,easing:'cubic-bezier(.45,0,.9,.55)',fill:'both'});   /* 滾出來用正面圖（同一格大小），落地停一下再轉成背影（Ming） */
         setTimeout(()=>{ cat.getAnimations().forEach(a=>a.cancel()); cat.classList.add('land');
           const ck=$('#crack'); ck.classList.remove('off'); ck.classList.add('grow');   // 屁股下裂開
           const ar=$('#arena'); document.body.classList.remove('quake'); void document.body.offsetWidth; document.body.classList.add('quake'); try{ navigator.vibrate&&navigator.vibrate([90,40,140]); }catch(e){}   // 砸到地上：場地大地震＋手機震動
           [[20,'-26px'],[180,'26px']].forEach(([x,dx])=>{ const d=document.createElement('i'); d.className='dust'; d.style.left=x+'px'; d.style.setProperty('--dx',dx); ar.appendChild(d); setTimeout(()=>d.remove(),700); });
-          setTimeout(()=>{ cat.classList.remove('land'); document.body.classList.remove('quake'); cat.innerHTML=back; fist.hidden=false; },900); },1600); },500); };
+          setTimeout(()=>{ cat.classList.remove('land'); document.body.classList.remove('quake'); cat.innerHTML=back; fist.hidden=false; },900); },1600); },1000); };
     tb.addEventListener('pointerup',end); tb.addEventListener('pointercancel',end); }
   // 出拳：每按一下胖貓揮拳、惡魔被打到；打滿就倒
   let backT=0, hitT=0;
@@ -2150,7 +2300,8 @@ function renderFinal(s, idx){
     gameCleanup = MiniGames.volley($('#gamebox'), {target:CONFIG.volleyTarget}, ()=>{ giveDigit(s.id); save(); render(); });
     bindBackupScan(s); bindNpc(s,idx); return;
   }
-  if(!state.extra.s7_blown) return renderFinalOpen(s);          // 先吹蠟燭
+  if(!state.extra.s7_blown){ const st=state.extra.s7_step;        // 2026-11-05 Ming：金色蠟燭 → 注入魔力 → 七根許願吹熄 → 煙霧
+    if(!st) return renderGoldGift(s); if(st==='inject') return renderGoldInject(s); if(st==='wish') return renderWish(s); return renderSmoke(); }
   return renderLocker();                                          // 2026-11-03 Ming：置物櫃由真人去開，App 不做轉盤（轉盤程式留在下面當備案）
   const expect = CODE_ORDER.map(k=>CONFIG.digits[k]).join('');
   const dial = state.extra.s7_dial || [0,0,0,0,0];
@@ -2187,12 +2338,93 @@ function renderFinalOpen(s){
   };
   const sb=$('#simblow'); if(sb) sb.onclick=()=>{ extinguish(); };
 }
+/* ── 麟光：第 7 根金色蠟燭 ── */
+const sparkles=(n,w,h)=>Array.from({length:n},(_,i)=>`<i class="spk" style="left:${(i*37+11)%w}px;top:${(i*53+7)%h}px;animation-delay:${(i*.23)%1.2}s"></i>`).join('');
+function renderGoldGift(s){   // 第 1 頁：列車長拿出金色蠟燭
+  const idx=CONFIG.stages.indexOf(s), {MOMO,MOMO_PAL}=window.MG_SPRITES;
+  main.innerHTML = ticket(s, `${steps()}
+    <p>到達麟光後，列車長給了妳第 7 根蠟燭，是金色的，最重要的蠟燭只能由妳自己注入魔力點燃！</p>
+    <div class="gold-gift hero"><div class="gg-momo">${spriteSVG(MOMO, MOMO_PAL, '132px', 'aria-label="列車長"')}</div><div class="gg-candle">${candleHTML('gold')}${sparkles(7,60,110)}</div></div>
+    <button class="nes-btn is-primary btn" id="inject">注入魔力</button>${npcBox(s,idx)}`);
+  $('#inject').onclick=()=>{ state.extra.s7_step='inject'; state.extra.s7_gold=true; save(); render(); goldStart(); };   // 同一個點擊裡開前鏡頭
+  bindNpc(s,idx);
+}
+let goldCount=0;
+function renderGoldInject(s){   // 第 2 頁：手掌在蠟燭上方遠近擺動 10 次，點燃赤紅色火焰
+  const idx=CONFIG.stages.indexOf(s), lit=!!state.extra.s7_goldLit; goldCount=lit?10:0;
+  main.innerHTML = ticket(s, `${steps()}
+    <p>請將手掌放在蠟燭上方，集中精神上下擺動，注入魔力！</p>
+    <div class="gold-big hero" id="goldbig"><div class="gb-candle">${candleHTML('gold'+(lit?' lit':''))}</div>${sparkles(10,170,170)}</div>
+    <div class="pips" id="pips">${Array.from({length:10},(_,i)=>`<i class="${i<goldCount?'on':''}"></i>`).join('')}</div>
+    <div id="gcam" class="gcam"></div><div id="gmsg"></div>
+    ${lit?'':'<button class="nes-btn is-primary btn" id="gstart" style="margin-top:14px">開始注入魔力</button>'}
+    <button class="nes-btn is-success btn" id="goldok" style="margin-top:14px;${lit?'':'display:none'}">成功點燃！</button>
+    ${npcBox(s,idx)}${state.npc&&!lit?'<button class="nes-btn is-warning btn small" id="simhand" style="margin-top:8px">控制者：模擬一次</button>':''}`);
+  const gs=$('#gstart'); if(gs) gs.onclick=goldStart;
+  $('#goldok').onclick=()=>{ state.extra.s7_step='wish'; save(); render(); };
+  const sh=$('#simhand'); if(sh) sh.onclick=goldPulse;
+  bindNpc(s,idx);
+}
+function goldPulse(){   // 擺動一次
+  if(goldCount>=10) return; goldCount++;
+  document.querySelectorAll('#pips i').forEach((p,i)=>p.classList.toggle('on',i<goldCount));
+  const g=$('#goldbig'); if(g){ g.style.setProperty('--gp',goldCount/10); g.classList.remove('pulse'); void g.offsetWidth; g.classList.add('pulse'); }
+  if(goldCount>=10){ stopCamera(); state.extra.s7_goldLit=true; save(); updateBar();
+    const c=document.querySelector('#goldbig .candle'); if(c) c.classList.add('lit');
+    const gs=$('#gstart'); if(gs) gs.remove(); const sh=$('#simhand'); if(sh) sh.remove(); $('#goldok').style.display=''; $('#gmsg').innerHTML=ok('金色蠟燭點燃了！'); }
+}
+async function goldStart(){   // 前鏡頭：手掌靠近（畫面變暗）→ 離開（變亮）算一次
+  const box=$('#gcam'); if(!box) return; const gs=$('#gstart'); if(gs) gs.style.display='none';
+  const v=await openCamera(box,'user'); if(!v){ if(gs) gs.style.display=''; return; }
+  const cv=document.createElement('canvas'); cv.width=48; cv.height=36; const g=cv.getContext('2d',{willReadFrequently:true});
+  let base=0, near=false, lastT=0;
+  colorTimer=setInterval(()=>{ if(!document.body.contains(box)){ stopCamera(); return; }
+    g.drawImage(v,0,0,48,36); const d=g.getImageData(0,0,48,36).data; let L=0; for(let i=0;i<d.length;i+=4) L+=d[i]*.3+d[i+1]*.59+d[i+2]*.11; L/=d.length/4;
+    base=Math.max(base*.997, L);   // 沒擋住時的亮度（慢慢往下修）
+    const now=performance.now();
+    if(!near && L<base*.6){ near=true; }
+    else if(near && L>base*.8 && now-lastT>220){ near=false; lastT=now; goldPulse(); } },70);
+}
+function renderWish(s){   // 第 3 頁：7 根一字排開，四周變暗，2～7 根依序變色，散發七彩光，許願後吹熄
+  const idx=CONFIG.stages.indexOf(s), N=MID+1;
+  main.innerHTML = ticket(s, `${steps()}
+    <div class="wish-front">
+      <div class="wish-row" id="wishrow"><i class="wish-rays" id="rays"></i><div class="candles mid" id="fc">${candleHTML('gold lit')}${Array.from({length:MID},()=>candleHTML('lit')).join('')}</div></div>
+      <p class="wish-text" id="wtext">蠟燭的魔力進化成許願之力了！許下 3 個願望後，吹熄蠟燭！</p>
+      <progress class="nes-progress is-warning" id="mic" value="0" max="100" style="display:none"></progress>
+      <button class="nes-btn is-primary btn wish-late" id="wished">許完願了！</button>
+      <button class="nes-btn is-success btn" id="wish" style="display:none">願望會實現！</button><div id="micmsg"></div>
+      ${state.npc?'<button class="nes-btn is-warning btn small wish-late" id="simblow" style="margin-top:8px">控制者：模擬吹熄 1 根</button>':''}
+    </div>${npcBox(s,idx)}`);
+  let dim=document.querySelector('.wish-dim'); if(!dim){ dim=document.createElement('div'); dim.className='wish-dim'; document.body.appendChild(dim); }
+  const row=$('#wishrow'), T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(row)) f(); },ms);
+  const cs=[...document.querySelectorAll('#fc .candle')];
+  ['cc1','cc2','cc3','cc4','cc5','cc6'].forEach((c,i)=>T(2200+i*450,()=>cs[i+1].classList.add(c)));   // 第 2 根起依序：橙黃綠青藍紫
+  T(5100,()=>$('#rays').classList.add('on'));                                                         // 散發七彩輻射光
+  T(5600,()=>row.parentElement.classList.add('ready'));                                               // 白字＋按鈕出現
+  let out=0;
+  const extinguish=()=>{ const wb=$('#wished'); if(wb) wb.style.display='none';
+    const lit=[...document.querySelectorAll('#fc .candle.lit')]; if(lit.length){ const c=lit[lit.length-1]; c.classList.remove('lit'); c.classList.add('out'); out++; }
+    if(out>=N){ $('#rays').classList.remove('on'); $('#mic').style.display='none'; $('#wish').style.display=''; const sb=$('#simblow'); if(sb) sb.remove(); } };
+  $('#wish').onclick=()=>{ dim.classList.add('leave'); setTimeout(()=>{ dim.remove(); state.extra.s7_step='smoke'; save(); render(); },700); };   // 暗的變回正常 → 煙霧凝聚 30
+  const sb=$('#simblow'); if(sb) sb.onclick=extinguish;
+  $('#wished').onclick=async()=>{ $('#wished').style.display='none'; $('#mic').style.display='';
+    try{ const ms=await navigator.mediaDevices.getUserMedia({audio:true,video:false});
+      actx = actx || new (window.AudioContext||window.webkitAudioContext)(); await actx.resume();
+      const src=actx.createMediaStreamSource(ms), an=actx.createAnalyser(); an.fftSize=1024; src.connect(an);
+      const buf=new Float32Array(an.fftSize); let acc=0, last=performance.now();
+      const loop=()=>{ if(out>=N||!document.body.contains(row)){ ms.getTracks().forEach(t=>t.stop()); return; } an.getFloatTimeDomainData(buf); let sum=0; for(let i=0;i<buf.length;i++) sum+=buf[i]*buf[i]; const rms=Math.sqrt(sum/buf.length); const now=performance.now();
+        if(rms>0.12){ acc+=now-last; if(acc>450){ extinguish(); acc=0; } } else acc=Math.max(0,acc-(now-last)/2); last=now; const m=$('#mic'); if(m) m.value=Math.min(100,rms*500); requestAnimationFrame(loop); };
+      loop();
+    }catch(e){ $('#micmsg').innerHTML=bad('麥克風打不開：'+(e.message||e)+'。請列車長用備援。'); } };
+  bindNpc(s,idx);
+}
 /* 吹熄後：煙霧聚成櫃號 */
 function renderSmoke(){
   const s=CONFIG.stages.find(x=>x.type==='final');
   main.innerHTML = ticket(s, `
-    <p>蠟燭的魔力進化成許願之力了！許下 3 個願望，將前 2 個說出來，第 3 個藏心裡。</p>
-    <div class="candles mid" id="fc">${Array.from({length:MID},()=>candleHTML('out')).join('')}</div>
+    <p>蠟燭的魔力進化成許願之力了！許下 3 個願望後，吹熄蠟燭！</p>
+    <div class="candles mid" id="fc">${candleHTML('gold out')}${Array.from({length:MID},()=>candleHTML('out')).join('')}</div>
     <progress class="nes-progress is-warning" value="0" max="100" style="visibility:hidden"></progress>
     <div class="smoke-wrap"><div class="smoke-num" id="smokenum">${CONFIG.lockerNumber}</div><p class="tag center smoke-late" style="margin:0">煙霧慢慢聚成了一個數字。</p></div>
     <button class="nes-btn is-primary btn smoke-late" id="gocode" style="margin-top:18px">這...這難道是寶藏的座標？<br>去置物櫃試試看</button>${npcBox(s,CONFIG.stages.indexOf(s))}`);
@@ -2251,6 +2483,9 @@ function renderFinish(){
 }
 /* 最後拍貼：「調整相片」模式＝每張照片可拖曳、右上 X 刪掉後可重新上傳；再按一次關閉 */
 let stripAdj=false, replayMenu=false;
+/* 每根蠟燭的故事一個顏色（選關重玩用）：從開頭到最後依序紅橙黃綠青藍紫 */
+const STORY_GROUPS=[{ids:['s0'],c:'#ffb3b3'},{ids:['g1','s1'],c:'#ffd0a1'},{ids:['g2','s3'],c:'#ffeb99'},{ids:['g3','s4'],c:'#b8e6a8'},{ids:['g4','s5d'],c:'#a8e6e0'},{ids:['m1','s6'],c:'#a9c8f7'},{ids:['g5','s7','s9'],c:'#d7b3f2'}];   // 依序紅橙黃綠青藍紫（Ming），淡色字才看得清楚
+const storyColor=id=>(STORY_GROUPS.find(g=>g.ids.includes(id))||{c:'#fff'}).c;
 /* 選關重玩：先把通關後的進度存起來（照片另外只備份那一關的），清掉那一關從頭玩；按「返回」整個還原 */
 function startReplay(i){
   const st=CONFIG.stages[i]; const strip=state.extra.strip||{};
@@ -2300,7 +2535,7 @@ async function showStrip(){
   b.innerHTML=`<div class="stripwrap" style="margin-top:18px"><img src="${u}" alt="">${slots}</div>
     <div class="row" style="margin-top:10px;justify-content:center"><a class="nes-btn btn small" style="display:inline-block;margin:0" download="生日列車拍貼.jpg" href="${u}">⬇ 存到手機</a><button class="nes-btn ${stripAdj?'is-primary':''} btn small" id="stripadj" style="margin:0">調整相片</button></div>
     <div class="row" style="margin-top:10px;justify-content:center"><button class="nes-btn ${replayMenu?'is-primary':''} btn small" id="replaymenu" style="margin:0">選關重玩</button><button class="nes-btn is-error btn small" id="restart" style="margin:0">從頭開始</button></div>
-    ${replayMenu?`<div class="replay-list">${CONFIG.stages.map((x,i)=>`<button class="nes-btn btn" data-replay="${i}"><span class="rl-name">${x.name}</span><span class="tag">${x.sub||''}</span></button>`).join('')}</div>`:''}`;
+    ${replayMenu?`<div class="replay-list">${CONFIG.stages.map((x,i)=>`<button class="nes-btn btn" data-replay="${i}" style="background-color:${storyColor(x.id)}"><span class="rl-name">${x.name}</span><span class="tag">${x.sub||''}</span></button>`).join('')}</div>`:''}`;
   $('#stripadj').onclick=()=>{ stripAdj=!stripAdj; showStrip(); };
   $('#replaymenu').onclick=()=>{ replayMenu=!replayMenu; showStrip(); };
   $('#restart').onclick=()=>{ if(confirm('從頭開始？目前的進度和照片都會清掉。')) reset(); };
