@@ -781,13 +781,22 @@ const $ = (s, el=document) => el.querySelector(s);
 const main = $('#main');
 /* 預先載入：走到 preloadFrom 那一關以後，背景下載後面關卡的大圖（忠孝復興 5 張＋圖示＋四幅畫），到現場就不用等 */
 const PRELOAD_KEEP=[]; let preloadDone=false;
-function preloadAhead(){
-  if(preloadDone) return; const from=CONFIG.stages.findIndex(x=>x.id==='s4'); if(state.stage<from) return;
-  preloadDone=true; const urls=new Set();
-  CONFIG.stages.forEach(st=>(st.photos||[]).forEach(p=>{ if(p.image) urls.add(p.image); (p.qs||[]).forEach(q=>{ (q.choices||[]).forEach(c=>urls.add(c.img)); (q.seq||[]).forEach(it=>urls.add(it.img)); }); }));
-  const list=[...urls]; let i=0;
-  const next=()=>{ if(i>=list.length) return; const im=new Image(); im.decoding='async'; im.onload=im.onerror=()=>setTimeout(next,50); im.src=list[i++]; PRELOAD_KEEP.push(im); };   // 一張一張來，不搶目前頁面的頻寬
-  setTimeout(()=>{ if(window.requestIdleCallback) requestIdleCallback(next,{timeout:3000}); else next(); }, 1500);   // 先讓目前頁面載完再開始
+function preloadAhead(){   // 2026-11-06 Ming：第一次打開就在背景照遊玩順序把全部音檔／圖片載完，體驗中不用等
+  if(preloadDone) return; preloadDone=true;
+  const A='audio/', B=A+'bgm/', X=A+'sfx/', mp3=(d,n)=>d+n+'.mp3';
+  const list=[ mp3(X,'click'), mp3(B,'title'), mp3(B,'travel'), mp3(X,'shutter'), mp3(X,'candle_lit'), mp3(X,'train'),
+    mp3(B,'volley'), mp3(X,'ball_hit'), mp3(X,'correct'), mp3(X,'wrong'), mp3(X,'digit'),
+    mp3(B,'puzzle'), A+'clip_lily.m4a', A+'clip_chandelier.m4a', A+'clip_lillian.m4a', A+'clip_lydia.m4a',
+    mp3(B,'adventure'), 'img/targets_all.mind', mp3(X,'card_flip'), mp3(B,'cute'), mp3(B,'runner'), mp3(X,'jump'), mp3(X,'cat'), mp3(X,'page') ];
+  CONFIG.stages.forEach(st=>(st.photos||[]).forEach(p=>{ if(p.image) list.push(p.image); (p.qs||[]).forEach(q=>{ (q.choices||[]).forEach(c=>c.img&&list.push(c.img)); (q.seq||[]).forEach(it=>it.img&&list.push(it.img)); }); }));
+  list.push(mp3(B,'eerie'), mp3(X,'glitch'), mp3(X,'devil'), mp3(B,'boss'), mp3(X,'punch'), mp3(B,'victory'), 'img/s0_puzzle_pixel.png',
+    mp3(B,'final'), mp3(X,'charge'), mp3(X,'ignite'), mp3(X,'rainbow'), mp3(X,'candle_blow'), mp3(X,'smoke'), mp3(X,'locker'), mp3(B,'birthday'), mp3(X,'heart'));
+  const urls=[...new Set(list)]; let i=0;
+  const next=()=>{ if(i>=urls.length) return; const u=urls[i++];
+    if(/\.(png|jpe?g)$/i.test(u)){ const im=new Image(); im.decoding='async'; im.onload=im.onerror=()=>setTimeout(next,40); im.src=u; PRELOAD_KEEP.push(im); return; }
+    if(location.protocol==='file:'){ setTimeout(next,0); return; }   // 本機測試沒有 service worker，跳過
+    fetch(u).then(r=>r.arrayBuffer()).catch(()=>{}).then(()=>setTimeout(next,40)); };   // 一個一個來（經過 service worker 就進快取），不搶目前頁面的頻寬
+  setTimeout(()=>{ if(window.requestIdleCallback) requestIdleCallback(next,{timeout:3000}); else next(); }, 1200);
 }
 /* 敘述文字裡的捷運站名一律上該站路線色（Ming）；頁首站名列、按鈕、輸入框不動 */
 const STATION_COLOR = [['大安森林公園','red'],['麟光捷運站','brown'],['科技大樓','brown'],['忠孝新生','orange'],['忠孝復興','blue'],['東門','red'],['麟光','brown']];
