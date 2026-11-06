@@ -2852,7 +2852,7 @@ async function makeStrip(){
     const ky=H/1500;   // 裝飾原本照 1500 高排，等比例分布到新高度
     drawSunset(g, W, H, [
       {rows:CLOUD_ROWS,pal:CP,x:14,y:150,k:3},{rows:CLOUD_ROWS,pal:CP,x:W-60,y:230,k:3},{rows:CLOUD_ROWS,pal:CP,x:W-56,y:560,k:2},{rows:CLOUD_ROWS,pal:CP,x:12,y:980,k:2},
-      {rows:HEART_ROWS,pal:HP,x:16,y:420,k:3},{rows:HEART_ROWS,pal:HP2,x:W-38,y:400,k:3},{rows:HEART_ROWS,pal:HP,x:W-34,y:760,k:3},{rows:HEART_ROWS,pal:HP2,x:16,y:800,k:3},{rows:HEART_ROWS,pal:HP,x:18,y:1180,k:3},{rows:HEART_ROWS,pal:HP2,x:W-36,y:1120,k:3},{rows:HEART_ROWS,pal:HP,x:60,y:1300,k:4},{rows:HEART_ROWS,pal:HP,x:W-90,y:1320,k:4},{rows:HEART_ROWS,pal:HP2,x:W/2-10,y:1250,k:3},
+      {rows:HEART_ROWS,pal:HP,x:16,y:420,k:3},{rows:HEART_ROWS,pal:HP2,x:W-38,y:400,k:3},{rows:HEART_ROWS,pal:HP,x:W-34,y:760,k:3},{rows:HEART_ROWS,pal:HP2,x:16,y:800,k:3},{rows:HEART_ROWS,pal:HP,x:18,y:1180,k:3},{rows:HEART_ROWS,pal:HP2,x:W-36,y:1120,k:3},{rows:HEART_ROWS,pal:HP,x:60,y:1300,k:4},{rows:HEART_ROWS,pal:HP,x:W-44,y:1240,k:3},{rows:HEART_ROWS,pal:HP2,x:W/2-10,y:1250,k:3},
       {rows:STAR_ROWS,pal:SP,x:40,y:40,k:3},{rows:STAR_ROWS,pal:SP,x:W-60,y:30,k:3},{rows:STAR_ROWS,pal:SP,x:W-40,y:300,k:2},{rows:STAR_ROWS,pal:SP,x:20,y:620,k:2},{rows:STAR_ROWS,pal:SP,x:W-30,y:900,k:2},{rows:STAR_ROWS,pal:SP,x:24,y:1420,k:3},{rows:STAR_ROWS,pal:SP,x:W-44,y:1440,k:3}
     ].map(d=>({...d, y:Math.round(d.y*ky)})));
   } else { g.fillStyle=T.bg; g.fillRect(0,0,W,H); }
