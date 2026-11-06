@@ -187,12 +187,13 @@
   footer{padding:10px 16px calc(env(safe-area-inset-bottom) + 12px);text-align:center;color:#9aa0c8;font-size:12px}
   .npc.nes-container{margin-top:10px;background:#fff3cd;padding:.8rem}
   .npc h3{margin:0 0 8px;font-size:13px;color:#8a5a00}
-  .npc .row{display:flex;gap:6px}
+  .npc .row,#bkrows .row{display:flex;gap:6px}   /* 控制鈕列會被搬到 #bkrows（浮動視窗釘選區），選擇器要連它一起 */
   .npc .ans,.replay-bar .ans{margin-top:8px}
   .npc .ans-row,.replay-bar .ans-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
   .npc .ans-row .tag,.replay-bar .ans-row .tag{margin:0;word-break:break-all}
   .npc .ans-row .copy,.replay-bar .ans-row .copy{flex:0 0 auto;margin:0;font-size:12px;padding:2px 8px}
-  .npc .row .btn.small{flex:1;margin:0;font-size:12px;padding:4px 2px;white-space:nowrap;text-align:center}
+  .npc .row .btn.small,#bkrows .row .btn.small{flex:1;margin:0;font-size:11px;padding:4px 1px;white-space:nowrap;text-align:center;min-width:0;letter-spacing:-.3px}   /* 2026-11-06 Ming：第一排多了音效鈕，字再縮小，手機上每排都要一行 */
+  #sndbtn svg{display:block;margin:0 auto;height:22px;width:auto}   /* 8 顆鈕一樣大（Ming），喇叭圖示置中 */
   .photo{width:100%;display:block;border:4px solid #000}
   /* 可拖曳調整位置的照片框（4:3，跟拍貼每格一樣） */
   .pframe{position:relative;width:100%;aspect-ratio:4/3;border:4px solid #000;background:#222 no-repeat;background-size:cover;user-select:none}
@@ -1189,6 +1190,7 @@ function npcBox(s, idx){
 }
 function npcInner(s, idx){
   return `<div class="npc"><div class="npc-rows"><div class="row">
+    <button class="nes-btn btn small ${SND.on()?'is-success':''}" id="sndbtn" title="音效開關" style="padding:2px 0">${sndIcon()}</button>
     <button class="nes-btn is-primary btn small" id="tbBack">◀ 上一頁</button>
     <button class="nes-btn is-primary btn small" id="tbNext">下一頁 ▶</button>
     ${CONFIG.testMode?'':'<button class="nes-btn btn small" id="npcclose">鎖起頁面</button>'}
@@ -1236,7 +1238,7 @@ function bindNpcPanel(s, idx){
   const nph=$('#npcphoto'); if(nph) nph.onclick=()=>{ const k=s.id+'_quiz', d=state.extra[k]||{cur:0,step:'look'}; const n=(s.photos||[1]).length;
     Object.assign(d,{step:d.cur>=n-1?'all':'ok', got:spotQs((s.photos||[s])[d.cur]).map((_,i)=>i), open:null, seqi:0}); state.extra[k]=d; save(); render(); };
   document.querySelectorAll('.npc .copy').forEach(b=>b.onclick=async()=>{ const v=b.dataset.copy; try{ await navigator.clipboard.writeText(v); }catch(e){ const t=document.createElement('textarea'); t.value=v; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); } b.textContent='已複製'; setTimeout(()=>b.textContent='複製',1200); });
-  $('#tbBack').onclick=pageBack; $('#tbNext').onclick=pageNext;
+  $('#tbBack').onclick=pageBack; $('#tbNext').onclick=pageNext; { const sb=$('#sndbtn'); if(sb) sb.onclick=()=>{ SND.toggle(); sb.innerHTML=sndIcon(); sb.classList.toggle('is-success',SND.on()); }; }
   $('#npcredo').onclick=()=>{ stopCamera(); clearStage(s.id); state.stage=idx; save(); render(); };   // 這關重來：只清這一關，從頭開始
   $('#npcback').onclick=()=>{
     // 回上一關：這一關和要回去的那一關都清乾淨，從頭開始
@@ -1255,7 +1257,7 @@ function clearStage(id){
 }
 /* 上傳照片一律從相簿選：列出明確的圖片格式（不用 image/*），Android 會直接開相簿，不會跳出相機選項（Ming：開相機再關掉會卡住） */
 const PHOTO_ACCEPT='image/jpeg,image/png,image/webp,image/heic,image/heif';
-function savePhoto(key, theme, url){ photoAdj=null; state.extra.strip = state.extra.strip||{}; state.extra.strip[key]={theme,url,ox:.5,oy:.5}; save(); }
+function savePhoto(key, theme, url){ photoAdj=null; SND.sfx('shutter'); state.extra.strip = state.extra.strip||{}; state.extra.strip[key]={theme,url,ox:.5,oy:.5}; save(); }
 /* 照片框：背景圖 cover＋位置百分比（跟拍貼 drawImage 的裁法一樣），可拖曳 */
 let photoAdj=null;   // 正在調整哪一張照片（key）；換頁或重畫別張就自動關掉
 function photoFrame(key, extra=''){ const it=(state.extra.strip||{})[key]; if(!it||!it.url) return '';
@@ -1346,7 +1348,7 @@ const STAGE_REVIEWS={   // 2026-11-05 Ming 用 回顧編輯器.html 填的；「
   g3:"30 歲了，記憶莉還是沒問題的，但列車長肚子餓了。",
   s4:"吃了好吃的食物，列車長再次幫妳點燃了 1 根蠟燭。",
   g4:"成為超級莉莉了！",
-  s5d:"拍了一張絕世美照， IG 總編替妳點燃了蠟燭，同時也得知，忠孝復興出現一隻邪惡的惡魔。",
+  s5d:"拍了一張絕世美照，IG 總編替妳點燃了蠟燭，同時也得知，忠孝復興出現一隻邪惡的惡魔。",
   m1:"跟列車長拍了合照，空間已經開始不穩定了！",
   s6:"次元惡魔想用虛假的空間替換現實，但是被妳阻止了，召喚胖貓爆揍了惡魔，成功點燃蠟燭。",
   g5:"隨著麟光越來越近，蠟燭的魔力越來越強了。",
@@ -1373,7 +1375,7 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   's1:lit':['點燃蠟燭了！'],
   's1:depart':['出發救胖貓！'],
   'g2:play':['提示：歌名都在歌詞中'],
-  'g2:arrive':['街嘻黨Break it down'],
+  'g2:arrive':['街嘻黨 Break it down'],
   's3:scan':['提示：左半：藏在季節內','提示：右半：藏在一朵花內'],
   's3:summon':['提示：左半：藏在季節內','提示：右半：藏在一朵花內'],
   's3:nextl':['提示：左半：藏在季節內','提示：右半：藏在一朵花內'],
@@ -1398,7 +1400,7 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   's6:nextp':['提示：在藍線 不在咖啡線'],
   's6:allclear':['空間怎麼在劇烈震盪？'],
   's6:end':['▓▒░#@!%&*?͏҉̷̸͜ 7#x!Ωæ∑ß∆ ░▒▓'],   // 惡魔出現時提示故意變亂碼（Ming）
-  's6:nextboss':['惡魔也扛不住這沈（肥）重（胖）的力量...'],
+  's6:nextboss':['惡魔也扛不住這沉（肥）重（胖）的力量...'],
   's6:lit':['點燃蠟燭了！'],
   's6:go':['踏上歸途'],
   'g5:play':['秘密任務進行中'],
@@ -1442,7 +1444,7 @@ const STAGE_TIPS={
   m1:['跟列車長拍一張「秘密任務！」合照。'],
   s6:['依序找到 5 張照片拍的地點。','把照片跟現場對照，用眼睛準星對準不一樣的地方，按「偵查」。','全部看破後，丟出胖貓徽章打倒次元惡魔。'],
   g5:['秘密任務進行中。'],
-  s7:['把手掌放在金色蠟燭上方，上下擺動 10 次注入魔力。','許下 3 個願望後吹熄蠟燭。','煙霧聚成的數字就是寶藏的座標。'],
+  s7:['把手掌放在金色蠟燭上方，集中精神擺動注入魔力。','許下 3 個願望後吹熄蠟燭。','煙霧聚成的數字就是寶藏的座標。'],
   s9:['最後的秘密任務：跟列車長拍一張「生日快樂！」合照。'] };
 let progSel=null;
 function progPanel(){
@@ -1656,17 +1658,60 @@ function snapshot(v){ const c=document.createElement('canvas'); c.width=v.videoW
 /* =========================================================
    各關渲染
    ========================================================= */
+/* ===== 音效／配樂（2026-11-06）：音檔由 Codex 製作，放 audio/bgm|sfx/*.mp3；檔案不存在就安靜略過 =====
+   SND.bgm(name)：切背景音樂（同一首不重啟、淡出舊的）；SND.sfx(name)：放一次音效；SND.page()：依目前頁面挑 BGM
+   開關存在 state.extra.sound（預設開）。手機要先有一次觸控才能出聲，所以第一次 pointerdown 再真正播 */
+const SND=(()=>{
+  const base='audio/'; const cache={}; let cur=null, curName='', unlocked=false, pending='';
+  const on=()=>state.extra.sound!==false;
+  const el=(kind,name)=>{ const k=kind+'/'+name; if(!cache[k]){ const a=new Audio(base+k+'.mp3'); a.preload='auto'; a.onerror=()=>{ cache[k]=null; }; cache[k]=a; } return cache[k]; };
+  const fade=(a,to,ms,done)=>{ const from=a.volume, t0=performance.now(); const tick=()=>{ const r=Math.min(1,(performance.now()-t0)/ms); a.volume=from+(to-from)*r; if(r<1) requestAnimationFrame(tick); else if(done) done(); }; tick(); };
+  function bgm(name){ if(name===curName) return; curName=name; if(!on()||!unlocked){ pending=name; return; } pending='';
+    if(cur){ const old=cur; cur=null; fade(old,0,500,()=>{ old.pause(); }); }
+    if(!name) return; const a=el('bgm',name); if(!a) return; a.loop=name!=='victory'; a.currentTime=0; a.volume=0; cur=a; a.play().then(()=>fade(a,ducked?DUCKV:VOL,600)).catch(()=>{}); }
+  let ducked=false; const VOL=.55, DUCKV=.1;
+  function duck(on){ ducked=!!on; if(cur) fade(cur, ducked?DUCKV:VOL, 400); }
+  function sfx(name,vol=.9){ if(!on()||!unlocked) return; const a=el('sfx',name); if(!a) return; const c=a.cloneNode(); c.volume=vol; c.play().catch(()=>{}); }
+  function toggle(){ state.extra.sound=!on(); save(); if(!on()){ if(cur){ cur.pause(); cur=null; } pending=curName; curName=''; } else { unlocked=true; const n=pending||curName; curName=''; bgm(n||page(true)); } }
+  function page(justName){   // 依目前關卡／步驟挑 BGM
+    const s=CONFIG.stages[state.stage]; let n='travel';
+    if(!state.started && state.stage===0 && !state.done.s0) n='title';
+    else if(s.type==='game'){ n={g1:'volley',g2:'travel',g3:'travel',g4:'runner',g5:'puzzle'}[s.id]||'travel'; if(state.extra[s.id+'_won']) n='travel'; }
+    else if(s.type==='library') n='puzzle';
+    else if(s.type==='firebadge') n='adventure';
+    else if(s.finalPhoto||s.id==='s9') n='birthday';
+    else if(s.type==='photo_task'||s.type==='director') n='cute';
+    else if(s.type==='spot'){ const d=state.extra[s.id+'_quiz']||{}; n=d.step==='boss'?(state.extra[s.id+'_won']||d.boss==='won'?'victory':'boss'):'eerie'; if(state.done[s.id]) n='travel'; }
+    else if(s.type==='final'){ n=state.extra.s7_blown?'final':(state.extra.s7_step==='wish'||state.extra.s7_step==='smoke')?'final':'final'; }
+    else if(s.type==='ticket_puzzle') n=state.extra.s0_tp?'travel':'title';
+    if(document.querySelector('#main .stripwrap')) n='birthday';
+    if(justName) return n; bgm(n); }
+  window.addEventListener('pointerdown',()=>{ if(unlocked) return; unlocked=true; if(on()){ const n=pending||curName; curName=''; if(n) bgm(n); } },{capture:true});
+  document.addEventListener('visibilitychange',()=>{ if(!cur) return; if(document.hidden) cur.pause(); else if(on()) cur.play().catch(()=>{}); });
+  document.addEventListener('click',e=>{ const b=e.target.closest('button.nes-btn, label.nes-btn, .progbtn, .bkbtn'); if(b && !b.closest('#gamebox')) sfx('click',.5); },{capture:true});
+  return {on,bgm,sfx,toggle,page,duck};
+})();
+window.SND=SND;
+/* 控制台音效鈕的像素喇叭（開：有聲波；關：打叉） */
+const SND_ON_ROWS=['....B.......','...BB..B....','.BBBB...B...','.BBBB.B..B..','.BBBB.B..B..','.BBBB...B...','...BB..B....','....B.......'];
+const SND_OFF_ROWS=['....B.......','...BB.......','.BBBB..B..B.','.BBBB...BB..','.BBBB...BB..','.BBBB..B..B.','...BB.......','....B.......'];
+const sndIcon=()=>spriteSVG(SND.on()?SND_ON_ROWS:SND_OFF_ROWS,{B:'#111'},'22px','aria-label="音效"')+(SND.on()?'':'');
+/* 換頁音效：同一頁只響一次 */
+let lastSfxPk='';
+function sfxPage(){ const pk=pageKey(); if(pk===lastSfxPk) return; lastSfxPk=pk; const m=document.querySelector('#main'); const name=(m.querySelector('.name')||{}).textContent||'';
+  if(/:lit$/.test(pk)) SND.sfx('candle_lit'); else if(/:number$/.test(pk)) SND.sfx('digit'); else if(/:(go|depart)$/.test(pk)) SND.sfx('train');
+  else if(m.querySelector('#bosscall.boss-call')) SND.sfx('devil'); else if(pk==='s7:gocode') SND.sfx('smoke'); else if(m.querySelector('.stripwrap')) SND.sfx('heart'); else if(/置物櫃/.test(name)) SND.sfx('locker'); }
 function render(){
   stopCamera(); stopGlitch(); if(state.extra.s7_step!=='wish'){ const dm=document.querySelector('.wish-dim'); if(dm) dm.remove(); } document.body.classList.remove('noprog');
   preloadAhead();
   setTimeout(recordPage,0);
   if(state.replay && replayFinished()){ window.scrollTo(0,0); return renderReplayDone(); }
   const idx=state.stage, s=CONFIG.stages[idx];
-  if(!state.started && idx===0 && !state.done.s0){ return state.extra.openLetter ? renderWelcome() : renderOpenLetter(); }
+  if(!state.started && idx===0 && !state.done.s0){ state.extra.openLetter ? renderWelcome() : renderOpenLetter(); return SND.page(); }
   if(gameCleanup){ gameCleanup(); gameCleanup=null; }
   if(state.done[s.id] && s.type!=='final' && !((s.type==='game'||s.type==='firebadge'||s.type==='photo_task') && !state.extra[s.id+'_left']) && !s.finalPhoto){ state.stage=Math.min(idx+1, CONFIG.stages.length-1); save(); return render(); }
   const r = { photo_task:renderPhotoTask, firebadge:renderFireBadge, game:renderGame, library:renderLibrary, ticket_puzzle:renderTicketPuzzle, spot:renderSpot, gps_qr:renderGpsQr, ar:renderAR, compass_color:renderCompassColor, food:renderFood, sound_puzzle:renderSoundPuzzle, rainbow:renderRainbow, director:renderDirector, final:renderFinal }[s.type];
-  const y=window.scrollY; r(s, idx); replayBar(); progButton(); backupButton(); keepPanels();
+  const y=window.scrollY; r(s, idx); replayBar(); progButton(); backupButton(); keepPanels(); SND.page(); sfxPage();
   window.scrollTo(0, Math.min(y, Math.max(0, document.documentElement.scrollHeight-window.innerHeight)));   // 按按鈕換頁後維持原本的捲動位置（Ming）；新頁比較短就停在最底
 }
 
@@ -1702,7 +1747,7 @@ function renderTicketPuzzle(s, idx){
   if(d.step==='ticket'){
     main.innerHTML = ticket(s, `${steps()}
       <div class="letter nes-container is-rounded" style="font-size:17px">${icons(s.ticketText)}</div>
-      <button class="nes-btn is-primary btn" id="got" style="margin-top:0">已獲得票卷</button>
+      <button class="nes-btn is-primary btn" id="got" style="margin-top:0">已獲得票券</button>
       ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
     $('#got').onclick=()=>{ state.extra[k]={step:'photo'}; save(); render(); };
   } else if(d.step==='photo'){
@@ -1900,7 +1945,7 @@ function bindZoom(wrap, Z, tappable){
 let glitchTimer=null;
 const glMoved=new Set();   // 被錯位過的元素，結束時要還原
 const glR=(a,b)=>a+Math.random()*(b-a);
-function startGlitch(){ document.body.classList.add('glitch'); if(glitchTimer) return; const G='▚▞▛▜░▒▓█ÆØ¥§¿Ω∆ʘɸ҂☰☱☲#%&';
+function startGlitch(){ document.body.classList.add('glitch'); if(glitchTimer) return; SND.sfx('glitch'); const G='▚▞▛▜░▒▓█ÆØ¥§¿Ω∆ʘɸ҂☰☱☲#%&';
   let layer=document.querySelector('.gl-layer'); if(!layer){ layer=document.createElement('div'); layer.className='gl-layer'; layer.innerHTML='<i></i>'.repeat(7); document.body.appendChild(layer); }
   glitchTimer=setInterval(()=>{
     document.querySelectorAll('#title,.ticket .sub,.ticket .station .name,.ticket .station .code,#codebar span').forEach(e=>{   // 上方 5 碼數字也會變亂碼（Ming 2026-11-06）
@@ -2033,7 +2078,7 @@ function renderBoss(s, idx, d, k){
     tb.addEventListener('pointerup',end); tb.addEventListener('pointercancel',end); }
   // 出拳：每按一下胖貓揮拳、惡魔被打到；打滿就倒
   let backT=0, hitT=0;
-  fist.onclick=()=>{ if(d.boss!=='fight') return;
+  fist.onclick=()=>{ if(d.boss!=='fight') return; SND.sfx('punch');
     d.hits=(d.hits||0)+1; keep(); const last=d.hits>=(s.bossHits||30);
     cat.getAnimations().forEach(a=>a.cancel()); clearTimeout(backT); clearTimeout(hitT);
     cat.innerHTML=punch;
@@ -2515,7 +2560,7 @@ function renderFinalOpen(s){
     <button class="nes-btn is-primary btn" id="blow">吹熄蠟燭</button><button class="nes-btn is-success btn" id="wish" style="display:none">願望會實現！</button><div id="micmsg"></div>${npcBox(s,CONFIG.stages.indexOf(s))}
     ${state.npc?'<button class="nes-btn is-warning btn small" id="simblow" style="margin-top:8px">控制者：模擬吹熄 1 根</button>':''}`);
   let out=0;
-  const extinguish=()=>{ const cs=document.querySelectorAll('#fc .candle.lit'); if(cs.length){ cs[cs.length-1].classList.remove('lit'); cs[cs.length-1].classList.add('out'); out++; } if(out>=MID){ $('#blow').style.display='none'; $('#wish').style.display=''; } };   // 全吹熄 → 出現「願望會實現！」
+  const extinguish=()=>{ const cs=document.querySelectorAll('#fc .candle.lit'); if(cs.length){ SND.sfx('candle_blow'); cs[cs.length-1].classList.remove('lit'); cs[cs.length-1].classList.add('out'); out++; } if(out>=MID){ $('#blow').style.display='none'; $('#wish').style.display=''; } };   // 全吹熄 → 出現「願望會實現！」
   $('#wish').onclick=renderSmoke;
   bindNpc(s,CONFIG.stages.indexOf(s));
   $('#blow').onclick=async()=>{
@@ -2565,13 +2610,14 @@ function renderGoldInject(s){   // 第 2 頁：手掌在蠟燭上方遠近擺動
 let goldDecay=0, goldLast=0;
 function goldShow(){ document.querySelectorAll('#pips i').forEach((p,i)=>p.classList.toggle('on',i<goldCount)); const g=$('#goldbig'); if(g) g.style.setProperty('--gp',goldCount/10); }
 /* 點燃閃光（金色蠟燭與許願頁七彩蠟燭共用）：以引線頂端為中心、兩條交錯光線等速旋轉，伸出去再縮回引線 */
-function igniteFlash(candle, host, pal, o={}){ const wk=candle&&candle.querySelector('.wick'); if(!wk||!host) return; const r=wk.getBoundingClientRect(), hr=host.getBoundingClientRect();
+function igniteFlash(candle, host, pal, o={}){ const wk=candle&&candle.querySelector('.wick'); if(!wk||!host) return; SND.sfx('ignite'); const r=wk.getBoundingClientRect(), hr=host.getBoundingClientRect();
   const fl=document.createElement('div'); fl.className='ig-flash'; fl.style.left=(r.left+r.width/2-hr.left)+'px'; fl.style.top=(r.top-hr.top)+'px';
   if(pal){ fl.style.setProperty('--fd',pal[0]); fl.style.setProperty('--fm',pal[1]); fl.style.setProperty('--fl',pal[2]); fl.style.setProperty('--fc',pal[3]||pal[2]); }
   if(o.len) fl.style.setProperty('--flen',o.len+'px'); if(o.w) fl.style.setProperty('--fw',o.w+'px'); if(o.dur) fl.style.setProperty('--fdur',o.dur+'ms');
   fl.innerHTML='<div class="ig-rot"><i></i><i></i></div>'; host.appendChild(fl); setTimeout(()=>fl.remove(),(o.dur||1600)+60); }
 function igniteRing(candle, col){ if(!candle) return; const rg=document.createElement('div'); rg.className='ig-ring'; if(col) rg.style.setProperty('--fm',col); candle.appendChild(rg); setTimeout(()=>rg.remove(),650); }
 function goldPulse(){   // 擺動一次
+  SND.sfx('charge',.7);
   if(goldCount>=10) return; goldCount++; goldLast=performance.now();
   goldShow();
   const g=$('#goldbig'); if(g){ g.classList.remove('pulse'); void g.offsetWidth; g.classList.add('pulse'); }
@@ -2622,11 +2668,11 @@ function renderWish(s){   // 第 3 頁：7 根一字排開，四周變暗，2～
     T(t0,()=>cd.classList.add('shrink'));
     T(t0+250,()=>igniteFlash(cd, row, pal, {len:900, w:5, dur:900}));
     T(t0+1150,()=>{ cd.classList.remove('shrink'); cd.classList.add(c,'pop'); igniteRing(cd, pal[1]); setTimeout(()=>cd.classList.remove('pop'),420); }); });
-  T(6400,()=>{ $('#rays').classList.add('on'); state.extra.s7_rainbow=true; save(); updateBar(); });   // 散發七彩光暈；上方蠟燭列也變七彩
+  T(6400,()=>{ $('#rays').classList.add('on'); state.extra.s7_rainbow=true; save(); updateBar(); SND.sfx('rainbow'); });   // 散發七彩光暈；上方蠟燭列也變七彩
   T(6900,()=>{ row.parentElement.classList.add('ready'); const sb=$('#simblow'); if(sb) sb.style.display=''; });   // 白字＋按鈕出現（模擬鈕已被搬進控制者視窗，要另外叫出來）
   let out=0;
   const extinguish=()=>{ const wb=$('#wished'); if(wb) wb.style.display='none';
-    const lit=[...document.querySelectorAll('#fc .candle.lit')]; if(lit.length){ const c=lit[lit.length-1]; c.classList.remove('lit'); c.classList.add('out'); out++; }
+    const lit=[...document.querySelectorAll('#fc .candle.lit')]; if(lit.length){ SND.sfx('candle_blow'); const c=lit[lit.length-1]; c.classList.remove('lit'); c.classList.add('out'); out++; }
     if(out>=N){ $('#rays').classList.remove('on'); $('#mic').style.display='none'; $('#wish').style.display=''; const sb=$('#simblow'); if(sb) sb.remove(); } };
   $('#wish').onclick=()=>{ dim.classList.add('leave'); setTimeout(()=>{ dim.remove(); state.extra.s7_step='smoke'; save(); render(); },700); };   // 暗的變回正常 → 煙霧凝聚 30
   const sb=$('#simblow'); if(sb) sb.onclick=extinguish;

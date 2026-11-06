@@ -1,3 +1,6 @@
+/* 音效轉接：app.html 有 window.SND 才會出聲，試玩頁沒有就靜音（2026-11-06） */
+const SFX=(n,v)=>{ try{ if(window.SND) window.SND.sfx(n,v); }catch(e){} };
+const DUCK=on=>{ try{ if(window.SND) window.SND.duck(on); }catch(e){} };
 /* =========================================================
    生日列車：五個 App 小遊戲
    用法：MiniGames.<名稱>(容器, 設定, 贏了的回呼) → 回傳清除函式
@@ -305,6 +308,7 @@ function song(el, cfg, onWin){
       if(s.audio){
         if(!au){ au=new Audio(s.audio); au.preload='auto';
           au.onerror=()=>{ w.querySelector('#mgyt').innerHTML='<p class="msg nes-text is-warning">… 音檔還沒放：'+s.audio+'</p>'; };
+          au.onplay=()=>DUCK(true); au.onpause=()=>DUCK(false); au.onended=()=>DUCK(false);   // 播歌時背景音樂先淡弱（Ming 2026-11-06）
         }
         const st=s.clip?0:(s.start||0), en=s.clip?null:s.end;
         au.currentTime=st; au.play().catch(()=>{});
@@ -312,7 +316,7 @@ function song(el, cfg, onWin){
         if(en){ clearInterval(au._t); au._t=setInterval(()=>{ if(au.currentTime>=en){ au.pause(); clearInterval(au._t); } },100); }
       }
     };
-    const chk=()=>{ if(w._ok) return; const v=norm(w.querySelector('#mgans').value); if(s.answers.some(a=>norm(a)===v)){   // 答對：先顯示「正確！」，按鈕變「下一題」才換題；最後一題答對直接進「全部答對」（Ming）
+    const chk=()=>{ if(w._ok) return; const v=norm(w.querySelector('#mgans').value); if(s.answers.some(a=>norm(a)===v)){ SFX('correct');   // 答對：先顯示「正確！」，按鈕變「下一題」才換題；最後一題答對直接進「全部答對」（Ming）
         if(i===songs.length-1){ if(au) au.pause(); i++; return draw(); }
         w._ok=true; const inp=w.querySelector('#mgans'); inp.readOnly=true; w.querySelector('#mgres').innerHTML='<p class="msg nes-text is-success">★ 正確！</p>';
         const bt=w.querySelector('#mgchk'); bt.textContent='下一題'; bt.onclick=()=>{ if(au) au.pause(); i++; draw(); }; } else { const r=w.querySelector('#mgres'); r.innerHTML='<p class="msg nes-text is-error">✕ 不是這首，再想想。</p>'; const inp=w.querySelector('#mgans'); inp.classList.remove('mg-shake'); void inp.offsetWidth; inp.classList.add('mg-shake'); } };
@@ -342,13 +346,13 @@ function memory(el, cfg, onWin){
     c.el=d;
     d.onclick=()=>{
       if(lock || d.classList.contains('open') || d.classList.contains('done')) return;
-      d.classList.add('open'); open.push(c); w.querySelector('#mgname').textContent=nameOf(c.v);
+      SFX('card_flip'); d.classList.add('open'); open.push(c); w.querySelector('#mgname').textContent=nameOf(c.v);
       if(open.length===2){
         moves++; w.querySelector('#mgmv').textContent='步數 '+moves;
         const [a,b]=open;
-        if(a.v===b.v){ a.el.classList.add('done'); b.el.classList.add('done'); open=[]; matched++;
+        if(a.v===b.v){ SFX('correct'); a.el.classList.add('done'); b.el.classList.add('done'); open=[]; matched++;
           if(matched===icons.length && !done){ done=true; setTimeout(()=>{ banner(grid,'全部翻開了！'); setTimeout(onWin,1400); },400); } }
-        else { lock=true; setTimeout(()=>{ a.el.classList.remove('open'); b.el.classList.remove('open'); open=[]; lock=false; },750); }
+        else { SFX('wrong',.5); lock=true; setTimeout(()=>{ a.el.classList.remove('open'); b.el.classList.remove('open'); open=[]; lock=false; },750); }
       }
     };
     grid.appendChild(d);
@@ -442,7 +446,7 @@ function mario(el, cfg, onWin){
     if(petting){ petting--; P.vx=0; if(petting%15===0) addHearts(petCat.x+6, petCat.y-4, 1); if(!petting){ petCat.petted=true; petCat=null; } return; }
     const acc_=0.12, max=1.6;
     if(pad.left){ P.vx=Math.max(P.vx-acc_,-max); P.face=-1; } else if(pad.right){ P.vx=Math.min(P.vx+acc_,max); P.face=1; } else { P.vx*=0.8; if(Math.abs(P.vx)<0.05) P.vx=0; }
-    if(pad.jump && P.on && !P.jumpHeld){ P.vy=-6.3; P.jumpHeld=true; }      // 跳得過 4 格高的水管
+    if(pad.jump && P.on && !P.jumpHeld){ SFX('jump',.6); P.vy=-6.3; P.jumpHeld=true; }      // 跳得過 4 格高的水管
     if(!pad.jump){ P.jumpHeld=false; if(P.vy<-2.5) P.vy=-2.5; }
     P.vy=Math.min(P.vy+0.25,5);
     P.x+=P.vx; if(P.x<cam){ P.x=cam; P.vx=0; } if(collideX(P)) P.vx=0;
@@ -459,7 +463,7 @@ function mario(el, cfg, onWin){
         c.y+=c.vy; collideY(c,false); if(c.y>H+40){ c.petted=true; c.gone=true; }
       }
       if(!c.petted && !c.gone && Math.abs((P.x+P.w/2)-(c.x+6))<11 && Math.abs((P.y+P.h/2)-(c.y+6))<13){
-        petting=75; petCat=c; c.vx=0; petCount++; w.querySelector('#mgcoin').textContent=`摸了 ${petCount} 隻貓`;
+        SFX('cat'); petting=75; petCat=c; c.vx=0; petCount++; w.querySelector('#mgcoin').textContent=`摸了 ${petCount} 隻貓`;
         P.face = c.x>P.x?1:-1; if(P.vy<0) P.vy=0; addHearts(c.x+6,c.y-4,2);
       }
     });
@@ -527,14 +531,14 @@ function volley(el, cfg, onWin){
   window.__MG_WIN=()=>{ if(over) return; started=true; const sb=w.querySelector('#mgstart'); if(sb) sb.remove(); s1=TARGET-1; score(true); };                                    // 墨墨拿到 10 分就開始放水
   const newRally=(toLeft)=>{ me={x:100,y:GROUND-PR,vy:0}; ai={x:W-100,y:GROUND-PR,vy:0,react:0}; ball={x:toLeft?100:W-100,y:60,vx:0,vy:0}; pause=50; };
   newRally(true);
-  const score=(leftWins)=>{ if(leftWins) s1++; else s2++; w.querySelector('#mgs1').textContent=s1; w.querySelector('#mgs2').textContent=s2;
+  const score=(leftWins)=>{ SFX(leftWins?'correct':'wrong'); if(leftWins) s1++; else s2++; w.querySelector('#mgs1').textContent=s1; w.querySelector('#mgs2').textContent=s2;
     if(s1>=TARGET){ over=true; overText=mercy()?['為了讓莉莉過關，','墨墨放水了！']:['莉莉贏了！']; setTimeout(onWin,2500); return; }
     // 墨墨先拿到分數也算通關
     if(s2>=TARGET){ over=true; overText=['妳輸了','但墨墨愛妳','所以妳贏了','♥']; setTimeout(onWin,3500); return; }
     newRally(leftWins); };
   const bounce=(p,isMe,spiking)=>{
     const dx=ball.x-p.x, dy=ball.y-p.y, d=Math.hypot(dx,dy); if(d>=PR+BR || d===0) return;
-    const nx=dx/d, ny=dy/d; ball.x=p.x+nx*(PR+BR); ball.y=p.y+ny*(PR+BR);
+    const nx=dx/d, ny=dy/d; ball.x=p.x+nx*(PR+BR); ball.y=p.y+ny*(PR+BR); SFX('ball_hit', isMe?.9:.6);
     if(!isMe && mercy()){ ball.vx=1.5+Math.random(); ball.vy=-4; return; }   // 放水：輕輕往自己後面撥，球落在自己這邊
     if(!isMe){                                                        // 墨墨：每一球都殺，算好角度剛好擦過網上再往下砸
       const vx=-(6.5+Math.random()*1.5), t=Math.max(1,(ball.x-NETX)/-vx), aimY=NETTOP-BR-18-Math.random()*24;   // 球速放慢，留一點接球的機會
@@ -622,7 +626,7 @@ function puzzle(el, cfg, onWin){
   el.innerHTML='';
   const w=h(`<div class="mg-wrap"><div class="mg-hud"><span class="tag">${lockOK?'拼對的格子會鎖住。':''}</span><span class="tag" id="mgleft"></span></div><div class="grid" style="display:grid;grid-template-columns:repeat(${n},1fr);gap:2px;aspect-ratio:1;background:#000;border:4px solid #000"></div></div>`);
   el.appendChild(w); const g=w.querySelector('.grid'); const pct=100/(n-1); g.parentElement.style.position='relative';
-  const finish=()=>{ done=true; g.style.gap='0'; draw(); banner(g.parentElement,'拼好了！'); setTimeout(()=>{ const b=g.parentElement.querySelector('.mg-banner'); if(b) b.remove(); onWin(); },1400); };   // 拼好：去分隔線與鎖定框、字幕 1.4 秒後收掉，讓她看整張圖
+  const finish=()=>{ SFX('correct'); done=true; g.style.gap='0'; draw(); banner(g.parentElement,'拼好了！'); setTimeout(()=>{ const b=g.parentElement.querySelector('.mg-banner'); if(b) b.remove(); onWin(); },1400); };   // 拼好：去分隔線與鎖定框、字幕 1.4 秒後收掉，讓她看整張圖
   window.__MG_WIN=()=>{ if(done) return; order=[...Array(n*n).keys()]; finish(); };
   const draw=()=>{ const lk=locked(); const left=order.filter((t,i)=>t!==i).length; w.querySelector('#mgleft').textContent=left?`還差 ${left} 格`:''; g.innerHTML=''; order.forEach((t,pos)=>{ const d=document.createElement('div');
     d.style.cssText=`background-image:url(${img});background-size:${n*100}% ${n*100}%;background-position:${(t%n)*pct}% ${Math.floor(t/n)*pct}%;cursor:${lk[pos]?'default':'pointer'};${sel===pos?'outline:4px solid #f7d51d;outline-offset:-4px;':''}${lk[pos]&&!done?'box-shadow:inset 0 0 0 2px #92cc41;':''}`;
