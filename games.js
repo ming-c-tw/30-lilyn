@@ -287,7 +287,7 @@ function song(el, cfg, onWin){
   window.__MG_WIN=()=>{ i=songs.length; draw(); };                         // 控制者「小遊戲通關」：走正常通關畫面
   const norm=s=>(s||'').toLowerCase().replace(/[\s\-—_~～'’"“”「」『』《》〈〉.,，。!！?？:：、]/g,'');
   const draw=()=>{
-    if(i>=songs.length){ if(!done){ done=true; el.innerHTML='<div class="mg-lyric" style="min-height:140px"></div>'; banner(el.firstChild,'全部答對！'); setTimeout(onWin,1400); } return; }
+    if(i>=songs.length){ if(!done){ done=true; SFX('win'); el.innerHTML='<div class="mg-lyric" style="min-height:140px"></div>'; banner(el.firstChild,'全部答對！'); setTimeout(onWin,1400); } return; }
     const s=songs[i];
     el.innerHTML='';
     const w=h(`<div class="mg-wrap">
@@ -319,7 +319,7 @@ function song(el, cfg, onWin){
     const chk=()=>{ if(w._ok) return; const v=norm(w.querySelector('#mgans').value); if(s.answers.some(a=>norm(a)===v)){ SFX('correct');   // 答對：先顯示「正確！」，按鈕變「下一題」才換題；最後一題答對直接進「全部答對」（Ming）
         if(i===songs.length-1){ if(au) au.pause(); i++; return draw(); }
         w._ok=true; const inp=w.querySelector('#mgans'); inp.readOnly=true; w.querySelector('#mgres').innerHTML='<p class="msg nes-text is-success">★ 正確！</p>';
-        const bt=w.querySelector('#mgchk'); bt.textContent='下一題'; bt.onclick=()=>{ if(au) au.pause(); i++; draw(); }; } else { const r=w.querySelector('#mgres'); r.innerHTML='<p class="msg nes-text is-error">✕ 不是這首，再想想。</p>'; const inp=w.querySelector('#mgans'); inp.classList.remove('mg-shake'); void inp.offsetWidth; inp.classList.add('mg-shake'); } };
+        const bt=w.querySelector('#mgchk'); bt.textContent='下一題'; bt.onclick=()=>{ if(au) au.pause(); i++; draw(); }; } else { SFX('wrong'); const r=w.querySelector('#mgres'); r.innerHTML='<p class="msg nes-text is-error">✕ 不是這首，再想想。</p>'; const inp=w.querySelector('#mgans'); inp.classList.remove('mg-shake'); void inp.offsetWidth; inp.classList.add('mg-shake'); } };
     w.querySelector('#mgchk').onclick=chk; w.querySelector('#mgans').onkeydown=e=>{ if(e.key==='Enter'){ if(w._ok) w.querySelector('#mgchk').click(); else chk(); } };
   };
   draw();
@@ -339,7 +339,7 @@ function memory(el, cfg, onWin){
   el.innerHTML='';
   const w=h(`<div class="mg-wrap"><div class="mg-hud"><span id="mgname">　</span><span id="mgmv">步數 0</span></div><div class="mg-mem" style="grid-template-columns:repeat(${cols},1fr)"></div></div>`);
   el.appendChild(w); const grid=w.querySelector('.mg-mem');
-  window.__MG_WIN=()=>{ if(done) return; done=true; grid.querySelectorAll('.mg-card').forEach(c=>c.classList.add('open','done')); setTimeout(()=>{ banner(grid,'全部翻開了！'); setTimeout(onWin,1400); },400); };   // 控制者「小遊戲通關」
+  window.__MG_WIN=()=>{ if(done) return; done=true; grid.querySelectorAll('.mg-card').forEach(c=>c.classList.add('open','done')); setTimeout(()=>{ SFX('win'); banner(grid,'全部翻開了！'); setTimeout(onWin,1400); },400); };   // 控制者「小遊戲通關」
   const face=v=>/^data:image|\.(png|jpe?g|gif|svg|webp)$/i.test(v)?`<img src="${v}" alt="">`:v;
   deck.forEach(c=>{
     const d=h(`<div class="mg-card"><div class="in"><div class="f"></div><div class="b">${face(c.v)}</div></div></div>`);
@@ -351,7 +351,7 @@ function memory(el, cfg, onWin){
         moves++; w.querySelector('#mgmv').textContent='步數 '+moves;
         const [a,b]=open;
         if(a.v===b.v){ SFX('correct'); a.el.classList.add('done'); b.el.classList.add('done'); open=[]; matched++;
-          if(matched===icons.length && !done){ done=true; setTimeout(()=>{ banner(grid,'全部翻開了！'); setTimeout(onWin,1400); },400); } }
+          if(matched===icons.length && !done){ done=true; setTimeout(()=>{ SFX('win'); banner(grid,'全部翻開了！'); setTimeout(onWin,1400); },400); } }
         else { SFX('wrong',.5); lock=true; setTimeout(()=>{ a.el.classList.remove('open'); b.el.classList.remove('open'); open=[]; lock=false; },750); }
       }
     };
@@ -431,7 +431,7 @@ function mario(el, cfg, onWin){
   const collideY=(o,isP)=>{ o.on=false; const l=o.x+1, r=o.x+o.w-1;
     if(o.vy>0){ const ey=o.y+o.h; for(const xx of [l,r]) if(solid(tileAt(xx,ey))){ o.y=Math.floor(ey/T)*T-o.h; o.vy=0; o.on=true; return; } }
     else if(o.vy<0){ for(const xx of [l,(l+r)/2,r]) if(solid(tileAt(xx,o.y))){ const tx=Math.floor(xx/T), ty=Math.floor(o.y/T); o.y=(ty+1)*T; o.vy=0;
-        if(isP){ if(map[ty][tx]==='?'){ map[ty][tx]='b'; bumps.push({x:tx,y:ty,t:0,heart:true}); } else if(map[ty][tx]==='B'){ bumps.push({x:tx,y:ty,t:0}); } }
+        if(isP){ if(map[ty][tx]==='?'){ SFX('bump'); map[ty][tx]='b'; bumps.push({x:tx,y:ty,t:0,heart:true}); } else if(map[ty][tx]==='B'){ SFX('ball_hit',.4); bumps.push({x:tx,y:ty,t:0}); } }
         return; } } };
   const addHearts=(x,y,n)=>{ for(let k=0;k<n;k++) hearts.push({x:x+(Math.random()*16-8),y:y-k*6,t:0,vx:(Math.random()-.5)*0.4}); };
 
@@ -452,7 +452,7 @@ function mario(el, cfg, onWin){
     P.x+=P.vx; if(P.x<cam){ P.x=cam; P.vx=0; } if(collideX(P)) P.vx=0;
     P.y+=P.vy; collideY(P,true);
     if(P.on && P.y>=12*T-16 && solid(tileAt(P.x-T,13*T+1)) && solid(tileAt(P.x+P.w+T,13*T+1))) safeX=P.x;
-    if(P.y>H+20){ dead=1; P.vy=-4; }
+    if(P.y>H+20){ SFX('fall'); dead=1; P.vy=-4; }
     cam=Math.max(cam, Math.min(P.x-6*T, (LEN-VW)*T));
     cats.forEach(c=>{
       if(c.x>cam+W+2*T || c.x<cam-3*T) return;
@@ -468,7 +468,7 @@ function mario(el, cfg, onWin){
       }
     });
     // 碰到男主角就過關
-    if(P.x+P.w>=BOY_X-1 && !won){ won=1; P.x=BOY_X-11; P.vx=0; if(P.vy<0) P.vy=0; P.face=1; addHearts(BOY_X,12*T-20,4); }
+    if(P.x+P.w>=BOY_X-1 && !won){ won=1; SFX('win'); P.x=BOY_X-11; P.vx=0; if(P.vy<0) P.vy=0; P.face=1; addHearts(BOY_X,12*T-20,4); }
   };
 
   const heart=(x,y,c)=>{ g.fillStyle=c||'#e76e8a'; g.fillRect(x,y,2,2); g.fillRect(x+3,y,2,2); g.fillRect(x-1,y+1,7,2); g.fillRect(x,y+3,5,1); g.fillRect(x+1,y+4,3,1); g.fillRect(x+2,y+5,1,1); };
@@ -532,9 +532,9 @@ function volley(el, cfg, onWin){
   const newRally=(toLeft)=>{ me={x:100,y:GROUND-PR,vy:0}; ai={x:W-100,y:GROUND-PR,vy:0,react:0}; ball={x:toLeft?100:W-100,y:60,vx:0,vy:0}; pause=50; };
   newRally(true);
   const score=(leftWins)=>{ SFX(leftWins?'correct':'wrong'); if(leftWins) s1++; else s2++; w.querySelector('#mgs1').textContent=s1; w.querySelector('#mgs2').textContent=s2;
-    if(s1>=TARGET){ over=true; overText=mercy()?['為了讓莉莉過關，','墨墨放水了！']:['莉莉贏了！']; setTimeout(onWin,2500); return; }
+    if(s1>=TARGET){ over=true; SFX('win'); overText=mercy()?['為了讓莉莉過關，','墨墨放水了！']:['莉莉贏了！']; setTimeout(onWin,2500); return; }
     // 墨墨先拿到分數也算通關
-    if(s2>=TARGET){ over=true; overText=['妳輸了','但墨墨愛妳','所以妳贏了','♥']; setTimeout(onWin,3500); return; }
+    if(s2>=TARGET){ over=true; setTimeout(()=>SFX('heart'),900); overText=['妳輸了','但墨墨愛妳','所以妳贏了','♥']; setTimeout(onWin,3500); return; }
     newRally(leftWins); };
   const bounce=(p,isMe,spiking)=>{
     const dx=ball.x-p.x, dy=ball.y-p.y, d=Math.hypot(dx,dy); if(d>=PR+BR || d===0) return;
@@ -626,7 +626,7 @@ function puzzle(el, cfg, onWin){
   el.innerHTML='';
   const w=h(`<div class="mg-wrap"><div class="mg-hud"><span class="tag">${lockOK?'拼對的格子會鎖住。':''}</span><span class="tag" id="mgleft"></span></div><div class="grid" style="display:grid;grid-template-columns:repeat(${n},1fr);gap:2px;aspect-ratio:1;background:#000;border:4px solid #000"></div></div>`);
   el.appendChild(w); const g=w.querySelector('.grid'); const pct=100/(n-1); g.parentElement.style.position='relative';
-  const finish=()=>{ SFX('correct'); done=true; g.style.gap='0'; draw(); banner(g.parentElement,'拼好了！'); setTimeout(()=>{ const b=g.parentElement.querySelector('.mg-banner'); if(b) b.remove(); onWin(); },1400); };   // 拼好：去分隔線與鎖定框、字幕 1.4 秒後收掉，讓她看整張圖
+  const finish=()=>{ SFX('win'); done=true; g.style.gap='0'; draw(); banner(g.parentElement,'拼好了！'); setTimeout(()=>{ const b=g.parentElement.querySelector('.mg-banner'); if(b) b.remove(); onWin(); },1400); };   // 拼好：去分隔線與鎖定框、字幕 1.4 秒後收掉，讓她看整張圖
   window.__MG_WIN=()=>{ if(done) return; order=[...Array(n*n).keys()]; finish(); };
   const draw=()=>{ const lk=locked(); const left=order.filter((t,i)=>t!==i).length; w.querySelector('#mgleft').textContent=left?`還差 ${left} 格`:''; g.innerHTML=''; order.forEach((t,pos)=>{ const d=document.createElement('div');
     d.style.cssText=`background-image:url(${img});background-size:${n*100}% ${n*100}%;background-position:${(t%n)*pct}% ${Math.floor(t/n)*pct}%;cursor:${lk[pos]?'default':'pointer'};${sel===pos?'outline:4px solid #f7d51d;outline-offset:-4px;':''}${lk[pos]&&!done?'box-shadow:inset 0 0 0 2px #92cc41;':''}`;

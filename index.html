@@ -1298,7 +1298,7 @@ function showLetter(s, next){
     ${s.letter?`<p style="margin-top:12px">跟列車長拿信。</p><div class="letter nes-container is-rounded">${s.letter}</div>`:''}
     ${goNextHTML(s,idx)}${npcBox(s,idx)}`);
   $('#next').onclick=()=>{ state.stage=Math.min(state.stage+1, CONFIG.stages.length-1); save(); render(); };
-  bindNpc(s,idx);
+  bindNpc(s,idx); setTimeout(sfxPage,0);   // 拿信頁沒經過 render()，自己叫音效（有信→翻頁聲；目的地→列車聲）
 }
 const litHTML=()=>`<div class="candles big hero" style="margin-bottom:24px">${candleHTML('lit')}</div>`;
 function litStep(s, idx){                      // 回 true＝這次畫的是「成功點亮」頁；按下一步後 _go 記起來，下次 render 才給目的地
@@ -1309,7 +1309,7 @@ function litStep(s, idx){                      // 回 true＝這次畫的是「�
     <button class="nes-btn is-success btn" id="nextl">下一步</button>
     ${backupScanBox()}${npcBox(s,idx)}`);
   $('#nextl').onclick=()=>{ state.extra[s.id+'_go']=true; save(); if(['game','firebadge','photo_task'].includes(s.type)) render(); else showLetter(s,true); };   // 一般關 render 會直接跳下一站，所以自己畫目的地頁
-  bindBackupScan(s); bindNpc(s,idx); return true;
+  bindBackupScan(s); bindNpc(s,idx); setTimeout(sfxPage,0); return true;   // 沒經過 render() 也要響點亮音效
 }
 function arrivePage(s, idx){                   // 「已抵達 X」頁：大紅地標＋路線色按鈕
   const nx=CONFIG.stages[idx+1];
@@ -1495,7 +1495,7 @@ function openBackup(keep){ let p=document.getElementById('bkpanel'); if(!p){ p=d
   p.innerHTML=`<div class="pg-head"><div><b style="display:inline-flex;align-items:center;gap:6px">${ic}機器壞了？</b><p class="tag" style="margin:0">輸入備援密碼，打開控制者介面</p></div><button class="pg-x" id="bkx" aria-label="關閉">✕</button></div>
     <div class="row" style="margin-top:6px;align-items:stretch"><input class="nes-input" type="password" id="fbkpin" inputmode="numeric" placeholder="備援密碼" style="flex:1;font-size:18px"><button class="nes-btn btn small" id="fbkgo" style="margin:0">進入</button></div><div id="fbkmsg"></div>`;
   p.dataset.mode='pin'; p.hidden=false;
-  const go=()=>{ if(p.querySelector('#fbkpin').value===CONFIG.npcPin){ state.npc=true; save(); render(); openBackup(); } else p.querySelector('#fbkmsg').innerHTML=bad('密碼不對。'); };   // 登入後留在浮動視窗裡，直接換成控制者介面
+  const go=()=>{ if(p.querySelector('#fbkpin').value===CONFIG.npcPin){ state.npc=true; save(); render(); openBackup(); } else p.querySelector('#fbkmsg').innerHTML=oops('密碼不對。'); };   // 登入後留在浮動視窗裡，直接換成控制者介面
   p.querySelector('#bkx').onclick=()=>{ p.hidden=true; }; p.querySelector('#fbkgo').onclick=go; p.querySelector('#fbkpin').onkeydown=e=>{ if(e.key==='Enter') go(); };
   p.querySelector('#fbkpin').focus(); }
 /* 頁面上的「控制者：模擬…」鈕（各關自己綁好事件）搬進浮動視窗最上面；結尾頁的「全部重來」視窗裡已有，頁面那顆拿掉 */
@@ -1578,6 +1578,7 @@ function pass(s){
 }
 function ok(msg){ return `<p class="msg nes-text is-success">★ ${msg}</p>`; }
 function bad(msg){ return `<p class="msg nes-text is-error">✕ ${msg}</p>`; }
+function oops(msg){ SND.sfx('wrong'); return bad(msg); }   // 答錯／失敗時用：同 bad 但會響一聲
 function info(msg){ return `<p class="msg nes-text is-warning">… ${msg}</p>`; }
 
 /* 相機與 QR */
@@ -1680,7 +1681,17 @@ const SND=(()=>{
     if(!name) return; const a=el('bgm',name); if(!a) return; a.loop=name!=='victory'; a.currentTime=0; a.volume=0; cur=a; a.play().then(()=>fade(a,ducked?DUCKV:VOL,600)).catch(()=>{}); }
   let ducked=false; const VOL=.55, DUCKV=.1;
   function duck(on){ ducked=!!on; if(cur) fade(cur, ducked?DUCKV:VOL, 400); }
-  function sfx(name,vol=.9){ if(!on()||!unlocked) return; const a=el('sfx',name); if(!a) return; const c=a.cloneNode(); c.volume=vol; c.play().catch(()=>{}); }
+  /* 音效走 Web Audio：先把 mp3 解碼成 AudioBuffer 放記憶體，播的時候零延遲（2026-11-07 Ming：音效會 lag）。
+     解碼好之前（或 file: 本機測試 fetch 不到）退回 <audio> 複製播放。 */
+  let ac=null; const bufs={};
+  const ctx=()=>{ if(!ac){ const C=window.AudioContext||window.webkitAudioContext; if(C) try{ ac=new C(); }catch(e){} } return ac; };
+  function load(name){ if(name in bufs) return Promise.resolve(bufs[name]); bufs[name]=null; const c=ctx(); if(!c||location.protocol==='file:') return Promise.resolve(null);
+    return fetch(base+'sfx/'+name+'.mp3').then(r=>r.arrayBuffer()).then(ab=>new Promise((res,rej)=>c.decodeAudioData(ab,res,rej))).then(b=>{ bufs[name]=b; return b; }).catch(()=>null); }
+  const SFX_ALL=['click','correct','wrong','candle_lit','candle_blow','digit','shutter','train','card_flip','ball_hit','jump','cat','punch','devil','glitch','charge','ignite','rainbow','smoke','locker','heart','page','growl','win','badge','merge','unseal','throw','land','rift','defeat','rift_close','fall','bump','pop'];
+  function preload(){ let i=0; const next=()=>{ if(i>=SFX_ALL.length) return; load(SFX_ALL[i++]).then(()=>setTimeout(next,30)); }; next(); }
+  function sfx(name,vol=.9){ if(!on()||!unlocked) return; const c=ctx(), b=bufs[name];
+    if(c&&b){ if(c.state==='suspended') c.resume().catch(()=>{}); const src=c.createBufferSource(); src.buffer=b; const g=c.createGain(); g.gain.value=vol; src.connect(g); g.connect(c.destination); src.start(0); return; }
+    load(name); const a=el('sfx',name); if(!a) return; const cl=a.cloneNode(); cl.volume=vol; cl.play().catch(()=>{}); }
   function toggle(){ state.extra.sound=!on(); save(); if(!on()){ if(cur){ cur.pause(); cur=null; } pending=curName; curName=''; } else { unlocked=true; const n=pending||curName; curName=''; bgm(n||page(true)); } }
   function page(justName){   // 依目前關卡／步驟挑 BGM
     const s=CONFIG.stages[state.stage]; let n='travel';
@@ -1695,10 +1706,11 @@ const SND=(()=>{
     else if(s.type==='ticket_puzzle') n=state.extra.s0_tp?'travel':'title';
     if(document.querySelector('#main .stripwrap')) n='birthday';
     if(justName) return n; bgm(n); }
-  window.addEventListener('pointerdown',()=>{ if(unlocked) return; unlocked=true; if(on()){ const n=pending||curName; curName=''; if(n) bgm(n); } },{capture:true});
+  window.addEventListener('pointerdown',()=>{ const c=ctx(); if(c&&c.state==='suspended') c.resume().catch(()=>{}); if(unlocked) return; unlocked=true; if(on()){ const n=pending||curName; curName=''; if(n) bgm(n); } },{capture:true});
+  setTimeout(preload,600);   // 開頁就先把全部音效解碼進記憶體（都很小，總共不到 1 MB）
   document.addEventListener('visibilitychange',()=>{ if(!cur) return; if(document.hidden) cur.pause(); else if(on()) cur.play().catch(()=>{}); });
   document.addEventListener('click',e=>{ const b=e.target.closest('button.nes-btn, label.nes-btn, .progbtn, .bkbtn'); if(b && !b.closest('#gamebox')) sfx('click',.5); },{capture:true});
-  return {on,bgm,sfx,toggle,page,duck};
+  return {on,bgm,sfx,toggle,page,duck,ready:()=>SFX_ALL.filter(n=>bufs[n]).length};
 })();
 window.SND=SND;
 /* 控制台音效鈕的像素喇叭（開：有聲波；關：打叉） */
@@ -1709,7 +1721,11 @@ const sndIcon=()=>spriteSVG(SND.on()?SND_ON_ROWS:SND_OFF_ROWS,{B:'#111'},'22px',
 let lastSfxPk='';
 function sfxPage(){ const pk=pageKey(); if(pk===lastSfxPk) return; lastSfxPk=pk; const m=document.querySelector('#main'); const name=(m.querySelector('.name')||{}).textContent||'';
   if(/:lit$/.test(pk)) SND.sfx('candle_lit'); else if(/:number$/.test(pk)) SND.sfx('digit'); else if(/:(go|depart)$/.test(pk)) SND.sfx('train');
-  else if(m.querySelector('#bosscall.boss-call')) SND.sfx('devil'); else if(pk==='s7:gocode') SND.sfx('smoke'); else if(m.querySelector('.stripwrap')) SND.sfx('heart'); else if(/置物櫃/.test(name)) SND.sfx('locker'); }
+  else if(m.querySelector('#bosscall.boss-call') && !m.querySelector('#hole.pre-intro')) SND.sfx('devil'); else if(pk==='s7:gocode') SND.sfx('smoke'); else if(m.querySelector('.stripwrap')) SND.sfx('heart'); else if(/置物櫃/.test(name)) SND.sfx('locker');
+  else if(m.querySelector('.hungry')) SND.sfx('growl');                         // 列車長肚子咕嚕咕嚕叫
+  else if(m.querySelector('.fb-free')) SND.sfx('cat');                          // 胖貓從徽章滾出來：喵
+  else if(m.querySelector('#summon')) SND.sfx('merge');                         // 兩半徽章合體
+  else if(m.querySelector('.letter') && !m.querySelector('#got')) SND.sfx('page'); }   // 拿到信（開場信、車票除外）
 function render(){
   stopCamera(); stopGlitch(); if(state.extra.s7_step!=='wish'){ const dm=document.querySelector('.wish-dim'); if(dm) dm.remove(); } document.body.classList.remove('noprog');
   preloadAhead();
@@ -1735,7 +1751,7 @@ function renderOpenLetter(){
     <input class="nes-input" type="text" id="pw" autocomplete="off" autocapitalize="characters"><div id="res"></div>
     <button class="nes-btn is-primary btn" id="pwok" style="margin-top:14px">確認</button></section>`;
   const norm=t=>t.normalize('NFKC').toUpperCase().replace(/\s/g,'');
-  const go=()=>{ if(norm($('#pw').value)===norm(CONFIG.openPassword)){ state.extra.openLetter=true; save(); render(); } else $('#res').innerHTML=bad('密碼不對。'); };
+  const go=()=>{ if(norm($('#pw').value)===norm(CONFIG.openPassword)){ state.extra.openLetter=true; save(); render(); } else $('#res').innerHTML=oops('密碼不對。'); };
   $('#pwok').onclick=go; $('#pw').onkeydown=e=>{ if(e.key==='Enter') go(); };
 }
 function renderWelcome(){
@@ -1796,7 +1812,7 @@ function renderTicketPuzzle(s, idx){
       ${state.npc&&!solved?'<button class="nes-btn is-warning btn small" id="simsolve" style="margin-top:8px">控制者：直接拼好</button>':''}`);
     const g=$('#grid'); let order=d.order, sel=-1;
     const pct=100/(n-1);
-    const finish=()=>{ d.order=[...Array(n*n).keys()]; d.solved=true; state.extra[k]=d; giveDigit(s.id); save(); render(); };
+    const finish=()=>{ SND.sfx('win'); d.order=[...Array(n*n).keys()]; d.solved=true; state.extra[k]=d; giveDigit(s.id); save(); render(); };
     const draw=()=>{ g.innerHTML=''; order.forEach((tile,pos)=>{ const t=el(`<div class="tile ${sel===pos?'sel':''}" style="background-image:url(${s.image});background-size:${n*100}% ${n*100}%;background-position:${(tile%n)*pct}% ${Math.floor(tile/n)*pct}%"></div>`); if(!solved) t.onclick=()=>{ if(sel<0){sel=pos;} else { [order[sel],order[pos]]=[order[pos],order[sel]]; sel=-1; d.order=order; state.extra[k]=d; save(); if(order.every((v,i)=>v===i)){ finish(); return; } } draw(); }; g.appendChild(t); }); };
     draw();
     const sim=$('#simsolve'); if(sim) sim.onclick=finish;
@@ -1870,7 +1886,7 @@ function renderSpotQuiz(s, idx){
     const done=()=>{ got.push(d.open); d.got=got; d.open=null; state.extra[k]=d; save(); $('#scanres').innerHTML=ok('正確！');   // 答對：顯示「正確！」，題目框收掉
       if(got.length<qs.length){ $('#solved').innerHTML=solved(); $('#qarea').innerHTML=''; return; }   // 只換題目區，縮放與準星不動
       set({step:last?'all':'ok'}); };
-    const wrong=()=>{ $('#res').innerHTML=bad('不對，再看仔細一點。'); };
+    const wrong=()=>{ $('#res').innerHTML=oops('不對，再看仔細一點。'); };
     if(x.choices){ document.querySelectorAll('#qarea .choice').forEach(b=>b.onclick=()=>{ +b.dataset.i===x.correct?done():wrong(); }); return; }
     const c=$('#chk'); if(!c) return;
     const go=()=>{ const v=norm($('#ans').value); if(!v) return;
@@ -1889,9 +1905,9 @@ function renderSpotQuiz(s, idx){
     const hits=qs.map((x,j)=>({x,j,r:rects(x).filter(r=>spotHit(r,Z.cx,Z.cy))})).filter(h=>!hasSpot || h.r.length)
       .sort((a,b)=>Math.min(...a.r.map(area),1e9)-Math.min(...b.r.map(area),1e9));
     const fresh=hits.find(h=>!got.includes(h.j));
-    if(!hits.length){ $('#scanres').innerHTML=bad('這裡沒有破綻。'); return; }
-    if(!fresh){ $('#scanres').innerHTML=bad('這裡已經看破了。'); return; }
-    $('#scanres').innerHTML=ok(fresh.x.found||'找到破綻！'); if(d.open!==fresh.j) d.seqi=0; d.open=fresh.j; state.extra[k]=d; save();
+    if(!hits.length){ $('#scanres').innerHTML=oops('這裡沒有破綻。'); return; }
+    if(!fresh){ $('#scanres').innerHTML=oops('這裡已經看破了。'); return; }
+    SND.sfx('correct'); $('#scanres').innerHTML=ok(fresh.x.found||'找到破綻！'); if(d.open!==fresh.j) d.seqi=0; d.open=fresh.j; state.extra[k]=d; save();
     $('#qarea').innerHTML=openQ(fresh.j); bindAnswer(); const a=$('#ans'); if(a) a.focus(); };
   const area=r=>spotArea(r);
   bindAnswer();
@@ -2012,10 +2028,10 @@ function closeRift(d, keep){
   const hole=$('#hole'), cat=$('#cat'), arena=$('#arena');
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);
   let x1=-46;
-  T(1200,()=>{ const c=$('#bosscall'); if(c){ c.textContent='次元惡魔被打敗了！'; c.classList.remove('boss-call'); }   // 惡魔一消失就換字、停止震動
+  T(1200,()=>{ SND.sfx('defeat'); const c=$('#bosscall'); if(c){ c.textContent='次元惡魔被打敗了！'; c.classList.remove('boss-call'); }   // 惡魔一消失就換字、停止震動
     hole.classList.add('closing');   // 第一段：背影滾出裂隙
     cat.animate([{transform:'translate(0,0) rotate(0deg)'},{transform:`translate(${x1}px,0) rotate(-720deg)`}],{duration:1400,easing:'ease-in-out',fill:'forwards'}); });   // 往外滾出裂隙
-  T(2600,()=>{ hole.classList.remove('closing'); hole.classList.add('lineclose');
+  T(2600,()=>{ SND.sfx('rift_close'); hole.classList.remove('closing'); hole.classList.add('lineclose');
     const aw=arena.getBoundingClientRect().width, dx=Math.round(aw/2-95-14);   // 胖貓滾到畫面中間
     cat.getAnimations().forEach(a=>a.cancel()); cat.innerHTML=spriteSVG(SPRITE_ROWS, CAT_PAL, '190px', 'aria-label="胖貓"');   // 第二段：轉成正面滾到中間
     cat.animate([{transform:`translate(${x1}px,0) rotate(-720deg)`},{transform:`translate(${dx}px,0) rotate(0deg)`}],{duration:1300,easing:'ease-out',fill:'forwards'}); });
@@ -2026,14 +2042,14 @@ function bossIntro(done){
   const hole=$('#hole'), devil=$('#devil'), call=$('#bosscall'), tbox=$('#throwbox'), arena=$('#arena');
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);
   let glow=null;
-  T(700,()=>{ hole.classList.remove('pre-intro'); hole.classList.add('line'); hole._lineT=Date.now(); glow=document.createElement('div'); glow.className='rift-glow'; glow.innerHTML='<i class="rg-line"></i><div class="rg-lw"><i class="rg-l"></i></div><div class="rg-rw"><i class="rg-r"></i></div>'; arena.prepend(glow);   // 紅藍一條線
+  T(700,()=>{ SND.sfx('rift'); hole.classList.remove('pre-intro'); hole.classList.add('line'); hole._lineT=Date.now(); glow=document.createElement('div'); glow.className='rift-glow'; glow.innerHTML='<i class="rg-line"></i><div class="rg-lw"><i class="rg-l"></i></div><div class="rg-rw"><i class="rg-r"></i></div>'; arena.prepend(glow);   // 紅藍一條線
     startSpray(arena, hole); });
   T(2500,()=>{ hole.classList.remove('line'); hole.classList.add('opening'); hole._openT=Date.now(); if(glow){ glow.remove(); glow=null; } });   // 裂隙逐漸裂開
   T(3900,()=>{ hole.classList.remove('opening'); clearInterval(arena._spray); arena._spray=null; startSpray(arena, hole); });   // 拉開一結束就接上持續扭動（之前等到惡魔合成才切，中間會停住）
   T(3300,()=>startGlitch());                                                                         // 畫面開始混亂
   T(4100,()=>{ const one=c=>Object.fromEntries(Object.keys(DEVIL_PAL).map(k=>[k,c]));
     ['#ff2a6d','#05d9e8'].forEach((c,i)=>{ const g=document.createElement('div'); g.className='devil-ghost dg'+i; g.innerHTML=spriteSVG(DEVIL_ROWS, one(c), '112px', 'aria-hidden="true"'); arena.appendChild(g); setTimeout(()=>g.remove(),1500); }); });   // 紅光、藍光閃爍扭曲
-  T(5500,()=>{ devil.classList.remove('pre-intro'); devil.classList.add('born'); if(glow) glow.remove(); setTimeout(()=>devil.classList.remove('born'),650); });   // 合成次元惡魔
+  T(5500,()=>{ SND.sfx('devil'); devil.classList.remove('pre-intro'); devil.classList.add('born'); if(glow) glow.remove(); setTimeout(()=>devil.classList.remove('born'),650); });   // 合成次元惡魔
   T(6200,()=>{ call.classList.remove('pre-intro'); call.classList.add('pop'); setTimeout(()=>call.classList.remove('pop'),450); });                       // 跳字
   T(6600,()=>{ if(tbox) tbox.classList.remove('pre-intro'); done(); });
 }
@@ -2067,7 +2083,7 @@ function renderBoss(s, idx, d, k){
     const end=e=>{ if(!st) return; const dx=e.clientX-st.x, dy=e.clientY-st.y; st=null; tb.classList.remove('drag');
       const a=trail[0], b=trail[trail.length-1], dt=Math.max(16,b.t-a.t), vx=(b.x-a.x)/dt, vy=(b.y-a.y)/dt;   // 甩的速度（px/ms）
       if(!(vy<-.5 || dy<-90)){ tb.style.transform=''; tb.animate([{transform:`translate(${dx}px,${dy}px) scale(1.15)`},{transform:'translate(0,-10px) scale(1)'},{transform:'translate(0,0)'}],{duration:350,easing:'ease-out'}); return; }   // 太輕：彈回
-      d.boss='fight'; keep();
+      d.boss='fight'; keep(); SND.sfx('throw');
       const ar=$('#arena').getBoundingClientRect(), r0=tb.getBoundingClientRect();
       const cx0=r0.left+r0.width/2-dx, cy0=r0.top+r0.height/2-dy;   // 徽章原本的中心
       const tx=Math.max(ar.left+60,Math.min(ar.right-60, ar.left+ar.width*.45+vx*120)), ty=ar.top+ar.height*.42;   // 落點：裂隙中間，往甩的方向偏一點
@@ -2075,11 +2091,11 @@ function renderBoss(s, idx, d, k){
       tb.style.transform='';
       tb.animate([{transform:`translate(${dx}px,${dy}px) rotate(0deg) scale(1.15)`},{transform:`translate(${mx}px,${my}px) rotate(540deg) scale(.75)`},{transform:`translate(${ex}px,${ey}px) rotate(1080deg) scale(.4)`}],{duration:700,easing:'linear',fill:'forwards'});
       setTimeout(()=>{ const box=$('#throwbox'); if(box) box.style.visibility='hidden';   // 徽章區留著位置，底框不縮（Ming）
-        const fl=document.createElement('i'); fl.className='badge-burst'; fl.style.left=(tx-ar.left)+'px'; fl.style.top=(ty-ar.top)+'px'; $('#arena').appendChild(fl); setTimeout(()=>fl.remove(),600); },700);
+        SND.sfx('badge'); const fl=document.createElement('i'); fl.className='badge-burst'; fl.style.left=(tx-ar.left)+'px'; fl.style.top=(ty-ar.top)+'px'; $('#arena').appendChild(fl); setTimeout(()=>fl.remove(),600); },700);
       setTimeout(()=>{ cat.innerHTML=spriteSVG(SPRITE_ROWS, CAT_PAL, '190px', 'aria-label="胖貓"'); cat.hidden=false;
         const top=cat.getBoundingClientRect().bottom+40;   // 從畫面最上方外面開始掉，穿過標題文字掉進場地（慢一點：1.6 秒）
         cat.animate([{transform:`translateY(${-top}px) rotate(-1080deg)`},{transform:'translateY(0) rotate(0)'}],{duration:1600,easing:'cubic-bezier(.45,0,.9,.55)',fill:'both'});   /* 滾出來用正面圖（同一格大小），落地停一下再轉成背影（Ming） */
-        setTimeout(()=>{ cat.getAnimations().forEach(a=>a.cancel()); cat.classList.add('land');
+        setTimeout(()=>{ cat.getAnimations().forEach(a=>a.cancel()); cat.classList.add('land'); SND.sfx('land');
           const ck=$('#crack'); ck.classList.remove('off'); ck.classList.add('grow');   // 屁股下裂開
           const ar=$('#arena'); document.body.classList.remove('quake'); void document.body.offsetWidth; document.body.classList.add('quake'); try{ navigator.vibrate&&navigator.vibrate([90,40,140]); }catch(e){}   // 砸到地上：場地大地震＋手機震動
           [[20,'-26px'],[180,'26px']].forEach(([x,dx])=>{ const d=document.createElement('i'); d.className='dust'; d.style.left=x+'px'; d.style.setProperty('--dx',dx); ar.appendChild(d); setTimeout(()=>d.remove(),700); });
@@ -2132,9 +2148,9 @@ function renderGpsQr(s, idx){
       const d = haversine(p.coords.latitude,p.coords.longitude,s.target.lat,s.target.lng);
       const dEl=$('#dist'); if(dEl) dEl.textContent=`距離約 ${Math.round(d)} 公尺（誤差 ±${Math.round(p.coords.accuracy)}）`;
       if(d<=s.target.radius){ navigator.geolocation.clearWatch(geoWatch); state.extra.s1_arrived=true; save(); render(); }
-    }, e=>{ const g=$('#geo'); if(g) g.innerHTML=bad('拿不到定位：'+e.message+'。請允許定位，或掃列車長的備援卡。'); }, { enableHighAccuracy:true, maximumAge:3000, timeout:15000 });
+    }, e=>{ const g=$('#geo'); if(g) g.innerHTML=oops('拿不到定位：'+e.message+'。請允許定位，或掃列車長的備援卡。'); }, { enableHighAccuracy:true, maximumAge:3000, timeout:15000 });
   }
-  const sc=$('#scan'); if(sc) sc.onclick=()=>scanQR($('#qr'), t=>{ if(t===s.qrExpect){ pass(s); return true; } $('#qr').insertAdjacentHTML('afterbegin', bad('這張不是。')); return false; });
+  const sc=$('#scan'); if(sc) sc.onclick=()=>scanQR($('#qr'), t=>{ if(t===s.qrExpect){ pass(s); return true; } $('#qr').insertAdjacentHTML('afterbegin', oops('這張不是。')); return false; });
   const sim=$('#simarrive'); if(sim) sim.onclick=()=>{ state.extra.s1_arrived=true; save(); render(); };
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
 }
@@ -2169,8 +2185,8 @@ function renderLibrary(s, idx){
   const norm=t=>t.replace(/[\s《》「」、.。]/g,'');
   const ab=(g,ans)=>{ const L=ans.length; let a=0,b=0; const used=[]; for(let i=0;i<L;i++){ if(g[i]===ans[i]){ a++; used[i]=true; } } for(let i=0;i<L;i++){ if(g[i]===ans[i]) continue; for(let j=0;j<L;j++){ if(!used[j] && g[i]===ans[j] && g[j]!==ans[j]){ b++; used[j]=true; break; } } } return {a,b}; };
   const c=$('#chk'); if(c){ const go=()=>{ const v=$('#ans').value.trim();
-    if(step==='code'){ if(!new RegExp(`^\\d{${s.callDigits.length}}$`).test(v)){ $('#res').innerHTML=bad(`要 ${s.callDigits.length} 個數字。`); return; } const r=ab(v,s.callDigits); guesses.push({v,a:r.a,b:r.b}); state.extra[gk]=guesses; save(); if(v===s.callDigits) set('code_ok'); else render(); }
-    else { if(v===s.bookAnswer||(s.bookAnswerAlt||[]).includes(v)) pass(s); else $('#res').innerHTML=bad('不是這本，再看一次書背的 ISBN。'); } };
+    if(step==='code'){ if(!new RegExp(`^\\d{${s.callDigits.length}}$`).test(v)){ $('#res').innerHTML=oops(`要 ${s.callDigits.length} 個數字。`); return; } const r=ab(v,s.callDigits); guesses.push({v,a:r.a,b:r.b}); state.extra[gk]=guesses; save(); if(v===s.callDigits) set('code_ok'); else render(); }
+    else { if(v===s.bookAnswer||(s.bookAnswerAlt||[]).includes(v)) pass(s); else $('#res').innerHTML=oops('不是這本，再看一次書背的 ISBN。'); } };
     c.onclick=go; $('#ans').onkeydown=e=>{ if(e.key==='Enter') go(); }; }
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
 }
@@ -2192,7 +2208,7 @@ function renderAR(s, idx){
     o.textContent='對準中…保持 3 秒'; o.disabled=true;
     setTimeout(()=>{ $('#cam').appendChild(el(`<div class="overlay">${s.arString}</div>`)); state.extra.s2_revealed=true; save(); setTimeout(()=>{ render(); },1800); },3000);
   };
-  const c=$('#chk'); if(c) c.onclick=()=>{ const v=$('#ans').value.trim(); if(v===s.answer){ pass(s); } else $('#res').innerHTML=bad('不是這一位，再看一次卡。'); };
+  const c=$('#chk'); if(c) c.onclick=()=>{ const v=$('#ans').value.trim(); if(v===s.answer){ pass(s); } else $('#res').innerHTML=oops('不是這一位，再看一次卡。'); };
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
 }
 
@@ -2229,7 +2245,7 @@ function renderCompassColor(s, idx){
     };
     $('#perm').onclick=async()=>{
       try{ if(window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission==='function'){ const r=await DeviceOrientationEvent.requestPermission(); if(r!=='granted') throw new Error('沒有允許'); } start(); $('#perm').textContent='羅盤啟用中'; }
-      catch(e){ $('#geo').innerHTML=bad('羅盤啟用失敗：'+(e.message||e)); }
+      catch(e){ $('#geo').innerHTML=oops('羅盤啟用失敗：'+(e.message||e)); }
     };
     const sim=$('#simalign'); if(sim) sim.onclick=()=>{ state.extra.s3_aligned=true; save(); render(); };
   }else{
@@ -2243,7 +2259,7 @@ function renderCompassColor(s, idx){
           const d=c.getContext('2d').getImageData(Math.max(0,x-3),Math.max(0,y-3),7,7).data; let R=0,G=0,B=0,n=0; for(let i=0;i<d.length;i+=4){R+=d[i];G+=d[i+1];B+=d[i+2];n++;}
           const hsl=rgb2hsl(R/n,G/n,B/n); const diff=Math.min(Math.abs(hsl.h-s.targetHue),360-Math.abs(hsl.h-s.targetHue));
           $('#pick').innerHTML=`<p class="tag">妳選的顏色 <span class="swatch" style="background:rgb(${R/n|0},${G/n|0},${B/n|0})"></span></p>`;
-          if(hsl.s>0.18 && diff<=s.hueTolerance){ pass(s); } else $('#res').innerHTML=bad('不是這個顏色，再問列車長一題。');
+          if(hsl.s>0.18 && diff<=s.hueTolerance){ pass(s); } else $('#res').innerHTML=oops('不是這個顏色，再問列車長一題。');
         };
       };
     };
@@ -2285,14 +2301,14 @@ function renderSoundPuzzle(s, idx){
     : !solved?`<p class="tag">點 2 格交換，拼回原圖。</p><div class="grid" id="grid"></div>`
     : `${ok('拼好了。')}<p>牌子上的數字：<span class="big">${s.puzzleNumber}</span></p><p>照列車長運算卡上的規則算出一位數。</p><input class="nes-input" type="number" id="ans" inputmode="numeric" placeholder="一位數"><div id="res"></div><button class="nes-btn is-primary btn" id="chk" style="margin-top:14px">確認</button>`}
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
-  document.querySelectorAll('.audio-btn').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; playTone(i); b.onclick=()=>{ if(i===s.soundCorrect){ state.extra.s5_heard=true; save(); render(); } else { $('#res').innerHTML=bad('不是這一段。'); playTone(i); } }; b.textContent=`▶ 第 ${i+1} 段（再按一次選它）`; b.classList.add('is-primary'); });
+  document.querySelectorAll('.audio-btn').forEach(b=>b.onclick=()=>{ const i=+b.dataset.i; playTone(i); b.onclick=()=>{ if(i===s.soundCorrect){ state.extra.s5_heard=true; save(); render(); } else { $('#res').innerHTML=oops('不是這一段。'); playTone(i); } }; b.textContent=`▶ 第 ${i+1} 段（再按一次選它）`; b.classList.add('is-primary'); });
   const f=$('#file'); if(f) f.onchange=(e)=>{ const file=e.target.files[0]; if(!file) return; const rd=new FileReader(); rd.onload=()=>shrink(rd.result,700,u=>{ state.extra.s5_img=u; state.extra.s5_order=shuffle([0,1,2,3,4,5,6,7,8]); save(); render(); }); rd.readAsDataURL(file); };
   const g=$('#grid'); if(g){
     let order=state.extra.s5_order, sel=-1;
     const draw=()=>{ g.innerHTML=''; order.forEach((tile,pos)=>{ const t=el(`<div class="tile ${sel===pos?'sel':''}" style="background-image:url(${img});background-position:${(tile%3)*50}% ${Math.floor(tile/3)*50}%"></div>`); t.onclick=()=>{ if(sel<0){sel=pos;} else { [order[sel],order[pos]]=[order[pos],order[sel]]; sel=-1; state.extra.s5_order=order; save(); if(order.every((v,i)=>v===i)){ state.extra.s5_solved=true; save(); render(); return; } } draw(); }; g.appendChild(t); }); };
     draw();
   }
-  const c=$('#chk'); if(c) c.onclick=()=>{ if($('#ans').value.trim()===s.answer) pass(s); else $('#res').innerHTML=bad('再算一次。'); };
+  const c=$('#chk'); if(c) c.onclick=()=>{ if($('#ans').value.trim()===s.answer) pass(s); else $('#res').innerHTML=oops('再算一次。'); };
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
 }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.random()*(i+1)|0; [a[i],a[j]]=[a[j],a[i]]; } if(a.every((v,i)=>v===i)) [a[0],a[1]]=[a[1],a[0]]; return a; }
@@ -2339,7 +2355,7 @@ function renderRainbow(s, idx){
         const hsl=rgb2hsl(R/n,G/n,B/n);
         let hit=-1; rb.colors.forEach(ci=>{ if(rb.found.includes(ci)) return; const t=s.palette[ci].h; const diff=Math.min(Math.abs(hsl.h-t),360-Math.abs(hsl.h-t)); if(hsl.s>0.25 && hsl.l>0.15 && hsl.l<0.85 && diff<=s.hueTolerance) hit=ci; });
         $('#pick').innerHTML=`<p class="tag">妳選的顏色 <span class="swatch" style="background:rgb(${R/n|0},${G/n|0},${B/n|0})"></span></p>`;
-        if(hit>=0){ $('#res').innerHTML=ok(`${s.palette[hit].n}色，收！`); setTimeout(()=>mark(hit),500); } else $('#res').innerHTML=bad('這個顏色不在彩虹裡，或太淡。');
+        if(hit>=0){ $('#res').innerHTML=ok(`${s.palette[hit].n}色，收！`); setTimeout(()=>mark(hit),500); } else $('#res').innerHTML=oops('這個顏色不在彩虹裡，或太淡。');
       };
     };
   };
@@ -2491,7 +2507,7 @@ function renderFireBadge(s, idx){
   const sc=$('#scan'); if(sc) sc.onclick=async()=>{
     // 兩半同時找、不分先後：牆走 MindAR、花走顏色；哪個先命中就收哪一半
     const todo=s.targets.filter(t=>!has(t.key)); const flower=todo.find(t=>t.color); const keyOfIdx=i=>(s.targets.find(t=>(t.mindIdx||[]).includes(i))||{}).key;
-    const found=(key)=>{ if(sc.dataset.done) return; sc.dataset.done=1; if(colorTimer){ clearInterval(colorTimer); colorTimer=null; }
+    const found=(key)=>{ if(sc.dataset.done) return; sc.dataset.done=1; if(colorTimer){ clearInterval(colorTimer); colorTimer=null; } SND.sfx('badge');
       $('#cam').appendChild(el(`<div class="overlay ar-found ${key==='winter'?'L':'R'}">${badgeSVG(key==='winter'?'L':'R','64px')}</div>`));   // 半片＝完整徽章 128px 的一半（64px），跟合成後切半一樣大
       $('#cam').appendChild(el(`<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div>`));                                     // 字置中在下方（el() 只回第一個元素，要分開加）
       sc.textContent='收下徽章'; sc.disabled=false; sc.className='nes-btn is-primary btn';                                   // 按了才跳下一步
@@ -2504,7 +2520,7 @@ function renderFireBadge(s, idx){
       if(flower && v) colorScan(v, flower.color, ()=>{ if(window.__AR) window.__AR.by='顏色'; found(flower.key); });
     }catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
   };
-  const sm=$('#summon'); if(sm) sm.onclick=()=>{ d.summoned=true; state.extra[k]=d; state.done[s.id]=true; save(); render(); };
+  const sm=$('#summon'); if(sm) sm.onclick=()=>{ SND.sfx('unseal'); d.summoned=true; state.extra[k]=d; state.done[s.id]=true; save(); render(); };
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
 }
 
@@ -2558,7 +2574,7 @@ function renderFinal(s, idx){
     <div id="res"></div><button class="nes-btn is-primary btn" id="chk" style="margin-top:6px">轉開</button>
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
   $('#dials').onclick=(e)=>{ const b=e.target.closest('button'); if(!b) return; const i=+b.dataset.i, d=+b.dataset.d; dial[i]=(dial[i]+d+10)%10; state.extra.s7_dial=dial; save(); b.parentElement.querySelector('.v').textContent=dial[i]; };
-  $('#chk').onclick=()=>{ if(dial.join('')===expect) renderLocker(); else $('#res').innerHTML=bad('還沒對。順序就是妳拿到的順序。'); };
+  $('#chk').onclick=()=>{ if(dial.join('')===expect) renderLocker(); else $('#res').innerHTML=oops('還沒對。順序就是妳拿到的順序。'); };
   bindHints(s); bindBackupScan(s); bindNpc(s,idx);
 }
 function renderFinalOpen(s){
@@ -2581,7 +2597,7 @@ function renderFinalOpen(s){
       $('#blow').style.display='none';   // 開始吹就把按鈕藏起來
       const loop=()=>{ if(out>=MID){ ms.getTracks().forEach(t=>t.stop()); return; } an.getFloatTimeDomainData(buf); let sum=0; for(let i=0;i<buf.length;i++) sum+=buf[i]*buf[i]; const rms=Math.sqrt(sum/buf.length); const now=performance.now(); if(rms>0.12){ acc+=now-last; if(acc>450){ extinguish(); acc=0; } } else acc=Math.max(0,acc-(now-last)*0.5); last=now; const m=$('#mic'); if(m) m.value=Math.min(100,rms*400); requestAnimationFrame(loop); };
       loop();
-    }catch(e){ $('#micmsg').innerHTML=bad('麥克風打不開：'+(e.message||e)+'。請列車長用備援。'); }
+    }catch(e){ $('#micmsg').innerHTML=oops('麥克風打不開：'+(e.message||e)+'。請列車長用備援。'); }
   };
   const sb=$('#simblow'); if(sb) sb.onclick=()=>{ extinguish(); };
 }
@@ -2619,7 +2635,7 @@ function renderGoldInject(s){   // 第 2 頁：手掌在蠟燭上方遠近擺動
 let goldDecay=0, goldLast=0;
 function goldShow(){ document.querySelectorAll('#pips i').forEach((p,i)=>p.classList.toggle('on',i<goldCount)); const g=$('#goldbig'); if(g) g.style.setProperty('--gp',goldCount/10); }
 /* 點燃閃光（金色蠟燭與許願頁七彩蠟燭共用）：以引線頂端為中心、兩條交錯光線等速旋轉，伸出去再縮回引線 */
-function igniteFlash(candle, host, pal, o={}){ const wk=candle&&candle.querySelector('.wick'); if(!wk||!host) return; SND.sfx('ignite'); const r=wk.getBoundingClientRect(), hr=host.getBoundingClientRect();
+function igniteFlash(candle, host, pal, o={}){ const wk=candle&&candle.querySelector('.wick'); if(!wk||!host) return; SND.sfx(o.sfx||'ignite'); const r=wk.getBoundingClientRect(), hr=host.getBoundingClientRect();
   const fl=document.createElement('div'); fl.className='ig-flash'; fl.style.left=(r.left+r.width/2-hr.left)+'px'; fl.style.top=(r.top-hr.top)+'px';
   if(pal){ fl.style.setProperty('--fd',pal[0]); fl.style.setProperty('--fm',pal[1]); fl.style.setProperty('--fl',pal[2]); fl.style.setProperty('--fc',pal[3]||pal[2]); }
   if(o.len) fl.style.setProperty('--flen',o.len+'px'); if(o.w) fl.style.setProperty('--fw',o.w+'px'); if(o.dur) fl.style.setProperty('--fdur',o.dur+'ms');
@@ -2675,7 +2691,7 @@ function renderWish(s){   // 第 3 頁：7 根一字排開，四周變暗，2～
   const CPAL={cc1:['#d9681a','#ff9f43','#ffd8a8'],cc2:['#d9b21e','#ffe066','#fff6b0'],cc3:['#2e9e44','#66d678','#c4f5cb'],cc4:['#16968f','#3ad1c8','#c4f5f1'],cc5:['#2459b8','#4c8df0','#c9ddff'],cc6:['#7a32ad','#b464e6','#ead0ff']};   // 各色火焰的深／中／淺色（跟 .cc1~.cc6 的火焰一致）
   ['cc1','cc2','cc3','cc4','cc5','cc6'].forEach((c,i)=>{ const t0=2200+i*550, cd=cs[i+1], pal=CPAL[c];   // 第 2 根起依序：橙黃綠青藍紫，每根都走金色蠟燭那套點燃動畫（Ming 2026-11-06）
     T(t0,()=>cd.classList.add('shrink'));
-    T(t0+250,()=>igniteFlash(cd, row, pal, {len:900, w:5, dur:900}));
+    T(t0+250,()=>igniteFlash(cd, row, pal, {len:900, w:5, dur:900, sfx:'pop'}));   // 許願頁每根變色用短的「pop」，不用金蠟燭那段長的
     T(t0+1150,()=>{ cd.classList.remove('shrink'); cd.classList.add(c,'pop'); igniteRing(cd, pal[1]); setTimeout(()=>cd.classList.remove('pop'),420); }); });
   T(6400,()=>{ $('#rays').classList.add('on'); state.extra.s7_rainbow=true; save(); updateBar(); SND.sfx('rainbow'); });   // 散發七彩光暈；上方蠟燭列也變七彩
   T(6900,()=>{ row.parentElement.classList.add('ready'); const sb=$('#simblow'); if(sb) sb.style.display=''; });   // 白字＋按鈕出現（模擬鈕已被搬進控制者視窗，要另外叫出來）
@@ -2693,7 +2709,7 @@ function renderWish(s){   // 第 3 頁：7 根一字排開，四周變暗，2～
       const loop=()=>{ if(out>=N||!document.body.contains(row)){ ms.getTracks().forEach(t=>t.stop()); return; } an.getFloatTimeDomainData(buf); let sum=0; for(let i=0;i<buf.length;i++) sum+=buf[i]*buf[i]; const rms=Math.sqrt(sum/buf.length); const now=performance.now();
         if(rms>0.12){ acc+=now-last; if(acc>450){ extinguish(); acc=0; } } else acc=Math.max(0,acc-(now-last)/2); last=now; const m=$('#mic'); if(m) m.value=Math.min(100,rms*500); requestAnimationFrame(loop); };
       loop();
-    }catch(e){ $('#micmsg').innerHTML=bad('麥克風打不開：'+(e.message||e)+'。請列車長用備援。'); } };
+    }catch(e){ $('#micmsg').innerHTML=oops('麥克風打不開：'+(e.message||e)+'。請列車長用備援。'); } };
   bindNpc(s,idx);
 }
 /* 吹熄後：煙霧聚成櫃號 */
@@ -2731,7 +2747,7 @@ function renderLetterIntro(){
     <p>完成最後的秘密任務後，獲得了一封信。</p>
     <div style="display:flex;justify-content:center;margin:30px 0">${spriteSVG(ENVELOPE_ROWS, {K:'#000',W:'#fff8e8',S:'#e8d6b6',F:'#f0e2c6',R:'#e03131',H:'#ffaaaa'}, '184px', 'aria-label="一封信"')}</div>
     <button class="nes-btn is-primary btn" id="openletter" style="margin-top:0">打開這封信</button>${npcBox(s,idx)}</section>`;
-  $('#openletter').onclick=()=>{ state.extra.letterOpen=true; save(); render(); }; bindNpc(s,idx);
+  $('#openletter').onclick=()=>{ SND.sfx('page'); state.extra.letterOpen=true; save(); render(); }; bindNpc(s,idx);
 }
 function renderEndLetter(){
   stopCamera();
