@@ -208,7 +208,7 @@
   .replay-list .rl-name{font-size:16px}
   .replay-list .tag{margin:0}
   .replay-bar{margin-top:14px;background:#fff8e1}
-  .slot .px{position:absolute;top:-8px;right:-8px;width:26px;height:26px;padding:0;border:3px solid #000;background:#e76e55;color:#fff;font:inherit;font-size:16px;line-height:18px;cursor:pointer;z-index:2}
+  .pframe .px{position:absolute;top:-8px;right:-8px;width:26px;height:26px;padding:0;border:3px solid #000;background:#e76e55;color:#fff;font:inherit;font-size:16px;line-height:18px;cursor:pointer;z-index:2}
   .nes-progress{height:14px;margin:4px 0 8px}
   .steps{display:flex;gap:4px;margin:0 0 10px}
   .steps i{flex:1;height:8px;background:#ccc;box-shadow:inset -2px -2px 0 rgba(0,0,0,.15)}
@@ -250,7 +250,7 @@
   .progbtn svg{display:block}
   .progbtn{background:#fff}
   .bkbtn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:4900;width:52px;height:52px;border-radius:50%;border:4px solid #000;background:#eceef0;box-shadow:3px 3px 0 #000;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}   /* 右下角備援扳手鈕 */
-  :root{--panel-sink:80px;--panel-h:min(440px,calc(100dvh - 16px))}   /* 視窗再往下沉 40px 到螢幕外（Ming 2026-11-06），沉下去的部分是內側留白，內容滑到底仍看得到 */   /* 兩個浮動視窗直接貼到螢幕最底（連 Home 條的位置也用掉），被擋到的內容在視窗裡用手指滑（Ming 2026-11-06） */
+  :root{--panel-sink:80px;--panel-h:min(464px,calc(100dvh - 16px))}   /* 視窗再往下沉 40px 到螢幕外（Ming 2026-11-06），沉下去的部分是內側留白，內容滑到底仍看得到 */   /* 兩個浮動視窗直接貼到螢幕最底（連 Home 條的位置也用掉），被擋到的內容在視窗裡用手指滑（Ming 2026-11-06） */
   #bkpanel{position:fixed;left:8px;right:8px;bottom:calc(0px - var(--panel-sink));z-index:5000;background:#fdeef3;height:var(--panel-h);overflow-y:auto;overscroll-behavior:contain;padding:0 14px calc(12px + var(--panel-sink) + env(safe-area-inset-bottom));margin:0}
   #progpanel{position:fixed;left:8px;right:8px;bottom:calc(0px - var(--panel-sink));z-index:5000;background:#fdeef3;height:var(--panel-h);overflow-y:auto;overscroll-behavior:contain;padding:0 14px calc(12px + var(--panel-sink) + env(safe-area-inset-bottom));margin:0}   /* 左下、右下同一個高度：在最窄 320px 量進度視窗最長內容（s6 提示）＝434px，取 440；矮螢幕不超出畫面（Ming 2026-11-05） */
   .pg-pin{position:sticky;top:0;z-index:2;background:#fdeef3;margin:0 -14px;padding:12px 14px 6px}   /* 標題列＋站點列／按鈕列釘在視窗最上面，只有下面的內容捲（Ming 2026-11-06） */
@@ -1197,7 +1197,7 @@ function npcInner(s, idx){
     <button class="nes-btn btn small" id="npcback" ${idx===0?'disabled':''}>回上一關</button>
     <button class="nes-btn btn small" id="npcredo">這關重來</button>
     <button class="nes-btn is-error btn small" id="npcreset">全部重來</button>
-  </div></div>${s.type==='game' && !state.extra[s.id+'_won']?'<button class="nes-btn is-warning btn small" id="npcwin" style="margin-top:8px;width:100%">小遊戲通關</button>':''}
+  </div></div>${s.id==='s7'&&state.extra.s7_step==='inject'&&!state.extra.s7_goldLit?'<p class="tag" id="gmeter" style="margin:8px 0 0">鏡頭讀數：按「開始注入魔力」後顯示</p>':''}${s.type==='game' && !state.extra[s.id+'_won']?'<button class="nes-btn is-warning btn small" id="npcwin" style="margin-top:8px;width:100%">小遊戲通關</button>':''}
   ${s.type==='firebadge' && !(state.extra[s.id+'_fb']||{}).summoned?`<div class="row" style="margin-top:8px"><button class="nes-btn is-warning btn small" id="npcL" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('winter')?'disabled':''}>完成左半</button><button class="nes-btn is-warning btn small" id="npcR" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('flower')?'disabled':''}>完成右半</button></div>`:''}
   ${s.type==='spot' && ['look','find'].includes((state.extra[s.id+'_quiz']||{step:'look'}).step)?'<button class="nes-btn is-warning btn small" id="npcphoto" style="margin-top:8px;width:100%">完成這張圖</button>':''}
   ${s.type==='library'&&s.backup?`<button class="nes-btn is-warning btn small" id="npcbk" style="margin-top:8px;width:100%">${state.extra[s.id+'_bk']?'改回主書':'改用備案書（'+s.backup.book.title+'）'}</button>`:''}
@@ -1260,7 +1260,7 @@ function savePhoto(key, theme, url){ photoAdj=null; state.extra.strip = state.ex
 let photoAdj=null;   // 正在調整哪一張照片（key）；換頁或重畫別張就自動關掉
 function photoFrame(key, extra=''){ const it=(state.extra.strip||{})[key]; if(!it||!it.url) return '';
   const on=photoAdj===key;
-  return `<div class="pframe ${on?'adj':''}" data-k="${key}" style="background-image:url(${it.url});background-position:${(it.ox??.5)*100}% ${(it.oy??.5)*100}%;${extra};margin-bottom:8px"></div>
+  return `<div class="pframe ${on?'adj':''}" data-k="${key}" style="background-image:url(${it.url});background-position:${(it.ox??.5)*100}% ${(it.oy??.5)*100}%;${extra};margin-bottom:8px"><button class="px" data-del="${key}" aria-label="刪掉照片">✕</button></div>
     <div class="row" style="justify-content:center;margin:0 0 14px"><button class="nes-btn ${on?'is-primary':''} btn small" data-padj="${key}" style="margin:0">${on?'調整好了':'調整相片'}</button></div>`; }
 function bindPframes(root, onEnd){
   (root||document).querySelectorAll('.pframe[data-k]').forEach(el=>{ const key=el.dataset.k, it=(state.extra.strip||{})[key]; if(!it||!it.url) return;
@@ -1272,7 +1272,9 @@ function bindPframes(root, onEnd){
       el.style.backgroundPosition=`${it.ox*100}% ${it.oy*100}%`; });
     const end=()=>{ if(!st) return; st=null; el.classList.remove('drag'); save(); if(onEnd) onEnd(key); };
     el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end); });
-  (root||document).querySelectorAll('[data-padj]').forEach(b=>b.onclick=()=>{ photoAdj=photoAdj===b.dataset.padj?null:b.dataset.padj; render(); }); }
+  (root||document).querySelectorAll('[data-padj]').forEach(b=>b.onclick=()=>{ photoAdj=photoAdj===b.dataset.padj?null:b.dataset.padj; render(); });
+  // 照片右上 ✕：刪掉後回到「上傳合照」（2026-11-06 Ming：拿掉「重新上傳」鈕，改成刪掉再傳）
+  (root||document).querySelectorAll('.pframe[data-k] [data-del]').forEach(x=>x.onclick=e=>{ e.stopPropagation(); if(!confirm('刪掉這張照片？')) return; const st=state.extra.strip||{}; const k=x.dataset.del; st[k]={theme:(st[k]||{}).theme, url:null}; photoAdj=null; save(); render(); }); }
 function cardBlock(){
   const u=state.extra.birthdayCard; if(!u) return '';
   return `<p class="center" style="margin:12px 0 4px">今天的生日卡</p><img class="photo" src="${u}" alt=""><a class="nes-btn btn small" style="display:inline-block;margin-top:8px" download="生日卡.jpg" href="${u}">⬇ 存到手機</a>`;
@@ -1370,7 +1372,7 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   's1:find':['提示：不是中文作家'],
   's1:lit':['點燃蠟燭了！'],
   's1:depart':['出發救胖貓！'],
-  'g2:play':['提示：英文歌打中文翻譯也可以'],
+  'g2:play':['提示：歌名都在歌詞中'],
   'g2:arrive':['街嘻黨Break it down'],
   's3:scan':['提示：左半：藏在季節內','提示：右半：藏在一朵花內'],
   's3:summon':['提示：左半：藏在季節內','提示：右半：藏在一朵花內'],
@@ -1704,15 +1706,14 @@ function renderTicketPuzzle(s, idx){
       ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
     $('#got').onclick=()=>{ state.extra[k]={step:'photo'}; save(); render(); };
   } else if(d.step==='photo'){
-    const shot=(state.extra.strip||{})[s.id];
+    const shot=((state.extra.strip||{})[s.id]||{}).url;
     main.innerHTML = ticket(s, `${steps()}
       <p style="margin:4px 0 2px">請拍一張合照，合照主題：</p>
       <p class="center" style="font-size:34px;margin:0 0 12px;color:var(--red)">${s.departTheme}</p>
       ${shot?photoFrame(s.id,'margin-bottom:14px'):poseHTML()}
-      <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${PHOTO_ICON} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
-      ${shot?'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:14px">下一步</button>':''}
+      ${shot?'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:0">下一步</button>':`<label class="nes-btn is-primary btn" style="display:block;text-align:center">${PHOTO_ICON} 上傳合照<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>`}
       ${backupScanBox()}${npcBox(s,idx)}`);
-    $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.departTheme, u); render(); }); rd.readAsDataURL(f); };
+    const fi=$('#file'); if(fi) fi.onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.departTheme, u); render(); }); rd.readAsDataURL(f); };
     const np=$('#nextp'); if(np) np.onclick=()=>{ state.extra[s.id+'_lit']=true; state.extra[k]={step:'lit'}; save(); render(); };
     bindPframes(main);
   } else if(d.step==='lit'){
@@ -1902,16 +1903,16 @@ const glR=(a,b)=>a+Math.random()*(b-a);
 function startGlitch(){ document.body.classList.add('glitch'); if(glitchTimer) return; const G='▚▞▛▜░▒▓█ÆØ¥§¿Ω∆ʘɸ҂☰☱☲#%&';
   let layer=document.querySelector('.gl-layer'); if(!layer){ layer=document.createElement('div'); layer.className='gl-layer'; layer.innerHTML='<i></i>'.repeat(7); document.body.appendChild(layer); }
   glitchTimer=setInterval(()=>{
-    document.querySelectorAll('#title,.ticket .sub,.ticket .station .name,.ticket .station .code').forEach(e=>{
+    document.querySelectorAll('#title,.ticket .sub,.ticket .station .name,.ticket .station .code,#codebar span').forEach(e=>{   // 上方 5 碼數字也會變亂碼（Ming 2026-11-06）
       if(!e.dataset.og) e.dataset.og=e.textContent; const og=e.dataset.og;
-      e.textContent=Math.random()<.35?og:[...og].map(c=>Math.random()<.45?G[Math.random()*G.length|0]:c).join(''); });
+      e.textContent=Math.random()<.3?og:[...og].map(c=>Math.random()<.6?G[Math.random()*G.length|0]:c).join(''); });
     // 物件到處錯位（像手機壞掉）：打魔王的場地本身不動，惡魔和胖貓才不受影響
     const arena=document.getElementById('arena');
-    document.querySelectorAll('header, .rail, main > *, .ticket > *, .ticket > * > *, .ticket button').forEach(e=>{
+    document.querySelectorAll('header, .rail, main > *, .ticket > *, .ticket > * > *, .ticket button, #candlebar .candle, #codebar span').forEach(e=>{   // 蠟燭跟數字也一起錯位
       if(arena && (e.contains(arena)||arena.contains(e))) return; if(e.closest('.noglitch')) return;
-      if(Math.random()<.28){ glMoved.add(e); const x=glR(-14,14)|0, y=glR(-6,6)|0, g=glR(2,6)|0;
-        e.style.transform=`translate(${x}px,${y}px)${Math.random()<.2?` skewX(${glR(-12,12)|0}deg)`:''}`;
-        e.style.clipPath=Math.random()<.35?`inset(${glR(0,45)|0}% 0 ${glR(0,45)|0}% 0)`:'';
+      if(Math.random()<.4){ glMoved.add(e); const x=glR(-22,22)|0, y=glR(-10,10)|0, g=glR(3,8)|0;   // 混亂再大一點（Ming）
+        e.style.transform=`translate(${x}px,${y}px)${Math.random()<.35?` skewX(${glR(-16,16)|0}deg)`:''}`;
+        e.style.clipPath=Math.random()<.45?`inset(${glR(0,45)|0}% 0 ${glR(0,45)|0}% 0)`:'';
         e.style.filter=`drop-shadow(${g}px 0 rgba(255,42,109,.75)) drop-shadow(-${g}px 0 rgba(5,217,232,.75))`; }
       else if(glMoved.has(e) && Math.random()<.6){ e.style.transform=e.style.clipPath=e.style.filter=''; } });
     // 底圖錯位＋RGB 重影的偏移量
@@ -2349,7 +2350,7 @@ function renderDirectorShoot(s, idx){            // 備案：原本的拍 3 張�
 
 /* 拍主題合照：上傳 → 成功點亮蠟燭 → 已抵達下一站 */
 function renderPhotoTask(s, idx){
-  const nx=CONFIG.stages[idx+1]; const shot=(state.extra.strip||{})[s.id];
+  const nx=CONFIG.stages[idx+1]; const shot=((state.extra.strip||{})[s.id]||{}).url;
   if(state.done[s.id] && s.finalPhoto) return state.extra.endLetter ? renderFinish() : state.extra.letterOpen ? renderEndLetter() : renderLetterIntro();
   if(state.done[s.id]){
     if(!s.noCandle && litStep(s,idx)) return;
@@ -2375,10 +2376,9 @@ function renderPhotoTask(s, idx){
     <p style="margin:4px 0 2px">${s.photoPrompt||'請拍一張合照，合照主題：'}</p>
     <p class="center" style="font-size:34px;margin:0 0 12px;color:var(--red)">${s.theme}</p>
     ${shot?photoFrame(s.id,'margin-bottom:14px'):poseHTML()}
-    <label class="nes-btn ${shot?'':'is-primary'} btn" style="display:block;text-align:center">${PHOTO_ICON} ${shot?'重新上傳':'上傳合照'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
-    ${shot?(s.finalPhoto?'<button class="nes-btn is-success btn" id="nextp" style="margin-top:14px">已完成最後的秘密任務</button>':'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:14px">下一步</button>'):''}
+    ${shot?(s.finalPhoto?'<button class="nes-btn is-success btn" id="nextp" style="margin-top:0">已完成最後的秘密任務</button>':'<button class="nes-btn is-primary btn" id="nextp" style="margin-top:0">下一步</button>'):`<label class="nes-btn is-primary btn" style="display:block;text-align:center">${PHOTO_ICON} 上傳合照<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>`}
     ${backupScanBox()}${npcBox(s,idx)}`);
-  $('#file').onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.theme, u); render(); }); rd.readAsDataURL(f); };   // 最後合照也是上傳後按綠色按鈕才完成（Ming）
+  const fi=$('#file'); if(fi) fi.onchange=(e)=>{ const f=e.target.files[0]; if(!f) return; const rd=new FileReader(); rd.onload=()=>squareCrop(rd.result, 1000, u=>{ savePhoto(s.id, s.theme, u); render(); }); rd.readAsDataURL(f); };   // 最後合照也是上傳後按綠色按鈕才完成（Ming）
   const np=$('#nextp'); if(np) np.onclick=()=>{ state.done[s.id]=true; save(); render(); };
   bindPframes(main); bindBackupScan(s); bindNpc(s,idx);
 }
@@ -2546,7 +2546,7 @@ let goldCount=0;
 function renderGoldInject(s){   // 第 2 頁：手掌在蠟燭上方遠近擺動 10 次，點燃赤紅色火焰
   const idx=CONFIG.stages.indexOf(s), lit=!!state.extra.s7_goldLit; goldCount=lit?10:0;
   main.innerHTML = ticket(s, `${steps()}
-    <p>請將手掌放在蠟燭上方，集中精神上下擺動，注入魔力！</p>
+    <p>請將手掌放在蠟燭上方，集中精神，擺動注入魔力！</p>
     <div class="gold-big hero" id="goldbig"><div class="gb-candle">${candleHTML('gold'+(lit?' lit':''))}</div>${sparkles(10,170,170)}</div>
     ${lit?'':`<div class="pips" id="pips">${Array.from({length:10},(_,i)=>`<i class="${i<goldCount?'on':''}"></i>`).join('')}</div>`}
     <div id="gcam" class="gcam"></div><div id="gmsg"></div>
@@ -2587,13 +2587,21 @@ async function goldStart(){   // 前鏡頭：手掌靠近（畫面變暗）→ �
   const box=$('#gcam'); if(!box) return; const gs=$('#gstart'); if(gs) gs.style.display='none';
   const v=await openCamera(box,'user'); if(!v){ if(gs) gs.style.display=''; return; }
   const cv=document.createElement('canvas'); cv.width=48; cv.height=36; const g=cv.getContext('2d',{willReadFrequently:true});
-  let base=0, near=false, lastT=0;
+  let base=0, near=false, lastT=0, prev=null, moving=false, calmT=0, lastPulse=0;
   colorTimer=setInterval(()=>{ if(!document.body.contains(box)){ stopCamera(); return; }
-    g.drawImage(v,0,0,48,36); const d=g.getImageData(0,0,48,36).data; let L=0; for(let i=0;i<d.length;i+=4) L+=d[i]*.3+d[i+1]*.59+d[i+2]*.11; L/=d.length/4;
-    base=Math.max(base*.997, L);   // 沒擋住時的亮度（慢慢往下修）
+    g.drawImage(v,0,0,48,36); const d=g.getImageData(0,0,48,36).data; const n=d.length/4; let L=0, D=0; const cur=new Float32Array(n);
+    for(let i=0,j=0;i<d.length;i+=4,j++){ const y=d[i]*.3+d[i+1]*.59+d[i+2]*.11; cur[j]=y; L+=y; if(prev) D+=Math.abs(y-prev[j]); }
+    L/=n; D=prev?D/n:0; prev=cur;
     const now=performance.now();
-    if(!near && L<base*.6){ near=true; }
-    else if(near && L>base*.8 && now-lastT>220){ near=false; lastT=now; goldPulse(); } },70);
+    /* 機制 1：變暗（手把鏡頭遮住） */
+    base=Math.max(base*.995, L);
+    if(!near && L<base*.72){ near=true; }
+    else if(near && L>base*.9 && now-lastT>160){ near=false; lastT=now; if(now-lastPulse>300){ lastPulse=now; goldPulse(); } }
+    /* 機制 2：畫面動作（白天亮度變不了多少，但手在鏡頭前揮過去，畫面會大幅變化）：動作從平靜→大於門檻算 1 次，最快 0.3 秒 1 次 */
+    const MOVE=9;   // 相鄰兩格平均亮度差（0–255），手揮過通常 15 以上，桌上靜止大約 1–3
+    if(D>MOVE){ if(!moving && now-calmT>120 && now-lastPulse>300){ lastPulse=now; goldPulse(); } moving=true; }
+    else { if(moving) calmT=now; moving=false; }
+    const mt=$('#gmeter'); if(mt) mt.textContent=`鏡頭讀數：亮度 ${L|0}／基準 ${base|0}　動作 ${D.toFixed(1)}（門檻 ${MOVE}）${near?'　手遮住':''}${moving?'　動作中':''}`; },70);
 }
 function renderWish(s){   // 第 3 頁：7 根一字排開，四周變暗，2～7 根依序變色，散發七彩光，許願後吹熄
   const idx=CONFIG.stages.indexOf(s), N=MID+1;
@@ -2650,8 +2658,8 @@ function renderLocker(){
   main.innerHTML = `<section class="ticket nes-container is-rounded with-title" style="--line-color:var(--brown)">
     <p class="title">三十而莉</p>
     <div class="station"><span class="code">BR03</span><span class="name">麟光置物櫃</span></div>
-    <p class="center" style="font-size:20px;margin:6px 0 4px">${CHEST} 去 ${CONFIG.lockerNumber} 號櫃找寶藏！</p>
-    <p class="center" style="margin:0 0 4px">密碼 <span class="big">${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}</span></p>
+    <p class="center" style="font-size:20px;margin:6px 0 10px">去 ${CONFIG.lockerNumber} 號櫃找寶藏！</p>
+    <div class="center" style="margin:0 0 6px">${CHEST.replace('width:1.2em','width:120px')}</div>
     ${CONFIG.codeMeaning?`<p class="center" style="margin:0 0 4px;font-size:22px;color:var(--red)">${CONFIG.codeMeaning}</p>`:''}
     <button class="nes-btn is-success btn" id="next" style="margin-top:14px">拿到禮物了！</button>${npcBox(s,idx)}</section>`;
   $('#next').onclick=()=>{ state.done[s.id]=true; state.stage=idx+1; save(); render(); }; bindNpc(s,idx);
@@ -2790,6 +2798,24 @@ function drawSunset(g, W, H, deco){
   for(let i=0;i<40;i++){ const x=rnd()*W, y=rnd()*H; g.fillStyle='rgba(255,255,255,.9)'; g.fillRect(x,y,3,3); }
   deco.forEach(d=>drawRows(g, d.rows, d.pal, d.x, d.y, d.k));
 }
+/* 拍貼照片的次元裂隙框：跟 boss 站 .arena-hole 同一套——鋸齒多邊形裁切照片，底下墊洋紅（左上錯位）＋青色（右下錯位）兩層同形狀，外圍加光暈 */
+function riftFrame(g, x, y, w, h, seed, draw){
+  const inset=0, step=36; let n=seed*7+3;   // 不內縮：裂縫鋸齒直接切在照片原本的外框上，紅藍錯位層會凸出照片外（Ming：照片不要變小，重疊沒關係）
+ const rnd=a=>{ n=(n*9301+49297)%233280; return n/233280*a; };
+  const L=x+inset, T=y+inset, R=x+w-inset, B=y+h-inset; const pts=[];
+  for(let px=L;px<R;px+=step) pts.push([px,T+rnd(12)]);
+  for(let py=T;py<B;py+=step) pts.push([R-rnd(10),py]);
+  for(let px=R;px>L;px-=step) pts.push([px,B-rnd(12)]);
+  for(let py=B;py>T;py-=step) pts.push([L+rnd(10),py]);
+  const path=(dx,dy)=>{ g.beginPath(); pts.forEach((p,i)=>i?g.lineTo(p[0]+dx,p[1]+dy):g.moveTo(p[0]+dx,p[1]+dy)); g.closePath(); };
+  g.save(); g.shadowColor='#ff2a6d'; g.shadowBlur=18; g.fillStyle='#ff2a6d'; path(-6,-6); g.fill(); g.restore();   // boss 站是 (-6,-3)，上緣只剩 3px 會被吃掉，拍貼上下也用 6（Ming）
+  g.save(); g.shadowColor='#05d9e8'; g.shadowBlur=18; g.fillStyle='#05d9e8'; path(6,6); g.fill(); g.restore();
+  g.save(); path(0,0); g.clip(); draw(); g.restore();
+  /* 外圈再纏一條跟 FRAME_WIRE 一樣的抖動線（左紅右藍漸層、線寬 3.5），沿著裂縫的鋸齒邊走、再抖一點（Ming） */
+  const j=()=>rnd(7)-3.5; const wp=pts.map(p=>[p[0]+j(),p[1]+j()]);
+  const gr=g.createLinearGradient(L,0,R,0); gr.addColorStop(0,'#ff2a6d'); gr.addColorStop(.45,'#ff2a6d'); gr.addColorStop(.55,'#05d9e8'); gr.addColorStop(1,'#05d9e8');
+  g.save(); g.strokeStyle=gr; g.lineWidth=3.5; g.lineJoin='miter'; g.beginPath(); wp.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])); g.closePath(); g.stroke(); g.restore();
+}
 function drawRows(g, rows, pal, x, y, k){ rows.forEach((r,yy)=>[...r].forEach((c,xx)=>{ if(c!=='.' && pal[c]){ g.fillStyle=pal[c]; g.fillRect(x+xx*k, y+yy*k, k, k); } })); }
 /* 像素字：每個字分開用像素字型原生大小畫，去掉半透明邊、加粗，再每格放大 k 倍（含 1 格陰影）
    opt：{gap:字距(格), chars:{'字':{size:字型px, boldY:true＝上下也加粗}}}；y0～y1：整排字（含陰影）上下置中 */
@@ -2815,8 +2841,8 @@ async function makeStrip(){
   // 2026-11-06 Ming：就算一張照片都沒有（用控制者跳關），拍貼也要畫出來，空格可以按「調整相片」上傳
   try{ await document.fonts.load('40px "Fusion Pixel 12px Proportional TC"'); }catch(e){}
   // 2×6 吋拍貼（5.1×15.2cm，1:3）、300dpi＝600×1800；每格照片 4:3；高度先給照片，左右留白跟著算
-  const W=600, H=1800, gap=28, foot=204; let head=72, ph, pw, pad;
-  for(let i=0;i<8;i++){ ph=Math.floor((H-head-foot-gap*3)/4); pw=Math.round(ph*4/3); pad=Math.round((W-pw)/2); head=pad; }   // 最上面的空隙＝左右留白（Ming 2026-11-06），反覆算到穩定
+  const W=600, H=1800, gap=20, foot=228, TOP=20; let head=72, ph, pw, pad;   // 2026-11-06 Ming：照片間距縮小（28→20）、上下天地多留一點（頭＋20、底＋24）
+  for(let i=0;i<8;i++){ ph=Math.floor((H-head-foot-gap*3)/4); pw=Math.round(ph*4/3); pad=Math.round((W-pw)/2); head=pad+TOP; }   // 最上面的空隙＝左右留白（Ming 2026-11-06），反覆算到穩定
   ph=Math.floor((H-head-foot-gap*3)/4); pw=Math.round(ph*4/3); pad=Math.round((W-pw)/2);
   const c=document.createElement('canvas'); c.width=W; c.height=H; const g=c.getContext('2d');
   const F=n=>`${n}px "Fusion Pixel 12px Proportional TC","PingFang TC",sans-serif`;
@@ -2837,11 +2863,11 @@ async function makeStrip(){
   for(let i=0;i<Math.min(4,list.length);i++){
     const it=list[i], x=pad, y=head+i*(ph+gap);
     if(!T.noFrame){ g.fillStyle=T.frame; g.fillRect(x-4,y-4,pw+8,ph+8); }
-    g.fillStyle='#432285'; g.fillRect(x+6,y+6,pw,ph);   // 每張照片右下加跟「三十而莉」一樣的紫色陰影（Ming 2026-11-06）
-    if(!it){ g.fillStyle='rgba(255,255,255,.35)'; g.fillRect(x,y,pw,ph); continue; }
-    const im=await load(it.url);
-    const r=Math.max(pw/im.width, ph/im.height), sw=pw/r, sh=ph/r;
-    g.drawImage(im,(im.width-sw)*(it.ox??.5),(im.height-sh)*(it.oy??.5),sw,sh,x,y,pw,ph);
+    const im=it?await load(it.url):null;
+    riftFrame(g, x, y, pw, ph, i, ()=>{   // 照片＝裂隙裡透出來的畫面：鋸齒裁切＋洋紅／青色錯位邊＋光暈（Ming 2026-11-06）
+      if(!im){ g.fillStyle='rgba(255,255,255,.35)'; g.fillRect(x,y,pw,ph); return; }
+      const r=Math.max(pw/im.width, ph/im.height), sw=pw/r, sh=ph/r;
+      g.drawImage(im,(im.width-sw)*(it.ox??.5),(im.height-sh)*(it.oy??.5),sw,sh,x,y,pw,ph); });
   }
   if(T.sunset){ const HP={R:'#ff4d6d'}, HP2={R:'#ffc2d1'}, y1=head, y2=head+ph+gap, y3=head+(ph+gap)*2, y4=head+(ph+gap)*3;   // 故意蓋到照片邊角的愛心
     [{x:W-pad-18,y:y2-12,k:4,pal:HP2},{x:W-pad-14,y:y4-10,k:4,pal:HP},{x:W-pad-20,y:y3+ph-14,k:3,pal:HP}].forEach(d=>drawRows(g, HEART_ROWS, d.pal, d.x, d.y, d.k)); }
@@ -2865,7 +2891,7 @@ async function makeStrip(){
     drawRows(g, FAIRY_ROWS, FAIRY_PAL, pad-fl*k-8, yTop-fb*k, k); }   // 往左 8px（Ming）
   /* 捷運＋人物畫在照片之後，帽子會蓋在照片上 */
   const TCUTS=[[0,434],[471,899],[936,1391],[1428,1892]], TCH=82, TLEAD=16, TCW=Math.round(Math.max(...TCUTS.map(([a,b])=>b-a))*TCH/427);   // 「三十而莉」4 個字在標題圖（427 高）裡的左右範圍、字高、字距
-  const tk=9, tw=TRAIN_ROWS[0].length*tk, gx=Math.round((W-(TCW+TLEAD+tw))/2), tx=gx+TCW+TLEAD, ty=H-20-TRAIN_ROWS.length*tk, tc=tx+tw*.78;   // 兩人站在車頂右邊，左邊放 7 根蠟燭（Ming 2026-11-06）   // 「三十而莉」＋捷運一組左右置中，中間距離＝字距（Ming 2026-11-06）   // 捷運往右，讓出左邊給「三十而莉」（Ming 2026-11-06）   // 捷運底部離下緣 42，日期緊貼車輪下；人物可以蓋到最後一張照片（Ming）
+  const tk=9, tw=TRAIN_ROWS[0].length*tk, gx=Math.round((W-(TCW+TLEAD+tw))/2), tx=gx+TCW+TLEAD, ty=H-44-TRAIN_ROWS.length*tk, tc=tx+tw*.78;   // 兩人站在車頂右邊，左邊放 7 根蠟燭（Ming 2026-11-06）   // 「三十而莉」＋捷運一組左右置中，中間距離＝字距（Ming 2026-11-06）   // 捷運往右，讓出左邊給「三十而莉」（Ming 2026-11-06）   // 捷運底部離下緣 42，日期緊貼車輪下；人物可以蓋到最後一張照片（Ming）
   const pk=5, ph2=window.MG_SPRITES.LILY.length*pk, py=ty-ph2+2;
   drawRows(g, TRAIN_ROWS, TRAIN_PAL, tx, ty, tk);
   const {LILY,LILY_PAL,MOMO_CAP,MOMO_CAP_PAL}=window.MG_SPRITES;
@@ -2886,7 +2912,7 @@ async function makeStrip(){
       else g.drawImage(di, a, 0, b-a, di.height, x, Math.round((head-dh)/2), ws[i], dh); x+=ws[i]+sp; }); }
   if(CONFIG.stripTitleImg){ const ti=await load(CONFIG.stripTitleImg), cuts=TCUTS, ch=TCH;
     g.imageSmoothingQuality='high';
-    const yb=H-20, lead=TLEAD;   // 「莉」下緣貼齊捷運輪子底   // 「莉」壓在最後一張照片左下角不動，「三十而」由上往下疊在它上面（Ming 2026-11-06）
+    const yb=H-44, lead=TLEAD;   // 「莉」下緣貼齊捷運輪子底   // 「莉」壓在最後一張照片左下角不動，「三十而」由上往下疊在它上面（Ming 2026-11-06）
     cuts.forEach(([x0,x1],i)=>{ const cw=Math.round((x1-x0)*ch/ti.height);
       g.drawImage(ti, x0, 0, x1-x0, ti.height, gx, yb-ch-(3-i)*(ch+lead), cw, ch); }); }
   // 2026-11-06 Ming：最底下的日期拿掉
