@@ -1710,6 +1710,12 @@ const SND=(()=>{
   setTimeout(preload,600);   // 開頁就先把全部音效解碼進記憶體（都很小，總共不到 1 MB）
   document.addEventListener('visibilitychange',()=>{ if(!cur) return; if(document.hidden) cur.pause(); else if(on()) cur.play().catch(()=>{}); });
   document.addEventListener('click',e=>{ const b=e.target.closest('button.nes-btn, label.nes-btn, .progbtn, .bkbtn'); if(b && !b.closest('#gamebox')) sfx('click',.5); },{capture:true});
+  // Android Chrome：用返回手勢關掉檔案選擇器後，同一個 input 再點不會再開（直到重載）。
+  // 所以每次按上傳都換一個全新的 input（沿用原本的 onchange）再開選擇器；選擇器取消也順手換新。
+  const freshFile=(inp)=>{ const f=inp.cloneNode(); f.value=''; f.onchange=inp.onchange; f.addEventListener('cancel',()=>freshFile(f)); inp.replaceWith(f); return f; };
+  document.addEventListener('click',e=>{ if(e.target.matches && e.target.matches('input[type=file]')) return;
+    const lab=e.target.closest('label'); if(!lab) return; const inp=lab.querySelector('input[type=file]'); if(!inp) return;
+    e.preventDefault(); freshFile(inp).click(); });
   return {on,bgm,sfx,toggle,page,duck,ready:()=>SFX_ALL.filter(n=>bufs[n]).length};
 })();
 window.SND=SND;
