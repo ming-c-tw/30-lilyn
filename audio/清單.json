@@ -871,6 +871,16 @@
       "samples": 145530,
       "source": "Ming 提供：街嘻黨 Break It Down S2EP4 片頭 14.97–18.27 秒",
       "license": "Ming 提供，僅私人使用"
+    },
+    "burn": {
+      "file": "sfx/burn.mp3",
+      "loop": false,
+      "desc": "點亮頁：真的火柴劃燃＋燃燒聲",
+      "duration": 1.5,
+      "sample_rate": 44100,
+      "samples": 66150,
+      "source": "freesound 423810「Match strike 02」剪輯（經 Openverse）",
+      "license": "CC0"
     }
   },
   "授權": "每個檔案的來源與授權分別記於 bgm／sfx 各項 source、license。所有合成錄音及原創編曲：自製 CC0。birthday 的 Happy Birthday 旋律按使用者提供的公共領域條件使用；未使用任何第三方錄音、音源、採樣或素材。",
