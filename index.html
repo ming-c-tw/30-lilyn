@@ -1789,7 +1789,7 @@ const SND=(()=>{
   const ctx=()=>{ if(!ac){ const C=window.AudioContext||window.webkitAudioContext; if(C) try{ ac=new C(); }catch(e){} } return ac; };
   function load(name){ if(name in bufs) return Promise.resolve(bufs[name]); bufs[name]=null; const c=ctx(); if(!c||location.protocol==='file:') return Promise.resolve(null);
     return fetch(base+'sfx/'+name+'.mp3').then(r=>r.arrayBuffer()).then(ab=>new Promise((res,rej)=>c.decodeAudioData(ab,res,rej))).then(b=>{ bufs[name]=b; return b; }).catch(()=>null); }
-  const SFX_ALL=['invite','ticket','fairy','telescope','yum','mystery','director','aura','gift','gold_ignite','wish_n1','wish_n2','wish_n3','wish_n4','wish_n5','wish_n6','wish','finale','click','correct','wrong','candle_lit','candle_blow','digit','shutter','train','card_flip','ball_hit','jump','cat','punch','devil','glitch','charge','ignite','rainbow','smoke','locker','heart','page','growl','win','badge','merge','unseal','throw','land','rift','defeat','rift_close','fall','bump','pop','exile','trap','arrow','arrow_bad','escape','banish','heal','dim','purr','gauge_full','ult_spin','ult_slam','grip','shake','grip_free'];
+  const SFX_ALL=['breakdown','invite','ticket','fairy','telescope','yum','mystery','director','aura','gift','gold_ignite','wish_n1','wish_n2','wish_n3','wish_n4','wish_n5','wish_n6','wish','finale','click','correct','wrong','candle_lit','candle_blow','digit','shutter','train','card_flip','ball_hit','jump','cat','punch','devil','glitch','charge','ignite','rainbow','smoke','locker','heart','page','growl','win','badge','merge','unseal','throw','land','rift','defeat','rift_close','fall','bump','pop','exile','trap','arrow','arrow_bad','escape','banish','heal','dim','purr','gauge_full','ult_spin','ult_slam','grip','shake','grip_free'];
   function preload(){ let i=0; const next=()=>{ if(i>=SFX_ALL.length) return; load(SFX_ALL[i++]).then(()=>setTimeout(next,30)); }; next(); }
   function sfx(name,vol=.9){ if(!on()||!unlocked) return; const c=ctx(), b=bufs[name];
     if(c&&b){ if(c.state==='suspended') c.resume().catch(()=>{}); const src=c.createBufferSource(); src.buffer=b; const g=c.createGain(); g.gain.value=vol; src.connect(g); g.connect(c.destination); src.start(0); return; }
@@ -1846,7 +1846,8 @@ function sfxPage(){ const pk=pageKey(); if(pk===lastSfxPk) return; lastSfxPk=pk;
   else if(/專屬$/.test(name)) SND.sfx('invite'); else if(m.querySelector('#got')) SND.sfx('ticket');   // 歡迎頁／拿車票頁
   else if(PAGE_SFX[pk]) SND.sfx(PAGE_SFX[pk]); else if(/:number$/.test(pk)) SND.sfx('digit'); else if(/:(go|depart)$/.test(pk)) SND.sfx('train');
   else if(m.querySelector('#bosscall.boss-call') && !m.querySelector('#hole.pre-intro')) SND.sfx('devil'); else if(pk==='s7:gocode') SND.sfx('smoke'); else if(m.querySelector('.stripwrap')) SND.sfx('heart'); else if(/置物櫃/.test(name)) SND.sfx('locker');
-  else if(m.querySelector('.passerby,.granny')) SND.sfx('telescope');           // 七彩望遠鏡
+  else if(m.querySelector('.passerby')) SND.sfx('breakdown');                   // 路人：break it down like this（Ming 給的音檔）
+  else if(m.querySelector('.granny')) SND.sfx('telescope');                     // 老太太的七彩望遠鏡
   else if(m.querySelector('[aria-label="神秘人的剪影"]')) SND.sfx('mystery');
   else if(m.querySelector('.editor-momo')) SND.sfx('director');                 // 導演關
   else if(m.querySelector('.rc')) SND.sfx('aura');                              // 七彩光暈蠟燭
