@@ -2522,7 +2522,7 @@ function renderBoss(s, idx, d, k){
       // 丟出去的徽章換成 3D 硬幣飛：邊飛邊翻（rotateY）＋微傾，看得到側邊厚度（Ming 2026-11-10）
       const S0=r0.width/1.15, D0=Math.round(S0), fc=document.createElement('div'); fc.className='coin-fly';
       fc.style.cssText=`left:${cx0+dx-ar.left-S0/2}px;top:${cy0+dy-ar.top-S0/2}px;width:${S0}px;height:${S0}px`;
-      fc.innerHTML=coinHTML(D0,14,badgeSVG('',D0+'px'),badgeSVG('',D0+'px')); $('#arena').appendChild(fc); tb.style.transform=''; tb.style.visibility='hidden';
+      fc.innerHTML=coinHTML(D0,10,badgeSVG('',D0+'px'),badgeSVG('',D0+'px')); $('#arena').appendChild(fc); tb.style.transform=''; tb.style.visibility='hidden';
       fc.querySelector('.coin3d').animate([{transform:'rotateX(18deg) rotateY(0deg)'},{transform:'rotateX(18deg) rotateY(1080deg)'}],{duration:700,easing:'linear',fill:'forwards'});
       fc.animate([{transform:'translate(0,0) scale(1.15)'},{transform:`translate(${mx-dx}px,${my-dy}px) scale(.75)`},{transform:`translate(${ex-dx}px,${ey-dy}px) scale(.4)`}],{duration:700,easing:'linear',fill:'forwards'});
       setTimeout(()=>fc.remove(),700);
@@ -2545,7 +2545,7 @@ function renderBoss(s, idx, d, k){
   function badgeBack(){
     const ar=arena.getBoundingClientRect(), c=cat.getBoundingClientRect();
     fist.style.visibility='hidden'; fist.hidden=false; const f=fist.getBoundingClientRect();
-    const S=f.width, D=Math.round(S*26/28), TH=14;   // 拳頭圓的直徑＝像素圖 26/28；厚度 14px
+    const S=f.width, D=Math.round(S*26/28), TH=10;   // 拳頭圓的直徑＝像素圖 26/28；厚度 10px（14 太厚，Ming 2026-11-10）
     const fb=document.createElement('div'); fb.className='coin-fly'; fb.style.cssText=`left:${f.left-ar.left}px;top:${f.top-ar.top}px;width:${S}px;height:${S}px`;
     fb.innerHTML=coinHTML(D,TH,badgeSVG('',D+'px'),FIST_SVG);
     arena.appendChild(fb); SND.sfx('throw',1.4);
