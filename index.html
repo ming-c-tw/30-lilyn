@@ -862,7 +862,7 @@ function preloadAhead(){   // 2026-11-06 Ming：第一次打開就在背景照�
   const list=[ mp3(X,'click'), mp3(B,'title'), mp3(B,'travel'), mp3(X,'shutter'), mp3(X,'candle_lit'), mp3(X,'train'),
     mp3(B,'volley'), mp3(X,'ball_hit'), mp3(X,'correct'), mp3(X,'wrong'), mp3(X,'digit'),
     mp3(B,'puzzle'), A+'clip_lily.m4a', A+'clip_chandelier.m4a', A+'clip_lillian.m4a', A+'clip_lydia.m4a',
-    mp3(B,'adventure'), 'img/targets_all.mind', mp3(X,'card_flip'), mp3(B,'cute'), mp3(B,'runner'), mp3(X,'jump'), mp3(X,'cat'), mp3(X,'page') ];
+    mp3(B,'adventure'), 'img/targets_all.mind', mp3(X,'card_flip'), mp3(B,'cute'), mp3(B,'fashion'), mp3(B,'runner'), mp3(X,'jump'), mp3(X,'cat'), mp3(X,'page') ];
   CONFIG.stages.forEach(st=>(st.photos||[]).forEach(p=>{ if(p.image) list.push(p.image); (p.qs||[]).forEach(q=>{ (q.choices||[]).forEach(c=>c.img&&list.push(c.img)); (q.seq||[]).forEach(it=>it.img&&list.push(it.img)); }); }));
   list.push(mp3(B,'eerie'), mp3(X,'glitch'), mp3(X,'devil'), mp3(B,'boss'), mp3(X,'punch'), mp3(B,'victory'), 'img/s0_puzzle_pixel.png',
     mp3(B,'final'), mp3(X,'charge'), mp3(X,'ignite'), mp3(X,'rainbow'), mp3(X,'candle_blow'), mp3(X,'smoke'), mp3(X,'locker'), mp3(B,'birthday'), mp3(X,'heart'));
@@ -1802,7 +1802,8 @@ const SND=(()=>{
     else if(s.type==='library') n='puzzle';
     else if(s.type==='firebadge') n='adventure';
     else if(s.finalPhoto||s.id==='s9') n='birthday';
-    else if(s.type==='photo_task'||s.type==='director') n='cute';
+    else if(s.type==='director') n='fashion';   // 導演關：時尚伸展台（Ming 2026-11-10）
+    else if(s.type==='photo_task') n='cute';
     else if(s.type==='spot'){ const d=state.extra[s.id+'_quiz']||{}; n=d.step==='boss'?(state.extra[s.id+'_won']||d.boss==='won'?'victory':'boss'):'eerie'; if(state.done[s.id]) n='travel'; }
     else if(s.type==='final'){ n=state.extra.s7_blown?'final':(state.extra.s7_step==='wish'||state.extra.s7_step==='smoke')?'final':'final'; }
     else if(s.type==='ticket_puzzle') n=state.extra.s0_tp?'travel':'title';

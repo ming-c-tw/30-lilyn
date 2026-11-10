@@ -165,6 +165,20 @@
       "loopEnd": 40,
       "source": "使用者指定公共領域 Happy Birthday 旋律；自製編曲與合成錄音，未引用既有錄音",
       "license": "自製 CC0"
+    },
+    "fashion": {
+      "file": "bgm/fashion.mp3",
+      "loop": true,
+      "desc": "忠孝新生導演關：時尚伸展台",
+      "duration": 30.967732426,
+      "sample_rate": 44100,
+      "samples": 1365677,
+      "bpm": 124,
+      "key": "A 小調",
+      "loopStart": 0,
+      "loopEnd": 30.967732426,
+      "source": "自製：樂譜.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
     }
   },
   "sfx": {
@@ -281,12 +295,12 @@
     "cat": {
       "file": "sfx/cat.mp3",
       "loop": false,
-      "desc": "胖貓：合成 8-bit 喵聲",
-      "duration": 0.94,
+      "desc": "胖貓：真的貓叫「喵～」",
+      "duration": 1.28,
       "sample_rate": 44100,
-      "samples": 41454,
-      "source": "自製：音效.mjs＋合成核心.mjs",
-      "license": "自製 CC0"
+      "samples": 56448,
+      "source": "Wikimedia Commons「Meow of a pleading cat.oga」（Heismark）剪輯",
+      "license": "Public domain"
     },
     "punch": {
       "file": "sfx/punch.mp3",
