@@ -499,7 +499,8 @@
   .coin-fly{position:absolute;z-index:5;pointer-events:none;perspective:420px}   /* 徽章飛回：有厚度的立體硬幣，正面徽章、背面拳頭（Ming） */
   .coin3d{position:absolute;inset:0;transform-style:preserve-3d}
   .coin3d>*{position:absolute;left:50%;top:50%}
-  .coin-edge{border-radius:50%;background:#5a3a22;box-shadow:inset 0 0 0 2px #2a170c}
+  .coin-edge{border-radius:50%;background:#8a5a26;box-shadow:inset 0 0 0 2px #3a200c}
+  .coin-edge.hi{background:#d9a441}   /* 側邊一圈一圈亮暗交錯，翻轉時看得出厚度 */
   .coin-face{backface-visibility:hidden;-webkit-backface-visibility:hidden}
   .coin-face svg{display:block}
   #motes{position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:1001;pointer-events:none;image-rendering:pixelated}
@@ -2331,7 +2332,7 @@ function renderBoss(s, idx, d, k){
   else if(!won){ startGlitch(); startSpray($('#arena'), $('#hole')); }
   const nb=$('#nextboss'); if(nb){ nb.onclick=()=>pass(s); return; }
   const cat=$('#cat'), devil=$('#devil'), fist=$('#fist'), arena=$('#arena'), call=$('#bosscall');
-  const MAX=s.bossHits||30, EXILE_MS=()=>{ const [lo,hi]=d.esc2?[800,1300]:d.esc1?[700,2000]:[1000,3000]; return lo+Math.random()*(hi-lo); },   /* 次元之握間隔隨機：一開始 1～3 秒，破過第一階段漩渦（4 指令）0.7～2 秒，破過第二階段（8 指令）0.8～1.3 秒（Ming 2026-11-10） */ HEAL=10;   /* 被放逐惡魔回 10 下 */
+  const MAX=s.bossHits||30, EXILE_MS=()=>{ const [lo,hi]=d.esc2?[400,650]:d.esc1?[350,1000]:[500,1500]; return lo+Math.random()*(hi-lo); },   /* 次元之握間隔隨機（Ming 2026-11-10 再全部除以 2）：一開始 0.5～1.5 秒，破過第一階段 0.35～1 秒，破過第二階段 0.4～0.65 秒（Ming 2026-11-10） */ HEAL=10;   /* 被放逐惡魔回 10 下 */
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);   // 離開這頁就全部作廢
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
   fade();
@@ -2471,11 +2472,12 @@ function renderBoss(s, idx, d, k){
     T(2320,()=>{ SND.sfx('ult_slam'); SND.bgm('victory');   /* 壓扁就進勝利音樂（Ming 2026-11-10） */ vib([120,40,200]); devil.classList.remove('stun'); devil.classList.add('squash'); quake(); const dr=devil.getBoundingClientRect(), ar=arena.getBoundingClientRect(); dust(dr.left-ar.left+dr.width/2);
       const c=CRACKS[CONFIG.crackStyle]||CRACKS.branch, ck=document.createElement('div'); ck.className='crack grow devil-crack'; ck.innerHTML=crackHTML();   // 惡魔被壓扁的地方也裂開（Ming 2026-11-10）
       const clip=arena.querySelector('.arena-clip')||arena, kr=clip.getBoundingClientRect();   // 放進裂隙內層：只在裂隙裡看得到，裂隙收合時一起被收掉
+      const ck0=$('#crack'); if(ck0 && clip!==arena){ const r=ck0.getBoundingClientRect(); ck0.style.left=(r.left-kr.left)+'px'; ck0.style.top=(r.top-kr.top)+'px'; ck0.style.bottom='auto'; clip.appendChild(ck0); }   // 胖貓那道裂痕也搬進去：不超出裂隙、跟著空間一起逐漸收起（Ming 2026-11-10）
       ck.style.left=(dr.left-kr.left+dr.width/2-c.cx*c.k)+'px'; ck.style.bottom='auto'; clip.appendChild(ck); ck.style.top=(dr.bottom-kr.top-ck.offsetHeight*.55)+'px'; });
     T(2800,()=>{ const a=cat.getAnimations()[0]; const from=a?getComputedStyle(cat).transform:'none'; cat.getAnimations().forEach(x=>x.cancel());   // 壓扁停一下 → 胖貓先轉背面、走回原位（Ming）
       cat.style.transform=from; cat.classList.remove('belly'); cat.innerHTML=back; cat.onpointerdown=cat.onpointermove=cat.onpointerup=null;
       setTimeout(()=>{ cat.style.transform=''; cat.animate([{transform:from},{transform:'translate(0,0) rotate(0deg)'}],{duration:450,easing:'ease-in',fill:'forwards'}); },350); });
-    T(4750,()=>{ SND.sfx('glitch'); devil.style.opacity='0';   /* 壓扁圖多留 1 秒再解離（Ming 2026-11-10） */   /* 惡魔裡的換幀動畫會強制 visibility，所以用透明度藏 */   // 壓扁後停一下下 → 像出場倒放：拆成紅、藍兩片光往兩邊扭開（Ming）
+    T(6750,()=>{ SND.sfx('glitch'); devil.style.opacity='0';   /* 壓扁圖多留 3 秒再解離（Ming 2026-11-10） */   /* 惡魔裡的換幀動畫會強制 visibility，所以用透明度藏 */   // 壓扁後停一下下 → 像出場倒放：拆成紅、藍兩片光往兩邊扭開（Ming）
       const one=c=>Object.fromEntries(Object.keys(DEVIL_PAL).map(k=>[k,c])), sq='scale(1.6,.22)';
       const path={ L:[[0,0,0,sq,1],[.2,-6,0,'skewX(12deg) '+sq,.5],[.4,-24,-4,'skewX(-25deg) scale(1.8,.3)',1],[.6,-40,4,'skewX(10deg) scale(1.7,.26)',.3],[.8,-56,-2,'skewX(-18deg) scale(1.9,.34)',1],[1,-70,6,'skewX(30deg) scale(2,.3)',.9]],
                    R:[[0,0,0,sq,1],[.2,6,0,'skewX(-12deg) '+sq,1],[.4,24,4,'skewX(25deg) scale(1.5,.2)',.4],[.6,40,-4,'skewX(-10deg) scale(1.8,.3)',1],[.8,56,2,'skewX(18deg) scale(1.6,.24)',.3],[1,70,-6,'skewX(-30deg) scale(2,.3)',.9]] };   // 保持壓扁的扁色塊往兩邊扭開（Ming：先壓扁再變色塊）
@@ -2483,7 +2485,7 @@ function renderBoss(s, idx, d, k){
         g.innerHTML=spriteSVG(DEVIL_ROWS, one(c), '112px', 'aria-hidden="true"'); arena.appendChild(g);
         g.animate(path[side].map(([o,x,y,t,op])=>({offset:o,transform:`translate(${x}px,${y}px) ${t}`,opacity:op})),{duration:1100,easing:'steps(11)',fill:'forwards'}); return {g,c}; });
       T(1100,()=>{ SND.sfx('pop'); const gh=gs.map(({g,c})=>({rect:g.getBoundingClientRect(),c})); gs.forEach(({g})=>g.remove()); startMotes(null, gh); }); });   // 兩片光各自爆出光點
-    T(6400,()=>{ d.boss='won'; d.hits=MAX; keep(); stopGlitch(); cat.getAnimations().forEach(x=>x.cancel()); closeRift(d, keep); });   // 光點爆完才算打敗
+    T(8400,()=>{ d.boss='won'; d.hits=MAX; keep(); stopGlitch(); cat.getAnimations().forEach(x=>x.cancel()); closeRift(d, keep); });   // 光點爆完才算打敗
   }
   // 重新進來（重載／被放逐後 render）時接回狀態
   if(d.boss==='fight'){ armExile(); }
@@ -2504,8 +2506,13 @@ function renderBoss(s, idx, d, k){
       cat.style.visibility='hidden'; cat.hidden=false; const cr0=cat.getBoundingClientRect(); cat.hidden=true; cat.style.visibility='';
       const tx=cr0.left+cr0.width/2, ty=cr0.top+cr0.height/2;   // 落點＝胖貓等一下出現的位置（Ming）
       const ex=tx-cx0, ey=ty-cy0, mx=dx+(ex-dx)*.5, my=Math.min(dy,ey)-110;   // 弧線最高點
-      tb.style.transform='';
-      tb.animate([{transform:`translate(${dx}px,${dy}px) rotate(0deg) scale(1.15)`},{transform:`translate(${mx}px,${my}px) rotate(540deg) scale(.75)`},{transform:`translate(${ex}px,${ey}px) rotate(1080deg) scale(.4)`}],{duration:700,easing:'linear',fill:'forwards'});
+      // 丟出去的徽章換成 3D 硬幣飛：邊飛邊翻（rotateY）＋微傾，看得到側邊厚度（Ming 2026-11-10）
+      const S0=r0.width/1.15, D0=Math.round(S0), fc=document.createElement('div'); fc.className='coin-fly';
+      fc.style.cssText=`left:${cx0+dx-ar.left-S0/2}px;top:${cy0+dy-ar.top-S0/2}px;width:${S0}px;height:${S0}px`;
+      fc.innerHTML=coinHTML(D0,14,badgeSVG('',D0+'px'),badgeSVG('',D0+'px')); $('#arena').appendChild(fc); tb.style.transform=''; tb.style.visibility='hidden';
+      fc.querySelector('.coin3d').animate([{transform:'rotateX(18deg) rotateY(0deg)'},{transform:'rotateX(18deg) rotateY(1080deg)'}],{duration:700,easing:'linear',fill:'forwards'});
+      fc.animate([{transform:'translate(0,0) scale(1.15)'},{transform:`translate(${mx-dx}px,${my-dy}px) scale(.75)`},{transform:`translate(${ex-dx}px,${ey-dy}px) scale(.4)`}],{duration:700,easing:'linear',fill:'forwards'});
+      setTimeout(()=>fc.remove(),700);
       setTimeout(()=>{ const box=$('#throwbox'); if(box) box.style.visibility='hidden';   // 徽章區留著位置，底框不縮（Ming）
         call.innerHTML='&nbsp;'; call.classList.remove('boss-call'); delete d.exiled; keep();   // 召喚出胖貓：「次元惡魔出現了！」／「使用徽章重新召喚」消失
         SND.sfx('badge'); const fl=document.createElement('i'); fl.className='badge-burst'; fl.style.left=(tx-ar.left)+'px'; fl.style.top=(ty-ar.top)+'px'; $('#arena').appendChild(fl); setTimeout(()=>fl.remove(),600); },700);
@@ -2519,19 +2526,23 @@ function renderBoss(s, idx, d, k){
           setTimeout(()=>{ cat.classList.remove('land'); cat.innerHTML=back; badgeBack(); },900); },1600); },1000); };
     tb.addEventListener('pointerup',end); tb.addEventListener('pointercancel',end); }
   // 召喚完：徽章從胖貓身上飛回來，翻到背面變成出拳鈕
+  // 3D 硬幣：正反兩面＋一層層側邊（厚度 TH），旋轉時看得出是有厚度的徽章（Ming 2026-11-10）
+  const coinHTML=(D,TH,front,back)=>{ let edge=''; for(let z=-TH/2+1; z<TH/2; z++) edge+=`<i class="coin-edge${(z&1)?' hi':''}" style="width:${D}px;height:${D}px;transform:translate(-50%,-50%) translateZ(${z}px)"></i>`;
+    return `<div class="coin3d">${edge}<div class="coin-face" style="transform:translate(-50%,-50%) translateZ(${TH/2}px)">${front}</div><div class="coin-face" style="transform:translate(-50%,-50%) rotateY(180deg) translateZ(${TH/2}px)">${back}</div></div>`; };
   function badgeBack(){
     const ar=arena.getBoundingClientRect(), c=cat.getBoundingClientRect();
     fist.style.visibility='hidden'; fist.hidden=false; const f=fist.getBoundingClientRect();
-    const S=f.width, D=Math.round(S*26/28), TH=8;   // 拳頭圓的直徑＝像素圖 26/28；厚度 8px
-    let edge=''; for(let z=-TH/2+1; z<TH/2; z++) edge+=`<i class="coin-edge" style="width:${D}px;height:${D}px;transform:translate(-50%,-50%) translateZ(${z}px)"></i>`;
+    const S=f.width, D=Math.round(S*26/28), TH=14;   // 拳頭圓的直徑＝像素圖 26/28；厚度 14px
     const fb=document.createElement('div'); fb.className='coin-fly'; fb.style.cssText=`left:${f.left-ar.left}px;top:${f.top-ar.top}px;width:${S}px;height:${S}px`;
-    fb.innerHTML=`<div class="coin3d">${edge}<div class="coin-face" style="transform:translate(-50%,-50%) translateZ(${TH/2}px)">${badgeSVG('',D+'px')}</div><div class="coin-face" style="transform:translate(-50%,-50%) rotateY(180deg) translateZ(${TH/2}px)">${FIST_SVG}</div></div>`;
+    fb.innerHTML=coinHTML(D,TH,badgeSVG('',D+'px'),FIST_SVG);
     arena.appendChild(fb); SND.sfx('throw',1.4);
     const sx=c.left+c.width/2-(f.left+S/2), sy=c.top+c.height/2-(f.top+S/2), mx=sx*.45, my=Math.min(sy,0)*.45-70;   // 往上畫一道弧線
-    const DUR=820;
-    fb.querySelector('.coin3d').animate([{transform:'rotateY(0deg)'},{transform:'rotateY(540deg)',offset:.82},{transform:'rotateY(540deg)'}],{duration:DUR,easing:'ease-out',fill:'forwards'});   // 邊飛邊翻一圈半，停在背面＝拳頭
-    fb.animate([{transform:`translate(${sx}px,${sy}px) scale(.35)`},{transform:`translate(${mx}px,${my}px) scale(.85)`,offset:.45},{transform:'translate(0,0) scale(1.12)',offset:.82},{transform:'translate(0,0) scale(1)'}],{duration:DUR,easing:'ease-in-out',fill:'forwards'}).onfinish=()=>{
-      fb.remove(); fist.style.visibility=''; armExile(); };   // 翻完不放音效（跟召喚成功同一聲，Ming 2026-11-10 拿掉）
+    const DUR=1500;   // 翻成拳頭要看得清楚（Ming 2026-11-10）：先飛回來轉一圈、徽章面朝前停一下，再放大慢慢翻成拳頭，翻好閃一下
+    fb.querySelector('.coin3d').animate([{transform:'rotateY(0deg)'},{transform:'rotateY(360deg)',offset:.45},{transform:'rotateY(360deg)',offset:.58},{transform:'rotateY(540deg)',offset:.86},{transform:'rotateY(540deg)'}],{duration:DUR,easing:'ease-in-out',fill:'forwards'});
+    fb.animate([{transform:`translate(${sx}px,${sy}px) scale(.35)`},{transform:`translate(${mx}px,${my}px) scale(.85)`,offset:.25},{transform:'translate(0,0) scale(1)',offset:.45},{transform:'translate(0,0) scale(1)',offset:.58},{transform:'translate(0,0) scale(1.5)',offset:.72},{transform:'translate(0,0) scale(1.15)',offset:.86},{transform:'translate(0,0) scale(1)'}],{duration:DUR,easing:'ease-in-out',fill:'forwards'});
+    setTimeout(()=>{ if(!document.body.contains(fb)) return; SND.sfx('card_flip',1.2); },DUR*.58);
+    setTimeout(()=>{ if(!document.body.contains(fb)) return; const fl=document.createElement('i'); fl.className='badge-burst'; fl.style.left=(f.left-ar.left+S/2)+'px'; fl.style.top=(f.top-ar.top+S/2)+'px'; arena.appendChild(fl); setTimeout(()=>fl.remove(),600); },DUR*.86);   // 翻成拳頭那一刻閃一下
+    setTimeout(()=>{ fb.remove(); if(!document.body.contains(arena)) return; fist.style.visibility=''; armExile(); },DUR);   // 翻完不放音效（跟召喚成功同一聲，Ming 2026-11-10 拿掉）
   }
   // 出拳：每按一下胖貓揮拳、惡魔被打到；打滿 → 翻肚摸貓 → 必殺技
   let backT=0, hitT=0;
