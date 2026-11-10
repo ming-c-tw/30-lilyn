@@ -179,6 +179,20 @@
       "loopEnd": 47.213106576,
       "source": "自製：樂譜.mjs＋合成核心.mjs",
       "license": "自製 CC0"
+    },
+    "final_pre": {
+      "file": "bgm/final_pre.mp3",
+      "loop": true,
+      "desc": "終點黑屏前：原本設計的終點曲（七道光，一個願望 v1）",
+      "duration": 68.571428571,
+      "sample_rate": 44100,
+      "samples": 3024000,
+      "bpm": 84,
+      "key": "C 大調",
+      "loopStart": 0,
+      "loopEnd": 68.571428571,
+      "source": "自製：樂譜.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
     }
   },
   "sfx": {
@@ -890,6 +904,16 @@
       "sample_rate": 44100,
       "samples": 59535,
       "source": "freesound 610935「Laugh 2」（經 Openverse）",
+      "license": "CC0"
+    },
+    "sparkle": {
+      "file": "sfx/sparkle.mp3",
+      "loop": false,
+      "desc": "許願頁七彩蠟燭：魔法灑粉閃閃",
+      "duration": 1.8,
+      "sample_rate": 44100,
+      "samples": 79380,
+      "source": "freesound 462095「Sparkling Star 01」（經 Openverse）",
       "license": "CC0"
     }
   },
