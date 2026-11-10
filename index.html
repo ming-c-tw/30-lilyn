@@ -1751,11 +1751,26 @@ const SND=(()=>{
   const on=()=>state.extra.sound!==false;
   const el=(kind,name)=>{ const k=kind+'/'+name; if(!cache[k]){ const a=new Audio(base+k+'.mp3'); a.preload='auto'; a.onerror=()=>{ cache[k]=null; }; cache[k]=a; } return cache[k]; };
   const fade=(a,to,ms,done)=>{ const from=a.volume, t0=performance.now(); const tick=()=>{ const r=Math.min(1,(performance.now()-t0)/ms); a.volume=from+(to-from)*r; if(r<1) requestAnimationFrame(tick); else if(done) done(); }; tick(); };
+  /* 背景音樂也走 Web Audio（解碼後循環播放，GainNode 控音量）：手機上 <audio> 常被擋、iOS 也不吃 volume，
+     音效那條已證實會響，所以 BGM 跟著走同一條（Ming 2026-11-10：手機只聽到音效、沒有背景音樂）。拿不到 AudioContext 或 file: 才退回 <audio>。 */
+  const bgBufs={};
+  function loadBgm(name){ if(bgBufs[name]) return bgBufs[name]; const c=ctx(); if(!c||location.protocol==='file:') return Promise.resolve(null);
+    return bgBufs[name]=fetch(base+'bgm/'+name+'.mp3').then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); }).then(ab=>new Promise((res,rej)=>c.decodeAudioData(ab,res,rej))).catch(()=>{ delete bgBufs[name]; return null; }); }
+  function waTrack(c,buf,loop){ const g=c.createGain(); g.gain.value=0; g.connect(c.destination); const s=c.createBufferSource(); s.buffer=buf; s.loop=loop; s.connect(g); s.start(0);
+    const vol=(v,ms)=>{ const t=c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value,t); g.gain.linearRampToValueAtTime(v,t+ms/1000); };
+    return { vol, stop(ms){ vol(0,ms); setTimeout(()=>{ try{ s.stop(); }catch(e){} g.disconnect(); },ms+60); }, pause(){}, play(){} }; }
+  function elTrack(name,loop){ const a=el('bgm',name); if(!a) return null; a.loop=loop; a.currentTime=0; a.volume=0;
+    const t={ el:a, vol(v,ms){ fade(a,v,ms); }, stop(ms){ fade(a,0,ms,()=>a.pause()); }, pause(){ a.pause(); }, play(){ if(a.paused) a.play().then(()=>fade(a,ducked?DUCKV:VOL,600)).catch(()=>{}); } };
+    a.play().then(()=>fade(a,ducked?DUCKV:VOL,600)).catch(()=>{}); return t; }
   function bgm(name){ if(name===curName) return; curName=name; if(!on()||!unlocked){ pending=name; return; } pending='';
-    if(cur){ const old=cur; cur=null; fade(old,0,500,()=>{ old.pause(); }); }
-    if(!name) return; const a=el('bgm',name); if(!a) return; a.loop=name!=='victory'; a.currentTime=0; a.volume=0; cur=a; a.play().then(()=>fade(a,ducked?DUCKV:VOL,600)).catch(()=>{}); }
+    if(cur){ cur.stop(500); cur=null; }
+    if(!name) return; const loop=name!=='victory';
+    loadBgm(name).then(buf=>{ if(curName!==name || cur || !on()) return; const c=ctx();
+      if(buf && c){ if(c.state!=='running') c.resume().catch(()=>{}); cur=waTrack(c,buf,loop); cur.vol(ducked?DUCKV:VOL,600);
+        Object.keys(bgBufs).forEach(k=>{ if(k!==name) delete bgBufs[k]; }); }   // 解碼後一首十幾 MB，只留正在播的
+      else cur=elTrack(name,loop); }); }
   let ducked=false; const VOL=.55, DUCKV=.1;
-  function duck(on){ ducked=!!on; if(cur) fade(cur, ducked?DUCKV:VOL, 400); }
+  function duck(on){ ducked=!!on; if(cur) cur.vol(ducked?DUCKV:VOL, 400); }
   /* 音效走 Web Audio：先把 mp3 解碼成 AudioBuffer 放記憶體，播的時候零延遲（2026-11-07 Ming：音效會 lag）。
      解碼好之前（或 file: 本機測試 fetch 不到）退回 <audio> 複製播放。 */
   let ac=null; const bufs={};
@@ -1767,7 +1782,7 @@ const SND=(()=>{
   function sfx(name,vol=.9){ if(!on()||!unlocked) return; const c=ctx(), b=bufs[name];
     if(c&&b){ if(c.state==='suspended') c.resume().catch(()=>{}); const src=c.createBufferSource(); src.buffer=b; const g=c.createGain(); g.gain.value=vol; src.connect(g); g.connect(c.destination); src.start(0); return; }
     load(name); const a=el('sfx',name); if(!a) return; const cl=a.cloneNode(); cl.volume=vol; cl.play().catch(()=>{}); }
-  function toggle(){ state.extra.sound=!on(); save(); if(!on()){ if(cur){ cur.pause(); cur=null; } pending=curName; curName=''; } else { unlocked=true; const n=pending||curName; curName=''; bgm(n||page(true)); } }
+  function toggle(){ state.extra.sound=!on(); save(); if(!on()){ if(cur){ cur.stop(0); cur=null; } pending=curName; curName=''; } else { unlocked=true; const n=pending||curName; curName=''; bgm(n||page(true)); } }
   function page(justName){   // 依目前關卡／步驟挑 BGM
     const s=CONFIG.stages[state.stage]; let n='travel';
     if(!state.started && state.stage===0 && !state.done.s0) n='title';
@@ -1788,10 +1803,10 @@ const SND=(()=>{
     if(c){ if(c.state!=='running') c.resume().catch(()=>{}); try{ const s=c.createBufferSource(); s.buffer=c.createBuffer(1,1,22050); s.connect(c.destination); s.start(0); }catch(e){} }
     if(!on()) return;
     if(!unlocked){ unlocked=true; const n=pending||curName; curName=''; if(n) bgm(n); return; }
-    if(cur && cur.paused && !document.hidden) cur.play().then(()=>fade(cur, ducked?DUCKV:VOL, 600)).catch(()=>{}); };
+    if(cur && !document.hidden) cur.play(); };
   ['pointerdown','pointerup','touchend','click','keydown'].forEach(ev=>window.addEventListener(ev,unlock,{capture:true}));
-  setTimeout(preload,600);   // 開頁就先把全部音效解碼進記憶體（都很小，總共不到 1 MB）
-  document.addEventListener('visibilitychange',()=>{ if(!cur) return; if(document.hidden) cur.pause(); else if(on()) cur.play().catch(()=>{}); });
+  setTimeout(()=>{ if(pending||curName) loadBgm(pending||curName); preload(); },600);   // 背景音樂先抓先解碼，第一下點擊就能直接響   // 開頁就先把全部音效解碼進記憶體（都很小，總共不到 1 MB）
+  document.addEventListener('visibilitychange',()=>{ if(document.hidden){ if(ac) ac.suspend().catch(()=>{}); if(cur) cur.pause(); } else if(on()){ if(ac) ac.resume().catch(()=>{}); if(cur) cur.play(); } });
   document.addEventListener('click',e=>{ const b=e.target.closest('button.nes-btn, label.nes-btn, .progbtn, .bkbtn'); if(b && !b.closest('#gamebox')) sfx('click',.5); },{capture:true});
   // Android Chrome：用返回手勢關掉檔案選擇器後，同一個 input 再點不會再開（直到重載）。
   // 所以每次按上傳都換一個全新的 input（沿用原本的 onchange）再開選擇器；選擇器取消也順手換新。
@@ -2352,7 +2367,7 @@ function renderBoss(s, idx, d, k){
     const c=call.querySelector('.cmd'); if(c){ c.innerHTML=html; return; }   // 只換箭頭，時間條不重畫
     call.innerHTML=`<span class="cmd">${html}</span><span class="cmdtime" style="width:${d.seq.length*34-4}px"><i></i></span>`; };
   let cmdT=0;
-  const cmdTimer=()=>{ clearTimeout(cmdT); const bar=call.querySelector('.cmdtime i'); if(!bar) return; const dur=d.seq.length>4?6500:4000;   // 4 個指令 4 秒、8 個 6.5 秒
+  const cmdTimer=()=>{ clearTimeout(cmdT); const bar=call.querySelector('.cmdtime i'); if(!bar) return; const dur=d.seq.length>4?11000:7000;   // 4 個指令 7 秒、8 個 11 秒（原 4／6.5 秒來不及按，Ming 2026-11-10）
     bar.getAnimations().forEach(a=>a.cancel());
     bar.animate([{width:'100%',background:'#92cc41'},{background:'#ffe066',offset:.65},{width:'0%',background:'#ff2a6d'}],{duration:dur,easing:'linear',fill:'forwards'});
     cmdT=setTimeout(()=>{ if(d.boss!=='trap' || !document.body.contains(arena)) return;   // 時間到：換一組新指令，從頭按
@@ -2479,7 +2494,7 @@ function renderBoss(s, idx, d, k){
     const end=e=>{ if(!st) return; const dx=e.clientX-st.x, dy=e.clientY-st.y; st=null; tb.classList.remove('drag');
       const a=trail[0], b=trail[trail.length-1], dt=Math.max(16,b.t-a.t), vx=(b.x-a.x)/dt, vy=(b.y-a.y)/dt;   // 甩的速度（px/ms）
       if(!(vy<-.5 || dy<-90)){ tb.style.transform=''; tb.animate([{transform:`translate(${dx}px,${dy}px) scale(1.15)`},{transform:'translate(0,-10px) scale(1)'},{transform:'translate(0,0)'}],{duration:350,easing:'ease-out'}); return; }   // 太輕：彈回
-      d.boss='fight'; keep(); SND.sfx('throw');
+      d.boss='fight'; keep(); SND.sfx('throw',2); SND.sfx('jump',1.2);   // 丟徽章：原本 throw 太小聲（Ming 2026-11-10 聽不到），加大＋疊一聲咻
       const ar=$('#arena').getBoundingClientRect(), r0=tb.getBoundingClientRect();
       const cx0=r0.left+r0.width/2-dx, cy0=r0.top+r0.height/2-dy;   // 徽章原本的中心
       cat.style.visibility='hidden'; cat.hidden=false; const cr0=cat.getBoundingClientRect(); cat.hidden=true; cat.style.visibility='';
@@ -2507,12 +2522,12 @@ function renderBoss(s, idx, d, k){
     let edge=''; for(let z=-TH/2+1; z<TH/2; z++) edge+=`<i class="coin-edge" style="width:${D}px;height:${D}px;transform:translate(-50%,-50%) translateZ(${z}px)"></i>`;
     const fb=document.createElement('div'); fb.className='coin-fly'; fb.style.cssText=`left:${f.left-ar.left}px;top:${f.top-ar.top}px;width:${S}px;height:${S}px`;
     fb.innerHTML=`<div class="coin3d">${edge}<div class="coin-face" style="transform:translate(-50%,-50%) translateZ(${TH/2}px)">${badgeSVG('',D+'px')}</div><div class="coin-face" style="transform:translate(-50%,-50%) rotateY(180deg) translateZ(${TH/2}px)">${FIST_SVG}</div></div>`;
-    arena.appendChild(fb); SND.sfx('throw',.6);
+    arena.appendChild(fb); SND.sfx('throw',1.4);
     const sx=c.left+c.width/2-(f.left+S/2), sy=c.top+c.height/2-(f.top+S/2), mx=sx*.45, my=Math.min(sy,0)*.45-70;   // 往上畫一道弧線
     const DUR=820;
     fb.querySelector('.coin3d').animate([{transform:'rotateY(0deg)'},{transform:'rotateY(540deg)',offset:.82},{transform:'rotateY(540deg)'}],{duration:DUR,easing:'ease-out',fill:'forwards'});   // 邊飛邊翻一圈半，停在背面＝拳頭
     fb.animate([{transform:`translate(${sx}px,${sy}px) scale(.35)`},{transform:`translate(${mx}px,${my}px) scale(.85)`,offset:.45},{transform:'translate(0,0) scale(1.12)',offset:.82},{transform:'translate(0,0) scale(1)'}],{duration:DUR,easing:'ease-in-out',fill:'forwards'}).onfinish=()=>{
-      fb.remove(); fist.style.visibility=''; SND.sfx('badge',.6); armExile(); };
+      fb.remove(); fist.style.visibility=''; armExile(); };   // 翻完不放音效（跟召喚成功同一聲，Ming 2026-11-10 拿掉）
   }
   // 出拳：每按一下胖貓揮拳、惡魔被打到；打滿 → 翻肚摸貓 → 必殺技
   let backT=0, hitT=0;
