@@ -2340,7 +2340,7 @@ function renderBoss(s, idx, d, k){
   else if(!won){ startGlitch(); startSpray($('#arena'), $('#hole')); }
   const nb=$('#nextboss'); if(nb){ nb.onclick=()=>pass(s); return; }
   const cat=$('#cat'), devil=$('#devil'), fist=$('#fist'), arena=$('#arena'), call=$('#bosscall');
-  const MAX=s.bossHits||30, EXILE_MS=()=>{ const ph=Math.min(2,Math.floor((d.hits||0)/30)), [lo,hi]=[[1500,2500],[1000,1800],[700,1200]][ph]; return lo+Math.random()*(hi-lo); },   /* 次元之握改回計時（Ming 2026-11-10），依血量分三階段：第 1 階段（0～29 下）1.5～2.5 秒、第 2 階段（30～59）1～1.8 秒、第 3 階段（60～89）0.7～1.2 秒；回到戰鬥就開始倒數，出拳不會重置 */ HEAL=30;   /* 被放逐惡魔回 30 下（＝退回上一階段起點） */
+  const MAX=s.bossHits||30, EXILE_MS=()=>{ const ph=Math.min(2,Math.floor((d.hits||0)/30)), [lo,hi]=[[3000,5000],[2000,3600],[1400,2400]][ph]; return lo+Math.random()*(hi-lo); },   /* 次元之握改回計時（Ming 2026-11-10），依血量分三階段：第 1 階段（0～29 下）3～5 秒、第 2 階段（30～59）2～3.6 秒、第 3 階段（60～89）1.4～2.4 秒（原本太頻繁，乘 2）；回到戰鬥就開始倒數，出拳不會重置 */ HEAL=30;   /* 被放逐惡魔回 30 下（＝退回上一階段起點） */
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);   // 離開這頁就全部作廢
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
   fade();
