@@ -517,6 +517,156 @@
       "samples": 19845,
       "source": "自製：音效.mjs＋合成核心.mjs",
       "license": "自製 CC0"
+    },
+    "exile": {
+      "file": "sfx/exile.mp3",
+      "loop": false,
+      "desc": "次元放逐施法：低沉蓄力上揚、減五度與空間扭曲",
+      "duration": 1.12,
+      "sample_rate": 44100,
+      "samples": 49392,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "trap": {
+      "file": "sfx/trap.mp3",
+      "loop": false,
+      "desc": "裂隙夾住胖貓：金屬能量短促閉合",
+      "duration": 0.42,
+      "sample_rate": 44100,
+      "samples": 18522,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "arrow": {
+      "file": "sfx/arrow.mp3",
+      "loop": false,
+      "desc": "方向正確：乾淨短嗶、無延遲尾音",
+      "duration": 0.09,
+      "sample_rate": 44100,
+      "samples": 3969,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "arrow_bad": {
+      "file": "sfx/arrow_bad.mp3",
+      "loop": false,
+      "desc": "方向錯誤：低沉短促的悶蜂鳴",
+      "duration": 0.3,
+      "sample_rate": 44100,
+      "samples": 13230,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "escape": {
+      "file": "sfx/escape.mp3",
+      "loop": false,
+      "desc": "胖貓掙脫：能量裂開與上行三音",
+      "duration": 0.9,
+      "sample_rate": 44100,
+      "samples": 39690,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "banish": {
+      "file": "sfx/banish.mp3",
+      "loop": false,
+      "desc": "胖貓被放逐：下墜吸入、微弱回音、末段徽章叮聲",
+      "duration": 1.3,
+      "sample_rate": 44100,
+      "samples": 57330,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "heal": {
+      "file": "sfx/heal.mp3",
+      "loop": false,
+      "desc": "惡魔回血：減七和弦上行琶音與邪氣低音",
+      "duration": 0.9,
+      "sample_rate": 44100,
+      "samples": 39690,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "dim": {
+      "file": "sfx/dim.mp3",
+      "loop": false,
+      "desc": "畫面暗下：低頻下沉與柔和懸疑鈴聲",
+      "duration": 1.1,
+      "sample_rate": 44100,
+      "samples": 48510,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "purr": {
+      "file": "sfx/purr.mp3",
+      "loop": false,
+      "desc": "摸胖貓：短促柔和的低頻顫動呼嚕",
+      "duration": 0.26,
+      "sample_rate": 44100,
+      "samples": 11466,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "gauge_full": {
+      "file": "sfx/gauge_full.mp3",
+      "loop": false,
+      "desc": "爽爽刻度集滿：明亮上行三連音與閃光",
+      "duration": 0.8,
+      "sample_rate": 44100,
+      "samples": 35280,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "ult_spin": {
+      "file": "sfx/ult_spin.mp3",
+      "loop": false,
+      "desc": "必殺技起飛：音高與旋轉顫動逐段加速的呼嘯",
+      "duration": 1.2,
+      "sample_rate": 44100,
+      "samples": 52920,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "ult_slam": {
+      "file": "sfx/ult_slam.mp3",
+      "loop": false,
+      "desc": "翻肚壓擊：重低音、碎裂餘震與短勝利收尾",
+      "duration": 1.1,
+      "sample_rate": 44100,
+      "samples": 48510,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "grip": {
+      "file": "sfx/grip.mp3",
+      "loop": false,
+      "desc": "次元之握：半秒能量嘶鳴上升，接短促巨爪夾合聲",
+      "duration": 0.74,
+      "sample_rate": 44100,
+      "samples": 32634,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "shake": {
+      "file": "sfx/shake.mp3",
+      "loop": false,
+      "desc": "搖動巨爪：粗顆粒雜訊與短脆碎裂嗶，無拖尾",
+      "duration": 0.1,
+      "sample_rate": 44100,
+      "samples": 4410,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "grip_free": {
+      "file": "sfx/grip_free.mp3",
+      "loop": false,
+      "desc": "巨爪碎開：玻璃碎裂噪音與上揚兩音的小勝利",
+      "duration": 0.64,
+      "sample_rate": 44100,
+      "samples": 28224,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
     }
   },
   "授權": "每個檔案的來源與授權分別記於 bgm／sfx 各項 source、license。所有合成錄音及原創編曲：自製 CC0。birthday 的 Happy Birthday 旋律按使用者提供的公共領域條件使用；未使用任何第三方錄音、音源、採樣或素材。",
