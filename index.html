@@ -1824,7 +1824,15 @@ const SND=(()=>{
   setTimeout(()=>{ preload(); if(pending||curName) loadBgm(pending||curName); },50);   // 背景音樂先抓先解碼，第一下點擊就能直接響   // 開頁就先把全部音效解碼進記憶體（都很小，總共不到 1 MB）
   document.addEventListener('visibilitychange',()=>{ if(document.hidden){ if(ac) ac.suspend().catch(()=>{}); if(cur) cur.pause(); } else if(on()){ if(ac) ac.resume().catch(()=>{}); if(cur) cur.play(); } });
   /* 按鈕聲在手指「碰到」就響（pointerdown），不等放開的 click（Ming：按鍵音效不即時）；之後 click 觸發的換頁音效會在 0.45 秒內把它收掉 */
-  document.addEventListener('pointerdown',e=>{ const b=e.target.closest('button.nes-btn, label.nes-btn, .progbtn, .bkbtn'); if(b && !b.disabled && !b.closest('#gamebox')){ unlock(); hush(); const r=play('click',.5); if(r) clk={...r,t:performance.now()}; } },{capture:true});
+  document.addEventListener('pointerdown',e=>{ const b=e.target.closest('button.nes-btn, label.nes-btn, .progbtn, .bkbtn'); if(b && !b.disabled && !b.closest('#gamebox, #bkpanel, .npc') && !b.matches('.bkbtn') && !/^控制者/.test(b.textContent.trim())){ unlock();   /* 控制者介面的按鈕不出按鈕聲（Ming 2026-11-10） */ hush(); const r=play('click',.5); if(r) clk={...r,t:performance.now()}; } },{capture:true});
+  /* 按鈕一按下就觸發（Ming 2026-11-10：音效要按下就響、不等手指起來）：pointerdown 直接 b.click()，之後手指放開那次原生 click 吞掉（畫面可能已換頁、手指底下是別顆鈕，不能讓它再觸發）。
+     權限鈕（iOS 要放開才算使用者操作）、上傳 label、小遊戲裡的鈕照舊等 click */
+  let swallow=0;
+  document.addEventListener('pointerdown',e=>{ if(e.button>0) return; const b=e.target.closest('button.nes-btn'); if(!b || b.disabled || b.closest('#gamebox') || b.matches('[data-p], #permskip, [data-slow]')) return;
+    swallow=performance.now(); b.click(); },{capture:false});
+  const unswallow=()=>{ if(swallow) setTimeout(()=>{ swallow=0; },400); };
+  window.addEventListener('pointerup',unswallow,true); window.addEventListener('pointercancel',()=>{ swallow=0; },true);
+  document.addEventListener('click',e=>{ if(swallow && e.isTrusted && performance.now()-swallow<3000){ swallow=0; e.preventDefault(); e.stopImmediatePropagation(); } },{capture:true});
   /* 手機：開了選照片、沒選就按上一頁退出後，再按上傳沒反應（Ming 2026-11-10 回報，之前「每次 .click() 一個新 input」的修法沒用）。
      改成：上傳 input 透明蓋滿整顆按鈕（CSS .upfile），手指直接點到 input 本身、不再用程式 .click()；
      選擇器關掉回到頁面（cancel／focus／visibilitychange）時，沒選到檔就把 input 換成全新的一個（沿用 onchange）。 */
