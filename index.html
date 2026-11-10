@@ -1782,7 +1782,7 @@ const SND=(()=>{
   function preload(){ let i=0; const next=()=>{ if(i>=SFX_ALL.length) return; load(SFX_ALL[i++]).then(()=>setTimeout(next,30)); }; next(); }
   function sfx(name,vol=.9){ if(!on()||!unlocked) return; const c=ctx(), b=bufs[name];
     if(c&&b){ if(c.state==='suspended') c.resume().catch(()=>{}); const src=c.createBufferSource(); src.buffer=b; const g=c.createGain(); g.gain.value=vol; src.connect(g); g.connect(c.destination); src.start(0); return; }
-    load(name); const a=el('sfx',name); if(!a) return; const cl=a.cloneNode(); cl.volume=vol; cl.play().catch(()=>{}); }
+    load(name); const a=el('sfx',name); if(!a) return; const cl=a.cloneNode(); cl.volume=Math.min(1,vol);   // <audio> 音量只能 0～1（Web Audio 可以 >1），手機還沒解碼完時會走這條 cl.play().catch(()=>{}); }
   function toggle(){ state.extra.sound=!on(); save(); if(!on()){ if(cur){ cur.stop(0); cur=null; } pending=curName; curName=''; } else { unlocked=true; const n=pending||curName; curName=''; bgm(n||page(true)); } }
   function page(justName){   // 依目前關卡／步驟挑 BGM
     const s=CONFIG.stages[state.stage]; let n='travel';
@@ -2332,7 +2332,7 @@ function renderBoss(s, idx, d, k){
   else if(!won){ startGlitch(); startSpray($('#arena'), $('#hole')); }
   const nb=$('#nextboss'); if(nb){ nb.onclick=()=>pass(s); return; }
   const cat=$('#cat'), devil=$('#devil'), fist=$('#fist'), arena=$('#arena'), call=$('#bosscall');
-  const MAX=s.bossHits||30, EXILE_MS=()=>{ const [lo,hi]=d.esc2?[400,650]:d.esc1?[350,1000]:[500,1500]; return lo+Math.random()*(hi-lo); },   /* 次元之握間隔隨機（Ming 2026-11-10 再全部除以 2）：一開始 0.5～1.5 秒，破過第一階段 0.35～1 秒，破過第二階段 0.4～0.65 秒（Ming 2026-11-10） */ HEAL=10;   /* 被放逐惡魔回 10 下 */
+  const MAX=s.bossHits||30, EXILE_MS=()=>{ const [lo,hi]=d.esc2?[533,867]:d.esc1?[467,1333]:[667,2000]; return lo+Math.random()*(hi-lo); },   /* 次元之握間隔隨機（Ming 2026-11-10 原值除以 1.5）：一開始 0.67～2 秒，破過第一階段 0.47～1.33 秒，破過第二階段 0.53～0.87 秒（Ming 2026-11-10） */ HEAL=10;   /* 被放逐惡魔回 10 下 */
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);   // 離開這頁就全部作廢
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
   fade();
