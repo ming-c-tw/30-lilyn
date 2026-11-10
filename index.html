@@ -1782,7 +1782,7 @@ const SND=(()=>{
   function preload(){ let i=0; const next=()=>{ if(i>=SFX_ALL.length) return; load(SFX_ALL[i++]).then(()=>setTimeout(next,30)); }; next(); }
   function sfx(name,vol=.9){ if(!on()||!unlocked) return; const c=ctx(), b=bufs[name];
     if(c&&b){ if(c.state==='suspended') c.resume().catch(()=>{}); const src=c.createBufferSource(); src.buffer=b; const g=c.createGain(); g.gain.value=vol; src.connect(g); g.connect(c.destination); src.start(0); return; }
-    load(name); const a=el('sfx',name); if(!a) return; const cl=a.cloneNode(); cl.volume=Math.min(1,vol);   // <audio> 音量只能 0～1（Web Audio 可以 >1），手機還沒解碼完時會走這條 cl.play().catch(()=>{}); }
+    load(name); const a=el('sfx',name); if(!a) return; const cl=a.cloneNode(); cl.volume=Math.min(1,vol);   /* <audio> 音量只能 0～1（Web Audio 可以 >1），手機還沒解碼完時會走這條 */ cl.play().catch(()=>{}); }
   function toggle(){ state.extra.sound=!on(); save(); if(!on()){ if(cur){ cur.stop(0); cur=null; } pending=curName; curName=''; } else { unlocked=true; const n=pending||curName; curName=''; bgm(n||page(true)); } }
   function page(justName){   // 依目前關卡／步驟挑 BGM
     const s=CONFIG.stages[state.stage]; let n='travel';
