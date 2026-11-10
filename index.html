@@ -514,13 +514,15 @@
   .cmd span.now{animation:cmdblink .4s steps(1) infinite}
   @keyframes cmdblink{50%{background:#ffe066}}
   .cmd span svg{display:block;width:100%;height:100%}
+  .cmdtime{display:block;height:12px;margin:6px auto 0;box-sizing:border-box;border:3px solid #222;background:#fff}   /* 指令時間條：時間到就換一組（Ming） */
+  .cmdtime i{display:block;height:100%;width:100%;background:#92cc41}
   .dpad{display:flex;justify-content:center;gap:10px;margin-top:14px}
   .dpad .nes-btn{width:68px;height:68px;padding:0;display:flex;align-items:center;justify-content:center;touch-action:manipulation}
   .dpad .nes-btn svg{display:block;width:40px;height:40px}
   .boss-dim{position:fixed;inset:0;background:#000;z-index:2;opacity:0;animation:bossdim .9s ease-in forwards}
   @keyframes bossdim{to{opacity:.5}}   /* 稍暗就好（Ming） */
   .boss-dim.off{animation:bossundim .4s ease-out forwards}
-  @keyframes bossundim{from{opacity:.86}to{opacity:0}}
+  @keyframes bossundim{from{opacity:.5}to{opacity:0}}   /* 跟 bossdim 的 .5 對齊，不然退場時會先閃暗一下（Ming） */
   .cat.belly{touch-action:none;cursor:pointer}   /* 翻肚原地翻，大小位置不變（Ming） */
   .cat.purr{animation:catpurr .25s steps(2) 1}
   @keyframes catpurr{from{transform:rotate(-3deg) scale(1.03)}to{transform:rotate(3deg) scale(1.03)}}
@@ -2306,7 +2308,7 @@ function renderBoss(s, idx, d, k){
   else if(!won){ startGlitch(); startSpray($('#arena'), $('#hole')); }
   const nb=$('#nextboss'); if(nb){ nb.onclick=()=>pass(s); return; }
   const cat=$('#cat'), devil=$('#devil'), fist=$('#fist'), arena=$('#arena'), call=$('#bosscall');
-  const MAX=s.bossHits||30, EXILE_MS=5000, HEAL=20;
+  const MAX=s.bossHits||30, EXILE_MS=3000,   /* 次元之握間隔（Ming 2026-11-10 改 3 秒） */ HEAL=20;
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);   // 離開這頁就全部作廢
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
   fade();
@@ -2338,7 +2340,15 @@ function renderBoss(s, idx, d, k){
   }
   // ---- 次元放逐：被揍第 10 下、第 20 下各放一次，裂隙困住胖貓，照上方指令（4 個→8 個）按下方四個鍵 ----
   const DIRS=['up','down','left','right'];
-  const drawCmd=()=>{ call.innerHTML=`<span class="cmd">${d.seq.map((x,i)=>`<span class="${i<d.pos?'done':i===d.pos?'now':''}">${arrowSVG(x,'#222','100%')}</span>`).join('')}</span>`; };
+  const drawCmd=()=>{ const html=d.seq.map((x,i)=>`<span class="${i<d.pos?'done':i===d.pos?'now':''}">${arrowSVG(x,'#222','100%')}</span>`).join('');
+    const c=call.querySelector('.cmd'); if(c){ c.innerHTML=html; return; }   // 只換箭頭，時間條不重畫
+    call.innerHTML=`<span class="cmd">${html}</span><span class="cmdtime" style="width:${d.seq.length*34-4}px"><i></i></span>`; };
+  let cmdT=0;
+  const cmdTimer=()=>{ clearTimeout(cmdT); const bar=call.querySelector('.cmdtime i'); if(!bar) return; const dur=d.seq.length>4?6500:4000;   // 4 個指令 4 秒、8 個 6.5 秒
+    bar.getAnimations().forEach(a=>a.cancel());
+    bar.animate([{width:'100%',background:'#92cc41'},{background:'#ffe066',offset:.65},{width:'0%',background:'#ff2a6d'}],{duration:dur,easing:'linear',fill:'forwards'});
+    cmdT=setTimeout(()=>{ if(d.boss!=='trap' || !document.body.contains(arena)) return;   // 時間到：換一組新指令，從頭按
+      d.seq=d.seq.map(()=>DIRS[Math.floor(Math.random()*4)]); d.pos=0; keep(); SND.sfx('trap',.6); vib(80); drawCmd(); cmdTimer(); },dur); };
   function startExile(){
     clearTimeout(exileT); const n=(d.hits||0)>=20?8:4;
     d.boss='trap'; d.seq=Array.from({length:n},()=>DIRS[Math.floor(Math.random()*4)]); d.pos=0; keep();
@@ -2381,7 +2391,7 @@ function renderBoss(s, idx, d, k){
         ctx.globalAlpha=1; requestAnimationFrame(swirl);
       };
       swirl(born); cat.classList.add('trapped');
-      drawCmd();
+      drawCmd(); cmdTimer();
       const tb=$('#throwbox'); if(tb) tb.style.display='none';
       const pad=document.createElement('div'); pad.className='dpad noglitch'; pad.id='dpad';
       pad.innerHTML=['left','up','down','right'].map(x=>`<button class="nes-btn is-primary" data-dir="${x}">${arrowSVG(x,'#fff','40px')}</button>`).join('');
@@ -2390,7 +2400,7 @@ function renderBoss(s, idx, d, k){
         if(b.dataset.dir===d.seq[d.pos]){ d.pos++; keep(); SND.sfx('arrow'); drawCmd(); if(d.pos>=d.seq.length) escape(); }
         else banish(); }); });
   }
-  const clearPad=()=>{ const pad=$('#dpad'); if(pad) pad.remove(); const tb=$('#throwbox'); if(tb) tb.style.display=''; };
+  const clearPad=()=>{ clearTimeout(cmdT); const pad=$('#dpad'); if(pad) pad.remove(); const tb=$('#throwbox'); if(tb) tb.style.display=''; };
   const undim=()=>{ devil.classList.remove('taunt'); const dm=$('#trapdim'); if(dm){ dm.classList.add('off'); setTimeout(()=>dm.remove(),400); } };
   function escape(){ undim();
     SND.sfx('escape'); const tr=$('#trap'); if(tr){ tr.classList.add('break'); setTimeout(()=>tr.remove(),450); }
@@ -2413,10 +2423,10 @@ function renderBoss(s, idx, d, k){
     d.boss='rub'; d.rub=0; keep(); clearTimeout(exileT); fist.hidden=true; devil.classList.add('stun');
     SND.sfx('dim'); const dim=document.createElement('div'); dim.className='boss-dim'; dim.id='bossdim'; arena.appendChild(dim);
     T(700,()=>{ cat.getAnimations().forEach(a=>a.cancel()); SND.sfx('cat');
-      const flip=cat.animate([{transform:'scaleY(1)'},{transform:'scaleY(.15)'}],{duration:160,easing:'steps(3)',fill:'forwards'});   // 原地翻肚：壓扁 → 換肚子圖 → 撐開（不壓到 0，不然會消失一下，Ming）
-      flip.onfinish=()=>{ cat.innerHTML=belly; cat.classList.add('belly'); flip.cancel(); cat.animate([{transform:'scaleY(.15)'},{transform:'scaleY(1)'}],{duration:160,easing:'steps(3)'});
-        const ar=arena.getBoundingClientRect(), cr=cat.getBoundingClientRect(); g.style.left=Math.max(26,cr.left-ar.left+cr.width/2-65)+'px'; g.style.top=(cr.top+cr.height/2-cat.offsetHeight/2-ar.top-40)+'px'; g.style.visibility=''; };   // 刻度放在胖貓頭上（翻肚動畫中 rect 被壓扁，改用實際高度回推頭頂）
-      const g=document.createElement('div'); g.className='gauge noglitch'; g.id='gauge'; g.innerHTML=`<b>爽</b><i></i>`; g.style.visibility='hidden'; arena.appendChild(g);
+      cat.innerHTML=belly; cat.classList.add('belly');   // 翻肚：直接換圖，不做翻轉動畫（Ming）
+      const ar=arena.getBoundingClientRect(), cr=cat.getBoundingClientRect();
+      const g=document.createElement('div'); g.className='gauge noglitch'; g.id='gauge'; g.innerHTML=`<b>爽</b><i></i>`; arena.appendChild(g);
+      g.style.left=Math.max(26,cr.left-ar.left+cr.width/2-65)+'px'; g.style.top=(cr.top-ar.top-40)+'px';   // 刻度放在胖貓頭上
       let last=null, acc=0, purrT=0;
       cat.onpointerdown=e=>{ if(d.boss!=='rub') return; last={x:e.clientX,y:e.clientY}; cat.setPointerCapture(e.pointerId); };
       cat.onpointermove=e=>{ if(!last||d.boss!=='rub') return; acc+=Math.abs(e.clientX-last.x)+Math.abs(e.clientY-last.y); last={x:e.clientX,y:e.clientY};
