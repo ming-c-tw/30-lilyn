@@ -84,6 +84,8 @@
     box-shadow:4px 0 #ffe066,0 4px #ffb703,4px 4px #ffb703,8px 4px #ffe066,0 8px #fb8500,4px 8px #ffb703,8px 8px #fb8500,4px 12px #fb8500;display:none}
   .candle.lit .flame{display:block;animation:flick .4s steps(2) infinite alternate}
   .candle.out .flame{display:none}
+  .candle.ignite .flame{animation:ignite 1.5s steps(12) both,flick .4s steps(2) 1.5s infinite alternate}   /* 點亮頁：沒火 → 大火 → 縮回正常 */
+  @keyframes ignite{0%,38%{transform:scale(0);filter:none}46%{transform:scale(2.8,3.2);filter:drop-shadow(0 0 10px #ffb703) drop-shadow(0 0 4px #fff)}62%{transform:scale(2.2,2.5);filter:drop-shadow(0 0 8px #ffb703)}100%{transform:none;filter:none}}
   .candle.gold{opacity:1}
   .candle.gold .stick{background:#ffd34d;box-shadow:inset -4px 0 0 #e0a800, 0 4px 0 #000}   /* 第 7 根金色蠟燭 */
   .candle.gold.lit .flame{filter:drop-shadow(0 0 4px #ff3b3b) drop-shadow(0 0 2px #ffb3b3);background:#ff6b6b;box-shadow:4px 0 #ff6b6b,0 4px #e8112d,4px 4px #e8112d,8px 4px #ff6b6b,0 8px #a4001a,4px 8px #e8112d,8px 8px #a4001a,4px 12px #a4001a}   /* 赤紅色火焰 */
@@ -1321,7 +1323,7 @@ function bindNpcPanel(s, idx){
     save(); render(); };
   const nw=$('#npcwin'); if(nw) nw.onclick=()=>{ if(window.__MG_WIN) window.__MG_WIN(); };   // 走遊戲自己的通關畫面
   // AR 關：控制者直接給左半／右半（兩半都有就跟真的掃到一樣，出現「解除封印」）
-  const fbGive=key=>{ stopCamera(); const k=s.id+'_fb', d=state.extra[k]||{got:[]}; if(!d.got.includes(key)) d.got.push(key); state.extra[k]=d; save(); render(); };
+  const fbGive=key=>{ SND.sfx('badge'); stopCamera(); const k=s.id+'_fb', d=state.extra[k]||{got:[]}; if(!d.got.includes(key)) d.got.push(key); state.extra[k]=d; save(); render(); };
   const nL=$('#npcL'); if(nL) nL.onclick=()=>fbGive('winter'); const nR=$('#npcR'); if(nR) nR.onclick=()=>fbGive('flower');
   // 忠孝復興：控制者直接算這張圖看破（最後一張就進魔王戰前的「已看破全部虛假」）
   const nph=$('#npcphoto'); if(nph) nph.onclick=()=>{ const k=s.id+'_quiz', d=state.extra[k]||{cur:0,step:'look'}; const n=(s.photos||[1]).length;
@@ -1380,7 +1382,7 @@ function showLetter(s, next){
   $('#next').onclick=()=>{ state.stage=Math.min(state.stage+1, CONFIG.stages.length-1); save(); render(); };
   bindNpc(s,idx); setTimeout(sfxPage,0);   // 拿信頁沒經過 render()，自己叫音效（有信→翻頁聲；目的地→列車聲）
 }
-const litHTML=()=>`<div class="candles big hero" style="margin-bottom:24px">${candleHTML('lit')}</div>`;
+const litHTML=()=>`<div class="candles big hero" style="margin-bottom:24px">${candleHTML('lit ignite')}</div>`;
 function litStep(s, idx){                      // 回 true＝這次畫的是「成功點亮」頁；按下一步後 _go 記起來，下次 render 才給目的地
   if(state.extra[s.id+'_go']) return false;
   main.innerHTML = ticket(s, `${steps()}
@@ -1787,7 +1789,7 @@ const SND=(()=>{
   const ctx=()=>{ if(!ac){ const C=window.AudioContext||window.webkitAudioContext; if(C) try{ ac=new C(); }catch(e){} } return ac; };
   function load(name){ if(name in bufs) return Promise.resolve(bufs[name]); bufs[name]=null; const c=ctx(); if(!c||location.protocol==='file:') return Promise.resolve(null);
     return fetch(base+'sfx/'+name+'.mp3').then(r=>r.arrayBuffer()).then(ab=>new Promise((res,rej)=>c.decodeAudioData(ab,res,rej))).then(b=>{ bufs[name]=b; return b; }).catch(()=>null); }
-  const SFX_ALL=['click','correct','wrong','candle_lit','candle_blow','digit','shutter','train','card_flip','ball_hit','jump','cat','punch','devil','glitch','charge','ignite','rainbow','smoke','locker','heart','page','growl','win','badge','merge','unseal','throw','land','rift','defeat','rift_close','fall','bump','pop','exile','trap','arrow','arrow_bad','escape','banish','heal','dim','purr','gauge_full','ult_spin','ult_slam','grip','shake','grip_free'];
+  const SFX_ALL=['invite','ticket','fairy','telescope','yum','mystery','director','aura','gift','gold_ignite','wish_n1','wish_n2','wish_n3','wish_n4','wish_n5','wish_n6','wish','finale','click','correct','wrong','candle_lit','candle_blow','digit','shutter','train','card_flip','ball_hit','jump','cat','punch','devil','glitch','charge','ignite','rainbow','smoke','locker','heart','page','growl','win','badge','merge','unseal','throw','land','rift','defeat','rift_close','fall','bump','pop','exile','trap','arrow','arrow_bad','escape','banish','heal','dim','purr','gauge_full','ult_spin','ult_slam','grip','shake','grip_free'];
   function preload(){ let i=0; const next=()=>{ if(i>=SFX_ALL.length) return; load(SFX_ALL[i++]).then(()=>setTimeout(next,30)); }; next(); }
   function sfx(name,vol=.9){ if(!on()||!unlocked) return; const c=ctx(), b=bufs[name];
     if(c&&b){ if(c.state==='suspended') c.resume().catch(()=>{}); const src=c.createBufferSource(); src.buffer=b; const g=c.createGain(); g.gain.value=vol; src.connect(g); g.connect(c.destination); src.start(0); return; }
@@ -1837,9 +1839,18 @@ const SND_OFF_ROWS=['....B.......','...BB.......','.BBBB..B..B.','.BBBB...BB..',
 const sndIcon=()=>spriteSVG(SND.on()?SND_ON_ROWS:SND_OFF_ROWS,{B:'#111'},'22px','aria-label="音效"')+(SND.on()?'':'');
 /* 換頁音效：同一頁只響一次 */
 let lastSfxPk='';
+const PAGE_SFX={'s1:sit':'fairy','s4:pre':'yum','s9:end':'finale'};
 function sfxPage(){ const pk=pageKey(); if(pk===lastSfxPk) return; lastSfxPk=pk; const m=document.querySelector('#main'); const name=(m.querySelector('.name')||{}).textContent||'';
-  if(/:lit$/.test(pk)) SND.sfx('candle_lit'); else if(/:number$/.test(pk)) SND.sfx('digit'); else if(/:(go|depart)$/.test(pk)) SND.sfx('train');
+  if(m.querySelector('.candle.ignite')){ setTimeout(()=>SND.sfx('ignite'),520); setTimeout(()=>SND.sfx('candle_lit'),900); }   /* 點亮頁：跟點燃動畫對拍（火冒出來 → 縮回） */
+  else if(/專屬$/.test(name)) SND.sfx('invite'); else if(m.querySelector('#got')) SND.sfx('ticket');   // 歡迎頁／拿車票頁
+  else if(PAGE_SFX[pk]) SND.sfx(PAGE_SFX[pk]); else if(/:number$/.test(pk)) SND.sfx('digit'); else if(/:(go|depart)$/.test(pk)) SND.sfx('train');
   else if(m.querySelector('#bosscall.boss-call') && !m.querySelector('#hole.pre-intro')) SND.sfx('devil'); else if(pk==='s7:gocode') SND.sfx('smoke'); else if(m.querySelector('.stripwrap')) SND.sfx('heart'); else if(/置物櫃/.test(name)) SND.sfx('locker');
+  else if(m.querySelector('.passerby,.granny')) SND.sfx('telescope');           // 七彩望遠鏡
+  else if(m.querySelector('[aria-label="神秘人的剪影"]')) SND.sfx('mystery');
+  else if(m.querySelector('.editor-momo')) SND.sfx('director');                 // 導演關
+  else if(m.querySelector('.rc')) SND.sfx('aura');                              // 七彩光暈蠟燭
+  else if(m.querySelector('.rift')) SND.sfx('rift');                            // 空間裂縫
+  else if(m.querySelector('.gold-gift')) SND.sfx('gift');                       // 列車長拿出金色蠟燭
   else if(m.querySelector('.hungry')) SND.sfx('growl');                         // 列車長肚子咕嚕咕嚕叫
   else if(m.querySelector('.fb-free')) SND.sfx('cat');                          // 胖貓從徽章滾出來：喵
   else if(m.querySelector('#summon')) SND.sfx('merge');                         // 兩半徽章合體
@@ -1918,6 +1929,7 @@ function renderWelcome(){
     ${candles()}
     <button class="nes-btn is-primary btn" id="go" style="margin-top:10px">我準備好了！</button></section>`;
   $('#go').onclick=()=>{ state.started=Date.now(); save(); render(); };   // 接著 render 會先進權限閘門頁
+  setTimeout(sfxPage,0);   // 歡迎頁沒經過 render() 的音效段，自己叫
 }
 
 /* 0 車票 → 前往下一站 → 車上拼圖 */
@@ -3106,7 +3118,7 @@ function goldPulse(){   // 擺動一次
   if(goldCount>=10){ stopCamera(); state.extra.s7_goldLit=true; save();
     const gs=$('#gstart'); if(gs) gs.remove(); const sh=$('#simhand'); if(sh) sh.remove();
     const c=document.querySelector('#goldbig .candle'), gb=$('#goldbig'); if(gb) gb.classList.add('igniting');
-    setTimeout(()=>igniteFlash(document.querySelector('#goldbig .candle'), $('#goldbig')),250);   // 火苗縮完 → 超長閃光從引線頂端出現，邊轉邊縮回引線（每次重抓畫面上的蠟燭）
+    setTimeout(()=>igniteFlash(document.querySelector('#goldbig .candle'), $('#goldbig'), undefined, {sfx:'gold_ignite'}),250);   // 火苗縮完 → 超長閃光從引線頂端出現，邊轉邊縮回引線（每次重抓畫面上的蠟燭）
     setTimeout(()=>{ const c=document.querySelector('#goldbig .candle'), gb=$('#goldbig'); if(!c) return; igniteRing(c);   // 炸一圈紅圈
       c.classList.add('lit','pop'); setTimeout(()=>c.classList.remove('pop'),420); if(gb) gb.classList.remove('igniting'); updateBar(); },1850);   // 閃光縮進引線 → 炸出紅火
     setTimeout(()=>{ const pp=$('#pips'); if(pp) pp.remove(); const ok2=$('#goldok'); if(ok2) ok2.style.display=''; const m=$('#gmsg'); if(m) m.innerHTML=ok('金色蠟燭點燃了！'); },2250); }
@@ -3148,10 +3160,10 @@ function renderWish(s){   // 第 3 頁：7 根一字排開，四周變暗，2～
   const CPAL={cc1:['#d9681a','#ff9f43','#ffd8a8'],cc2:['#d9b21e','#ffe066','#fff6b0'],cc3:['#2e9e44','#66d678','#c4f5cb'],cc4:['#16968f','#3ad1c8','#c4f5f1'],cc5:['#2459b8','#4c8df0','#c9ddff'],cc6:['#7a32ad','#b464e6','#ead0ff']};   // 各色火焰的深／中／淺色（跟 .cc1~.cc6 的火焰一致）
   ['cc1','cc2','cc3','cc4','cc5','cc6'].forEach((c,i)=>{ const t0=2200+i*550, cd=cs[i+1], pal=CPAL[c];   // 第 2 根起依序：橙黃綠青藍紫，每根都走金色蠟燭那套點燃動畫（Ming 2026-11-06）
     T(t0,()=>cd.classList.add('shrink'));
-    T(t0+250,()=>igniteFlash(cd, row, pal, {len:900, w:5, dur:900, sfx:'pop'}));   // 許願頁每根變色用短的「pop」，不用金蠟燭那段長的
+    T(t0+250,()=>igniteFlash(cd, row, pal, {len:900, w:5, dur:900, sfx:'wish_n'+(i+1)}));   // 許願頁每根變色：魔法鐘聲一根比一根高，連起來是一段旋律
     T(t0+1150,()=>{ cd.classList.remove('shrink'); cd.classList.add(c,'pop'); igniteRing(cd, pal[1]); setTimeout(()=>cd.classList.remove('pop'),420); }); });
   T(6400,()=>{ $('#rays').classList.add('on'); state.extra.s7_rainbow=true; save(); updateBar(); SND.sfx('rainbow'); });   // 散發七彩光暈；上方蠟燭列也變七彩
-  T(6900,()=>{ row.parentElement.classList.add('ready'); const sb=$('#simblow'); if(sb) sb.style.display=''; });   // 白字＋按鈕出現（模擬鈕已被搬進控制者視窗，要另外叫出來）
+  T(6900,()=>{ SND.sfx('wish'); row.parentElement.classList.add('ready'); const sb=$('#simblow'); if(sb) sb.style.display=''; });   // 白字＋按鈕出現（模擬鈕已被搬進控制者視窗，要另外叫出來）
   let out=0;
   const extinguish=()=>{ const wb=$('#wished'); if(wb) wb.style.display='none';
     const lit=[...document.querySelectorAll('#fc .candle.lit')]; if(lit.length){ SND.sfx('candle_blow'); const c=lit[lit.length-1]; c.classList.remove('lit'); c.classList.add('out'); out++; }

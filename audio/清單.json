@@ -667,6 +667,186 @@
       "samples": 28224,
       "source": "自製：音效.mjs＋合成核心.mjs",
       "license": "自製 CC0"
+    },
+    "invite": {
+      "file": "sfx/invite.mp3",
+      "loop": false,
+      "desc": "開場邀請函：拆信紙聲與溫暖的生日三音小鈴",
+      "duration": 1.08,
+      "sample_rate": 44100,
+      "samples": 47628,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "ticket": {
+      "file": "sfx/ticket.mp3",
+      "loop": false,
+      "desc": "專屬車票：剪票喀擦與清亮叮聲",
+      "duration": 0.7,
+      "sample_rate": 44100,
+      "samples": 30870,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "fairy": {
+      "file": "sfx/fairy.mp3",
+      "loop": false,
+      "desc": "圖書館小精靈現身：閃亮下行琶音與小翅膀顫動",
+      "duration": 1.08,
+      "sample_rate": 44100,
+      "samples": 47628,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "telescope": {
+      "file": "sfx/telescope.mp3",
+      "loop": false,
+      "desc": "七彩望遠鏡登場：兩段伸縮咻聲與鏡片閃光",
+      "duration": 0.88,
+      "sample_rate": 44100,
+      "samples": 38808,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "yum": {
+      "file": "sfx/yum.mp3",
+      "loop": false,
+      "desc": "美食登場：合成啊嗯咬一口與兩聲開心彈跳",
+      "duration": 0.78,
+      "sample_rate": 44100,
+      "samples": 34398,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "mystery": {
+      "file": "sfx/mystery.mp3",
+      "loop": false,
+      "desc": "神秘人剪影：低沉懸疑兩音與問號般上揚尾音",
+      "duration": 1.26,
+      "sample_rate": 44100,
+      "samples": 55566,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "director": {
+      "file": "sfx/director.mp3",
+      "loop": false,
+      "desc": "導演關登場：場記板啪聲與短促開拍號角",
+      "duration": 0.7,
+      "sample_rate": 44100,
+      "samples": 30870,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "aura": {
+      "file": "sfx/aura.mp3",
+      "loop": false,
+      "desc": "七彩蠟燭光暈：柔和閃爍的高音和弦與微顫",
+      "duration": 1.26,
+      "sample_rate": 44100,
+      "samples": 55566,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "gift": {
+      "file": "sfx/gift.mp3",
+      "loop": false,
+      "desc": "列車長送金色蠟燭：隆重的小號角開場與禮物閃光",
+      "duration": 1.28,
+      "sample_rate": 44100,
+      "samples": 56448,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "gold_ignite": {
+      "file": "sfx/gold_ignite.mp3",
+      "loop": false,
+      "desc": "金色蠟燭點燃：吸氣蓄力、爆燃轟聲與上行閃光長尾",
+      "duration": 1.86,
+      "sample_rate": 44100,
+      "samples": 82026,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "wish_n1": {
+      "file": "sfx/wish_n1.mp3",
+      "loop": false,
+      "desc": "許願第 1 根橙色蠟燭：C5 魔法鐘聲與火焰輕噗",
+      "duration": 0.78,
+      "sample_rate": 44100,
+      "samples": 34398,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "wish_n2": {
+      "file": "sfx/wish_n2.mp3",
+      "loop": false,
+      "desc": "許願第 2 根黃色蠟燭：D5 魔法鐘聲與火焰輕噗",
+      "duration": 0.78,
+      "sample_rate": 44100,
+      "samples": 34398,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "wish_n3": {
+      "file": "sfx/wish_n3.mp3",
+      "loop": false,
+      "desc": "許願第 3 根綠色蠟燭：E5 魔法鐘聲與火焰輕噗",
+      "duration": 0.78,
+      "sample_rate": 44100,
+      "samples": 34398,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "wish_n4": {
+      "file": "sfx/wish_n4.mp3",
+      "loop": false,
+      "desc": "許願第 4 根青色蠟燭：G5 魔法鐘聲與火焰輕噗",
+      "duration": 0.78,
+      "sample_rate": 44100,
+      "samples": 34398,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "wish_n5": {
+      "file": "sfx/wish_n5.mp3",
+      "loop": false,
+      "desc": "許願第 5 根藍色蠟燭：A5 魔法鐘聲與火焰輕噗",
+      "duration": 0.78,
+      "sample_rate": 44100,
+      "samples": 34398,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "wish_n6": {
+      "file": "sfx/wish_n6.mp3",
+      "loop": false,
+      "desc": "許願第 6 根紫色蠟燭：C6 魔法鐘聲與火焰輕噗",
+      "duration": 0.78,
+      "sample_rate": 44100,
+      "samples": 34398,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "wish": {
+      "file": "sfx/wish.mp3",
+      "loop": false,
+      "desc": "許願文字出現：夢幻上行豎琴琶音、大和弦與星星尾光",
+      "duration": 2.36,
+      "sample_rate": 44100,
+      "samples": 104076,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
+    },
+    "finale": {
+      "file": "sfx/finale.mp3",
+      "loop": false,
+      "desc": "全部通關：完整盛大勝利號角、終止和弦與煙火劈啪",
+      "duration": 2.86,
+      "sample_rate": 44100,
+      "samples": 126126,
+      "source": "自製：音效.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
     }
   },
   "授權": "每個檔案的來源與授權分別記於 bgm／sfx 各項 source、license。所有合成錄音及原創編曲：自製 CC0。birthday 的 Happy Birthday 旋律按使用者提供的公共領域條件使用；未使用任何第三方錄音、音源、採樣或素材。",
