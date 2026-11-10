@@ -909,11 +909,11 @@
     "sparkle": {
       "file": "sfx/sparkle.mp3",
       "loop": false,
-      "desc": "許願頁七彩蠟燭：魔法灑粉閃閃",
-      "duration": 1.8,
+      "desc": "許願頁七彩蠟燭：空靈水晶鈴灑粉",
+      "duration": 2.2,
       "sample_rate": 44100,
-      "samples": 79380,
-      "source": "freesound 462095「Sparkling Star 01」（經 Openverse）",
+      "samples": 97020,
+      "source": "freesound 639429「Crystal Twinkle」（經 Openverse）＋回音",
       "license": "CC0"
     }
   },
