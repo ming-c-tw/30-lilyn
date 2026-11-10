@@ -295,10 +295,10 @@
     "cat": {
       "file": "sfx/cat.mp3",
       "loop": false,
-      "desc": "胖貓：真的貓叫「喵～」",
-      "duration": 1.28,
+      "desc": "胖貓：真的貓叫升調奶音「喵～」",
+      "duration": 0.88,
       "sample_rate": 44100,
-      "samples": 56448,
+      "samples": 38808,
       "source": "Wikimedia Commons「Meow of a pleading cat.oga」（Heismark）剪輯",
       "license": "Public domain"
     },
