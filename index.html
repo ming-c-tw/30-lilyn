@@ -2332,7 +2332,7 @@ function renderBoss(s, idx, d, k){
   else if(!won){ startGlitch(); startSpray($('#arena'), $('#hole')); }
   const nb=$('#nextboss'); if(nb){ nb.onclick=()=>pass(s); return; }
   const cat=$('#cat'), devil=$('#devil'), fist=$('#fist'), arena=$('#arena'), call=$('#bosscall');
-  const MAX=s.bossHits||30, EXILE_MS=()=>{ const [lo,hi]=d.esc2?[600,1200]:d.esc1?[900,1700]:[1200,2200]; return lo+Math.random()*(hi-lo); },   /* 次元之握間隔隨機（Ming 2026-11-10 原值除以 1.5）：一開始 0.67～2 秒，（從第一拳起算）開場 1.2～2.2 秒，破過第一階段 0.9～1.7 秒，破過第二階段 0.6～1.2 秒（Ming 2026-11-10） */ HEAL=10;   /* 被放逐惡魔回 10 下 */
+  const MAX=s.bossHits||30, EXILE_MS=()=>{ const [lo,hi]=d.esc2?[300,600]:d.esc1?[450,850]:[600,1100]; return lo+Math.random()*(hi-lo); },   /* 次元之握間隔隨機（Ming 2026-11-10 原值除以 1.5）：一開始 0.67～2 秒，（從第一拳起算，Ming 2026-11-10 再除以 2）開場 0.6～1.1 秒，破過第一階段 0.45～0.85 秒，破過第二階段 0.3～0.6 秒（Ming 2026-11-10） */ HEAL=10;   /* 被放逐惡魔回 10 下 */
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);   // 離開這頁就全部作廢
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
   fade();
@@ -2348,8 +2348,8 @@ function renderBoss(s, idx, d, k){
   let waitPunch=false;
   const armExile=()=>{ clearTimeout(exileT); waitPunch=true; };
   const startExileTimer=()=>{ waitPunch=false; clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(); },EXILE_MS()); };
-  function startGrip(){
-    const since=performance.now()-punchAt; if(since<420){ clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(); },420-since); return; }   // 正在出拳：等胖貓回原位再抓
+  function startGrip(force){
+    const since=performance.now()-punchAt; if(!force && since<420){ fist.disabled=true; clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(true); },420-since); return; }   // 正在出拳：先鎖拳頭（不能再出拳一直把握往後延——連打時次元之握會永遠不觸發，Ming 2026-11-10），等這一拳收回就抓
     d.boss='grip'; keep(); fist.hidden=true; fist.disabled=true; SND.sfx('grip'); devil.classList.add('cast','grip');
     const ar=arena.getBoundingClientRect(), dr=devil.getBoundingClientRect();
     const claw=drawGrip(arena, cat, dr.left-ar.left+12, dr.top-ar.top+68);   // 翻轉後比中指那隻手的位置（第 3 欄、第 17 列）
