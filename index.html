@@ -1781,7 +1781,15 @@ const SND=(()=>{
     else if(s.type==='ticket_puzzle') n=state.extra.s0_tp?'travel':'title';
     if(document.querySelector('#main .stripwrap')) n='birthday';
     if(justName) return n; bgm(n); }
-  window.addEventListener('pointerdown',()=>{ const c=ctx(); if(c&&c.state==='suspended') c.resume().catch(()=>{}); if(unlocked) return; unlocked=true; if(on()){ const n=pending||curName; curName=''; if(n) bgm(n); } },{capture:true});
+  /* 手機只承認「手指放開／點擊／按鍵」是使用者操作（按下的瞬間不算），所以每種都試著解鎖；
+     背景音樂被擋過（paused）就在下一次操作重播。boss 單關一開頁就有音樂在等，之前只在 pointerdown 試一次就永遠沒聲音（Ming 2026-11-10） */
+  try{ if(navigator.audioSession) navigator.audioSession.type='playback'; }catch(e){}   // iOS 17+：靜音鍵開著也照樣出聲
+  const unlock=()=>{ const c=ctx();
+    if(c){ if(c.state!=='running') c.resume().catch(()=>{}); try{ const s=c.createBufferSource(); s.buffer=c.createBuffer(1,1,22050); s.connect(c.destination); s.start(0); }catch(e){} }
+    if(!on()) return;
+    if(!unlocked){ unlocked=true; const n=pending||curName; curName=''; if(n) bgm(n); return; }
+    if(cur && cur.paused && !document.hidden) cur.play().then(()=>fade(cur, ducked?DUCKV:VOL, 600)).catch(()=>{}); };
+  ['pointerdown','pointerup','touchend','click','keydown'].forEach(ev=>window.addEventListener(ev,unlock,{capture:true}));
   setTimeout(preload,600);   // 開頁就先把全部音效解碼進記憶體（都很小，總共不到 1 MB）
   document.addEventListener('visibilitychange',()=>{ if(!cur) return; if(document.hidden) cur.pause(); else if(on()) cur.play().catch(()=>{}); });
   document.addEventListener('click',e=>{ const b=e.target.closest('button.nes-btn, label.nes-btn, .progbtn, .bkbtn'); if(b && !b.closest('#gamebox')) sfx('click',.5); },{capture:true});
