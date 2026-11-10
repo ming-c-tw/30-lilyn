@@ -1761,19 +1761,24 @@ const SND=(()=>{
   const bgBufs={};
   function loadBgm(name){ if(bgBufs[name]) return bgBufs[name]; const c=ctx(); if(!c||location.protocol==='file:') return Promise.resolve(null);
     return bgBufs[name]=fetch(base+'bgm/'+name+'.mp3').then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); }).then(ab=>new Promise((res,rej)=>c.decodeAudioData(ab,res,rej))).catch(()=>{ delete bgBufs[name]; return null; }); }
-  function waTrack(c,buf,loop){ const g=c.createGain(); g.gain.value=0; g.connect(c.destination); const s=c.createBufferSource(); s.buffer=buf; s.loop=loop; s.connect(g); s.start(0);
+  function waTrack(c,buf,loop){ const g=c.createGain(); g.gain.value=0; g.connect(c.destination); const s=c.createBufferSource(); s.buffer=buf; s.loop=loop; s.connect(g); s.start(0); let dead=false; s.onended=()=>{ dead=true; };
     const vol=(v,ms)=>{ const t=c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value,t); g.gain.linearRampToValueAtTime(v,t+ms/1000); };
-    return { vol, stop(ms){ vol(0,ms); setTimeout(()=>{ try{ s.stop(); }catch(e){} g.disconnect(); },ms+60); }, pause(){}, play(){} }; }
+    return { vol, loop, get dead(){ return dead; }, stop(ms){ vol(0,ms); setTimeout(()=>{ try{ s.stop(); }catch(e){} g.disconnect(); },ms+60); }, pause(){}, play(){} }; }
   function elTrack(name,loop){ const a=el('bgm',name); if(!a) return null; a.loop=loop; a.currentTime=0; a.volume=0;
-    const t={ el:a, vol(v,ms){ fade(a,v,ms); }, stop(ms){ fade(a,0,ms,()=>a.pause()); }, pause(){ a.pause(); }, play(){ if(a.paused) a.play().then(()=>fade(a,ducked?DUCKV:VOL,600)).catch(()=>{}); } };
+    const t={ el:a, loop, get dead(){ return a.paused; }, vol(v,ms){ fade(a,v,ms); }, stop(ms){ fade(a,0,ms,()=>a.pause()); }, pause(){ a.pause(); }, play(){ if(a.paused) a.play().then(()=>fade(a,ducked?DUCKV:VOL,600)).catch(()=>{}); } };
     a.play().then(()=>fade(a,ducked?DUCKV:VOL,600)).catch(()=>{}); return t; }
+  /* 背景音樂巡檢（Ming 2026-11-10：控制台速通後拼圖頁只有音效沒音樂，電腦重現不出來）：
+     該有音樂卻沒在播（載入失敗退回被擋的 <audio>、循環音軌意外停掉、沒有音軌）就重播一次 */
+  let loading='';
+  setInterval(()=>{ if(!on()||!unlocked||!curName||document.hidden||loading) return;
+    if(!cur || (cur.loop && cur.dead)){ const n=curName; if(cur){ cur.stop(0); cur=null; } curName=''; bgm(n); } },2500);
   function bgm(name){ if(name===curName) return; curName=name; if(!on()||!unlocked){ pending=name; return; } pending='';
     if(cur){ cur.stop(500); cur=null; }
     if(!name) return; const loop=name!=='victory';
-    loadBgm(name).then(buf=>{ if(curName!==name || cur || !on()) return; const c=ctx();
+    loading=name; loadBgm(name).then(buf=>{ if(loading===name) loading=''; if(curName!==name || cur || !on()) return; const c=ctx();
       if(buf && c){ if(c.state!=='running') c.resume().catch(()=>{}); cur=waTrack(c,buf,loop); cur.vol(ducked?DUCKV:VOL,600);
         Object.keys(bgBufs).forEach(k=>{ if(k!==name) delete bgBufs[k]; }); }   // 解碼後一首十幾 MB，只留正在播的
-      else cur=elTrack(name,loop); }); }
+      else if(!c || location.protocol==='file:') cur=elTrack(name,loop); }); }   // 有 Web Audio 但這次抓／解碼失敗：不退回會被手機擋的 <audio>，留空讓巡檢 2.5 秒後重試
   let ducked=false; const VOL=.55, DUCKV=.1;
   function duck(on){ ducked=!!on; if(cur) cur.vol(ducked?DUCKV:VOL, 400); }
   /* 音效走 Web Audio：先把 mp3 解碼成 AudioBuffer 放記憶體，播的時候零延遲（2026-11-07 Ming：音效會 lag）。
@@ -1823,7 +1828,7 @@ const SND=(()=>{
   const back=()=>{ const p=picking; if(!p) return; setTimeout(()=>{ if(picking!==p) return; picking=null; if(!p.files || !p.files.length) freshFile(p); },700); };   // 等一下：選了檔的話 change 會先到
   window.addEventListener('focus',back); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) back(); });
   document.addEventListener('change',e=>{ if(e.target===picking) picking=null; },{capture:true});
-  return {on,bgm,sfx,toggle,page,duck,ready:()=>SFX_ALL.filter(n=>bufs[n]).length};
+  return {on,bgm,sfx,toggle,page,duck,ready:()=>SFX_ALL.filter(n=>bufs[n]).length,dbg:()=>({curName,pending,unlocked,has:!!cur,wa:!!(cur&&!cur.el)})};
 })();
 window.SND=SND;
 /* 控制台音效鈕的像素喇叭（開：有聲波；關：打叉） */
