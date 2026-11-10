@@ -2334,7 +2334,7 @@ function renderBoss(s, idx, d, k){
   else if(!won){ startGlitch(); startSpray($('#arena'), $('#hole')); }
   const nb=$('#nextboss'); if(nb){ nb.onclick=()=>pass(s); return; }
   const cat=$('#cat'), devil=$('#devil'), fist=$('#fist'), arena=$('#arena'), call=$('#bosscall');
-  const MAX=s.bossHits||30, GRIP_N=()=>{ const ph=Math.min(2,Math.floor((d.hits||0)/30)), [lo,hi]=[[5,7],[3,4],[1,2]][ph]; return lo+Math.floor(Math.random()*(hi-lo+1)); },   /* 次元之握用出拳次數觸發，依血量分三階段（Ming 2026-11-10）：第 1 階段（0～29 下）每 5～7 拳、第 2 階段（30～59）每 3～4 拳、第 3 階段（60～89）每 1～2 拳就握一次 */ HEAL=30;   /* 被放逐惡魔回 30 下（＝退回上一階段起點） */
+  const MAX=s.bossHits||30, EXILE_MS=()=>{ const ph=Math.min(2,Math.floor((d.hits||0)/30)), [lo,hi]=[[1500,2500],[1000,1800],[700,1200]][ph]; return lo+Math.random()*(hi-lo); },   /* 次元之握改回計時（Ming 2026-11-10），依血量分三階段：第 1 階段（0～29 下）1.5～2.5 秒、第 2 階段（30～59）1～1.8 秒、第 3 階段（60～89）0.7～1.2 秒；回到戰鬥就開始倒數，出拳不會重置 */ HEAL=30;   /* 被放逐惡魔回 30 下（＝退回上一階段起點） */
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);   // 離開這頁就全部作廢
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
   fade();
@@ -2345,9 +2345,7 @@ function renderBoss(s, idx, d, k){
   // ---- 次元之握：每 5 秒一次，惡魔從比中指那隻手伸出能量巨爪抓住胖貓，快速搖手機才掙脫（沒有失敗懲罰）----
   let exileT=0, motionSeen=false;
   let punchAt=0;   // 最近一次出拳時間：出拳動畫 0.36 秒內不發動次元之握
-  /* 次元之握節奏（Ming 2026-11-10）：改用出拳次數觸發，見 GRIP_N*/
-  let gripLeft=0;
-  const armExile=()=>{ clearTimeout(exileT); gripLeft=GRIP_N(); };   // 回到戰鬥：重抽這一輪要打幾拳才被握
+  const armExile=()=>{ clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(); },EXILE_MS()); };   // 回到戰鬥就倒數；時間到若正在出拳，startGrip 先鎖拳頭、等這拳收回就抓（不會被連打一直延後）
   function startGrip(force){
     const since=performance.now()-punchAt; if(!force && since<420){ fist.disabled=true; clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(true); },420-since); return; }   // 正在出拳：先鎖拳頭（不能再出拳一直把握往後延——連打時次元之握會永遠不觸發，Ming 2026-11-10），等這一拳收回就抓
     d.boss='grip'; keep(); fist.hidden=true; fist.disabled=true; SND.sfx('grip'); devil.classList.add('cast','grip');
@@ -2552,7 +2550,6 @@ function renderBoss(s, idx, d, k){
   let backT=0, hitT=0;
   fist.onclick=()=>{ if(d.boss!=='fight') return; SND.sfx('punch'); punchAt=performance.now();
     d.hits=(d.hits||0)+1; keep(); const last=d.hits>=MAX, exileNow=!last && d.hits%30===0;   // 第 30、60 下：次元放逐
-    if(!last && !exileNow && --gripLeft<=0) startGrip();   // 打滿這一輪的拳數 → 次元之握（startGrip 會先鎖拳頭、等這拳收回才抓）
     cat.getAnimations().forEach(a=>a.cancel()); clearTimeout(backT); clearTimeout(hitT);
     cat.innerHTML=punch;
     // 拳頭在出拳圖的右上（第 31.5 欄、第 9.5 列）→ 算出要衝多遠才會打到惡魔本體
