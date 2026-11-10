@@ -2331,7 +2331,7 @@ function renderBoss(s, idx, d, k){
   else if(!won){ startGlitch(); startSpray($('#arena'), $('#hole')); }
   const nb=$('#nextboss'); if(nb){ nb.onclick=()=>pass(s); return; }
   const cat=$('#cat'), devil=$('#devil'), fist=$('#fist'), arena=$('#arena'), call=$('#bosscall');
-  const MAX=s.bossHits||30, EXILE_MS=3000,   /* 次元之握間隔（Ming 2026-11-10 改 3 秒） */ HEAL=20;
+  const MAX=s.bossHits||30, EXILE_MS=()=>1000+Math.random()*2000,   /* 次元之握間隔：1～3 秒隨機（Ming 2026-11-10） */ HEAL=10;   /* 被放逐惡魔回 10 下 */
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);   // 離開這頁就全部作廢
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
   fade();
@@ -2342,7 +2342,7 @@ function renderBoss(s, idx, d, k){
   // ---- 次元之握：每 5 秒一次，惡魔從比中指那隻手伸出能量巨爪抓住胖貓，快速搖手機才掙脫（沒有失敗懲罰）----
   let exileT=0, motionSeen=false;
   let punchAt=0;   // 最近一次出拳時間：出拳動畫 0.36 秒內不發動次元之握
-  const armExile=()=>{ clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(); },EXILE_MS); };
+  const armExile=()=>{ clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(); },EXILE_MS()); };
   function startGrip(){
     const since=performance.now()-punchAt; if(since<420){ clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(); },420-since); return; }   // 正在出拳：等胖貓回原位再抓
     d.boss='grip'; keep(); fist.hidden=true; fist.disabled=true; SND.sfx('grip'); devil.classList.add('cast','grip');
@@ -2467,7 +2467,9 @@ function renderBoss(s, idx, d, k){
     T(1900,()=>{ const dr=devil.getBoundingClientRect(); const dx=(dr.left+dr.width/2)-(cr0.left+cr0.width/2), dy=(dr.bottom+10)-cr0.bottom;   // 整隻壓在惡魔身上：胖貓底邊對齊惡魔腳底
       cat.getAnimations().forEach(a=>a.cancel());
       cat.animate([{transform:`translate(${dx}px,-560px) rotate(1440deg)`},{transform:`translate(${dx}px,${dy}px) rotate(1440deg)`}],{duration:420,easing:'cubic-bezier(.6,0,1,.6)',fill:'forwards'}); });
-    T(2320,()=>{ SND.sfx('ult_slam'); vib([120,40,200]); devil.classList.remove('stun'); devil.classList.add('squash'); quake(); const dr=devil.getBoundingClientRect(), ar=arena.getBoundingClientRect(); dust(dr.left-ar.left+dr.width/2); });
+    T(2320,()=>{ SND.sfx('ult_slam'); SND.bgm('victory');   /* 壓扁就進勝利音樂（Ming 2026-11-10） */ vib([120,40,200]); devil.classList.remove('stun'); devil.classList.add('squash'); quake(); const dr=devil.getBoundingClientRect(), ar=arena.getBoundingClientRect(); dust(dr.left-ar.left+dr.width/2);
+      const c=CRACKS[CONFIG.crackStyle]||CRACKS.branch, ck=document.createElement('div'); ck.className='crack grow devil-crack'; ck.innerHTML=crackHTML();   // 惡魔被壓扁的地方也裂開（Ming 2026-11-10）
+      ck.style.left=(dr.left-ar.left+dr.width/2-c.cx*c.k)+'px'; ck.style.bottom='auto'; arena.appendChild(ck); ck.style.top=(dr.bottom-ar.top-ck.offsetHeight*.55)+'px'; });
     T(2800,()=>{ const a=cat.getAnimations()[0]; const from=a?getComputedStyle(cat).transform:'none'; cat.getAnimations().forEach(x=>x.cancel());   // 壓扁停一下 → 胖貓先轉背面、走回原位（Ming）
       cat.style.transform=from; cat.classList.remove('belly'); cat.innerHTML=back; cat.onpointerdown=cat.onpointermove=cat.onpointerup=null;
       setTimeout(()=>{ cat.style.transform=''; cat.animate([{transform:from},{transform:'translate(0,0) rotate(0deg)'}],{duration:450,easing:'ease-in',fill:'forwards'}); },350); });
