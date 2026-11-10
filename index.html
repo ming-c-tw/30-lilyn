@@ -865,7 +865,7 @@ new MutationObserver(()=>colorStations(main)).observe(main,{childList:true,subtr
 const STATE_KEY=BOSS_ONLY?'mrt-state-boss':'mrt-state';
 const state = load();
 function load(){
-  if(BOSS_ONLY){ const i=CONFIG.stages.findIndex(x=>x.type==='spot' && x.bossHits); const st={ stage:i, done:{}, codes:{}, started:Date.now(), npc:false, extra:{ openLetter:true, permsDone:true } };   // 單關只問這關要的權限（動作感應） st.extra[CONFIG.stages[i].id+'_quiz']={cur:0,step:'boss',boss:'wait',hits:0}; return st; }
+  if(BOSS_ONLY){ const i=CONFIG.stages.findIndex(x=>x.type==='spot' && x.bossHits); const st={ stage:i, done:{}, codes:{}, started:Date.now(), npc:false, extra:{ openLetter:true, permsDone:true } }; st.extra[CONFIG.stages[i].id+'_quiz']={cur:0,step:'boss',boss:'wait',hits:0}; return st; }   // 單關只問這關要的權限（動作感應）
   try{ const s = JSON.parse(localStorage.getItem(STATE_KEY)||'null'); if(s) return s; }catch(e){}
   return { stage:0, done:{}, codes:{}, started:null, npc:false, extra:{} };
 }
