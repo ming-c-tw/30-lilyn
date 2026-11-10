@@ -830,6 +830,8 @@ const CONFIG = {
   },
 };
 if(location.search.includes('test')) CONFIG.testMode=true;   // 測試腳本與自己試玩用：?test 打開測試模式
+/* LINE 內建瀏覽器不給相機／麥克風（權限頁按了只會變紅，Ming 2026-11-10）→ 加 openExternalBrowser=1 重開，LINE 會自動改用手機預設瀏覽器打開 */
+if(/\bLine\//i.test(navigator.userAgent) && !/[?&]openExternalBrowser=1/.test(location.search)){ const u=new URL(location.href); u.searchParams.set('openExternalBrowser','1'); location.replace(u.toString()); }
 const BOSS_ONLY=new URLSearchParams(location.search).has('boss'); if(BOSS_ONLY) CONFIG.testMode=true;   // ?boss：單獨試 boss 關（進度另存一份、每次重新載入都從丟徽章前開始）
 /* ========================================================= */
 /* 套用備案關卡（設定檔 useAlt，或網址 ?alt=s3:rainbow 臨時覆蓋） */
