@@ -498,6 +498,8 @@
   .fly-badge svg{display:block}
   .coin-fly{position:absolute;z-index:5;pointer-events:none;perspective:420px}   /* 徽章飛回：有厚度的立體硬幣，正面徽章、背面拳頭（Ming） */
   .coin3d{position:absolute;inset:0;transform-style:preserve-3d}
+  label:not(.slot):has(>input[type=file]){position:relative;overflow:hidden}   /* 拼貼格本身是 absolute，不能改 */
+  label>input[type=file]{display:block!important;position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0;z-index:2}   /* 透明蓋滿按鈕：手指直接點到 input（程式 .click() 在選擇器被返回鍵取消後會失效） */
   .coin3d>*{position:absolute;left:50%;top:50%}
   .coin-edge{border-radius:50%;background:#8a5a26;box-shadow:inset 0 0 0 2px #3a200c}
   .coin-edge.hi{background:#d9a441}   /* 側邊一圈一圈亮暗交錯，翻轉時看得出厚度 */
@@ -1811,12 +1813,16 @@ const SND=(()=>{
   setTimeout(()=>{ if(pending||curName) loadBgm(pending||curName); preload(); },600);   // 背景音樂先抓先解碼，第一下點擊就能直接響   // 開頁就先把全部音效解碼進記憶體（都很小，總共不到 1 MB）
   document.addEventListener('visibilitychange',()=>{ if(document.hidden){ if(ac) ac.suspend().catch(()=>{}); if(cur) cur.pause(); } else if(on()){ if(ac) ac.resume().catch(()=>{}); if(cur) cur.play(); } });
   document.addEventListener('click',e=>{ const b=e.target.closest('button.nes-btn, label.nes-btn, .progbtn, .bkbtn'); if(b && !b.closest('#gamebox')) sfx('click',.5); },{capture:true});
-  // Android Chrome：用返回手勢關掉檔案選擇器後，同一個 input 再點不會再開（直到重載）。
-  // 所以每次按上傳都換一個全新的 input（沿用原本的 onchange）再開選擇器；選擇器取消也順手換新。
-  const freshFile=(inp)=>{ const f=inp.cloneNode(); f.value=''; f.onchange=inp.onchange; f.addEventListener('cancel',()=>freshFile(f)); inp.replaceWith(f); return f; };
-  document.addEventListener('click',e=>{ if(e.target.matches && e.target.matches('input[type=file]')) return;
-    const lab=e.target.closest('label'); if(!lab) return; const inp=lab.querySelector('input[type=file]'); if(!inp) return;
-    e.preventDefault(); freshFile(inp).click(); });
+  /* 手機：開了選照片、沒選就按上一頁退出後，再按上傳沒反應（Ming 2026-11-10 回報，之前「每次 .click() 一個新 input」的修法沒用）。
+     改成：上傳 input 透明蓋滿整顆按鈕（CSS .upfile），手指直接點到 input 本身、不再用程式 .click()；
+     選擇器關掉回到頁面（cancel／focus／visibilitychange）時，沒選到檔就把 input 換成全新的一個（沿用 onchange）。 */
+  const freshFile=(inp)=>{ if(!inp.isConnected) return inp; const f=inp.cloneNode(); f.value=''; f.onchange=inp.onchange; inp.replaceWith(f); return f; };
+  let picking=null;
+  document.addEventListener('click',e=>{ if(e.target.matches && e.target.matches('input[type=file]')) picking=e.target; },{capture:true});
+  document.addEventListener('cancel',e=>{ if(e.target.matches && e.target.matches('input[type=file]')){ if(picking===e.target) picking=null; freshFile(e.target); } },{capture:true});
+  const back=()=>{ const p=picking; if(!p) return; setTimeout(()=>{ if(picking!==p) return; picking=null; if(!p.files || !p.files.length) freshFile(p); },700); };   // 等一下：選了檔的話 change 會先到
+  window.addEventListener('focus',back); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) back(); });
+  document.addEventListener('change',e=>{ if(e.target===picking) picking=null; },{capture:true});
   return {on,bgm,sfx,toggle,page,duck,ready:()=>SFX_ALL.filter(n=>bufs[n]).length};
 })();
 window.SND=SND;
