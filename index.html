@@ -2332,7 +2332,7 @@ function renderBoss(s, idx, d, k){
   else if(!won){ startGlitch(); startSpray($('#arena'), $('#hole')); }
   const nb=$('#nextboss'); if(nb){ nb.onclick=()=>pass(s); return; }
   const cat=$('#cat'), devil=$('#devil'), fist=$('#fist'), arena=$('#arena'), call=$('#bosscall');
-  const MAX=s.bossHits||30, EXILE_MS=()=>{ const [lo,hi]=d.esc2?[533,867]:d.esc1?[467,1333]:[667,2000]; return lo+Math.random()*(hi-lo); },   /* 次元之握間隔隨機（Ming 2026-11-10 原值除以 1.5）：一開始 0.67～2 秒，破過第一階段 0.47～1.33 秒，破過第二階段 0.53～0.87 秒（Ming 2026-11-10） */ HEAL=10;   /* 被放逐惡魔回 10 下 */
+  const MAX=s.bossHits||30, EXILE_MS=()=>{ const [lo,hi]=d.esc2?[600,1200]:d.esc1?[900,1700]:[1200,2200]; return lo+Math.random()*(hi-lo); },   /* 次元之握間隔隨機（Ming 2026-11-10 原值除以 1.5）：一開始 0.67～2 秒，（從第一拳起算）開場 1.2～2.2 秒，破過第一階段 0.9～1.7 秒，破過第二階段 0.6～1.2 秒（Ming 2026-11-10） */ HEAL=10;   /* 被放逐惡魔回 10 下 */
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);   // 離開這頁就全部作廢
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
   fade();
@@ -2343,7 +2343,11 @@ function renderBoss(s, idx, d, k){
   // ---- 次元之握：每 5 秒一次，惡魔從比中指那隻手伸出能量巨爪抓住胖貓，快速搖手機才掙脫（沒有失敗懲罰）----
   let exileT=0, motionSeen=false;
   let punchAt=0;   // 最近一次出拳時間：出拳動畫 0.36 秒內不發動次元之握
-  const armExile=()=>{ clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(); },EXILE_MS()); };
+  /* 次元之握節奏（Ming 2026-11-10：越來越容易觸發，但至少要能出一拳）：
+     回到戰鬥後先不計時，等胖貓出第一拳才開始倒數 → 每一輪保證至少打得到一拳；倒數長度隨階段縮短 */
+  let waitPunch=false;
+  const armExile=()=>{ clearTimeout(exileT); waitPunch=true; };
+  const startExileTimer=()=>{ waitPunch=false; clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(); },EXILE_MS()); };
   function startGrip(){
     const since=performance.now()-punchAt; if(since<420){ clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(); },420-since); return; }   // 正在出拳：等胖貓回原位再抓
     d.boss='grip'; keep(); fist.hidden=true; fist.disabled=true; SND.sfx('grip'); devil.classList.add('cast','grip');
@@ -2548,6 +2552,7 @@ function renderBoss(s, idx, d, k){
   let backT=0, hitT=0;
   fist.onclick=()=>{ if(d.boss!=='fight') return; SND.sfx('punch'); punchAt=performance.now();
     d.hits=(d.hits||0)+1; keep(); const last=d.hits>=MAX, exileNow=!last && d.hits%10===0;   // 第 10、20 下：次元放逐
+    if(waitPunch && !last && !exileNow) startExileTimer();   // 這一輪第一拳：開始倒數次元之握
     cat.getAnimations().forEach(a=>a.cancel()); clearTimeout(backT); clearTimeout(hitT);
     cat.innerHTML=punch;
     // 拳頭在出拳圖的右上（第 31.5 欄、第 9.5 列）→ 算出要衝多遠才會打到惡魔本體
