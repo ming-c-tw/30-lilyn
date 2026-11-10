@@ -141,14 +141,14 @@
     "final": {
       "file": "bgm/final.mp3",
       "loop": true,
-      "desc": "終點蠟燭／許願：夢幻感動，重現開場主題",
-      "duration": 45.714285714,
+      "desc": "終點蠟燭／許願：和聲吉他與電鋼琴、柔和氛圍和弦、溫暖低音與輕鼓，漂浮感獨立流行抒情，副歌展開並呼應開場動機",
+      "duration": 68.571428571,
       "sample_rate": 44100,
-      "samples": 2016000,
+      "samples": 3024000,
       "bpm": 84,
       "key": "C 大調",
       "loopStart": 0,
-      "loopEnd": 45.714285714,
+      "loopEnd": 68.571428571,
       "source": "自製：樂譜.mjs＋合成核心.mjs",
       "license": "自製 CC0"
     },
@@ -169,14 +169,14 @@
     "fashion": {
       "file": "bgm/fashion.mp3",
       "loop": true,
-      "desc": "忠孝新生導演關：時尚伸展台",
-      "duration": 30.967732426,
+      "desc": "忠孝新生導演關：現代 deep house 時裝秀，厚實四拍底鼓、反拍開鈸與拍手、抽吸合成和弦及切分低音，固定主題與中段 break／drop",
+      "duration": 47.213106576,
       "sample_rate": 44100,
-      "samples": 1365677,
-      "bpm": 124,
+      "samples": 2082098,
+      "bpm": 122,
       "key": "A 小調",
       "loopStart": 0,
-      "loopEnd": 30.967732426,
+      "loopEnd": 47.213106576,
       "source": "自製：樂譜.mjs＋合成核心.mjs",
       "license": "自製 CC0"
     }
