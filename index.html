@@ -712,8 +712,8 @@ const CONFIG = {
       sub:'路途中 · 金牌特務',
       theme:'秘密任務！' },
 
-    { id:'s6', name:'忠孝復興', code:'BL15 / BR10', line:'blue', type:'spot', bossHits:30, litStory:'次元惡魔消散的魔力點燃了蠟燭，胖貓揍完惡魔心滿意足的回去睡覺了。',
-      goStory:'6 根蠟燭都點燃了，燭火都指向同個方向，是麟光！回到麟光並執行第 5 個秘密任務，列車長這次不會騙人了，應該吧。',   // 目的地頁（回麟光）上方的敘述   // 全部看破 → 次元惡魔出現 → 丟徽章召喚胖貓 → 按拳頭 30 下打敗（不告訴玩家幾下）
+    { id:'s6', name:'忠孝復興', code:'BL15 / BR10', line:'blue', type:'spot', bossHits:90,   /* 三階段各 30 下（Ming 2026-11-10） */ litStory:'次元惡魔消散的魔力點燃了蠟燭，胖貓揍完惡魔心滿意足的回去睡覺了。',
+      goStory:'6 根蠟燭都點燃了，燭火都指向同個方向，是麟光！回到麟光並執行第 5 個秘密任務，列車長這次不會騙人了，應該吧。',   // 目的地頁（回麟光）上方的敘述   // 全部看破 → 次元惡魔出現 → 丟徽章召喚胖貓 → 按拳頭 90 下打敗（三階段各 30 下，不告訴玩家幾下）
       sub:'次元入侵 · 好眼莉',
       intro:'次元惡魔想用虛假的空間替換現實，請依序找到惡魔想替換的地點，並看破假空間的破綻，阻止惡魔！',
       // 一張一張來：先看圖 →「已找到地點 N」→ 開始找哪裡不一樣＋答題，答對才給下一張
@@ -2332,7 +2332,7 @@ function renderBoss(s, idx, d, k){
   else if(!won){ startGlitch(); startSpray($('#arena'), $('#hole')); }
   const nb=$('#nextboss'); if(nb){ nb.onclick=()=>pass(s); return; }
   const cat=$('#cat'), devil=$('#devil'), fist=$('#fist'), arena=$('#arena'), call=$('#bosscall');
-  const MAX=s.bossHits||30, EXILE_MS=()=>{ const [lo,hi]=d.esc2?[300,600]:d.esc1?[450,850]:[600,1100]; return lo+Math.random()*(hi-lo); },   /* 次元之握間隔隨機（Ming 2026-11-10 原值除以 1.5）：一開始 0.67～2 秒，（從第一拳起算，Ming 2026-11-10 再除以 2）開場 0.6～1.1 秒，破過第一階段 0.45～0.85 秒，破過第二階段 0.3～0.6 秒（Ming 2026-11-10） */ HEAL=10;   /* 被放逐惡魔回 10 下 */
+  const MAX=s.bossHits||30, GRIP_N=()=>{ const ph=Math.min(2,Math.floor((d.hits||0)/30)), [lo,hi]=[[5,7],[3,4],[1,2]][ph]; return lo+Math.floor(Math.random()*(hi-lo+1)); },   /* 次元之握用出拳次數觸發，依血量分三階段（Ming 2026-11-10）：第 1 階段（0～29 下）每 5～7 拳、第 2 階段（30～59）每 3～4 拳、第 3 階段（60～89）每 1～2 拳就握一次 */ HEAL=30;   /* 被放逐惡魔回 30 下（＝退回上一階段起點） */
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);   // 離開這頁就全部作廢
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
   fade();
@@ -2343,11 +2343,9 @@ function renderBoss(s, idx, d, k){
   // ---- 次元之握：每 5 秒一次，惡魔從比中指那隻手伸出能量巨爪抓住胖貓，快速搖手機才掙脫（沒有失敗懲罰）----
   let exileT=0, motionSeen=false;
   let punchAt=0;   // 最近一次出拳時間：出拳動畫 0.36 秒內不發動次元之握
-  /* 次元之握節奏（Ming 2026-11-10：越來越容易觸發，但至少要能出一拳）：
-     回到戰鬥後先不計時，等胖貓出第一拳才開始倒數 → 每一輪保證至少打得到一拳；倒數長度隨階段縮短 */
-  let waitPunch=false;
-  const armExile=()=>{ clearTimeout(exileT); waitPunch=true; };
-  const startExileTimer=()=>{ waitPunch=false; clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(); },EXILE_MS()); };
+  /* 次元之握節奏（Ming 2026-11-10）：改用出拳次數觸發，見 GRIP_N*/
+  let gripLeft=0;
+  const armExile=()=>{ clearTimeout(exileT); gripLeft=GRIP_N(); };   // 回到戰鬥：重抽這一輪要打幾拳才被握
   function startGrip(force){
     const since=performance.now()-punchAt; if(!force && since<420){ fist.disabled=true; clearTimeout(exileT); exileT=setTimeout(()=>{ if(d.boss==='fight' && document.body.contains(arena)) startGrip(true); },420-since); return; }   // 正在出拳：先鎖拳頭（不能再出拳一直把握往後延——連打時次元之握會永遠不觸發，Ming 2026-11-10），等這一拳收回就抓
     d.boss='grip'; keep(); fist.hidden=true; fist.disabled=true; SND.sfx('grip'); devil.classList.add('cast','grip');
@@ -2378,7 +2376,7 @@ function renderBoss(s, idx, d, k){
     cmdT=setTimeout(()=>{ if(d.boss!=='trap' || !document.body.contains(arena)) return;   // 時間到：換一組新指令，從頭按
       d.seq=d.seq.map(()=>DIRS[Math.floor(Math.random()*4)]); d.pos=0; keep(); SND.sfx('trap',.6); vib(80); drawCmd(); cmdTimer(); },dur); };
   function startExile(){
-    clearTimeout(exileT); const n=(d.hits||0)>=20?8:4;
+    clearTimeout(exileT); const n=(d.hits||0)>=60?8:4;   // 第 30 下 4 個指令、第 60 下 8 個
     d.boss='trap'; d.seq=Array.from({length:n},()=>DIRS[Math.floor(Math.random()*4)]); d.pos=0; keep();
     SND.sfx('exile'); devil.classList.add('cast'); setTimeout(()=>devil.classList.remove('cast'),600); fist.hidden=true;
     T(600,()=>{ SND.sfx('trap'); vib([60,30,60]); const tr=document.createElement('div'); tr.className='trap'; tr.id='trap';
@@ -2551,8 +2549,8 @@ function renderBoss(s, idx, d, k){
   // 出拳：每按一下胖貓揮拳、惡魔被打到；打滿 → 翻肚摸貓 → 必殺技
   let backT=0, hitT=0;
   fist.onclick=()=>{ if(d.boss!=='fight') return; SND.sfx('punch'); punchAt=performance.now();
-    d.hits=(d.hits||0)+1; keep(); const last=d.hits>=MAX, exileNow=!last && d.hits%10===0;   // 第 10、20 下：次元放逐
-    if(waitPunch && !last && !exileNow) startExileTimer();   // 這一輪第一拳：開始倒數次元之握
+    d.hits=(d.hits||0)+1; keep(); const last=d.hits>=MAX, exileNow=!last && d.hits%30===0;   // 第 30、60 下：次元放逐
+    if(!last && !exileNow && --gripLeft<=0) startGrip();   // 打滿這一輪的拳數 → 次元之握（startGrip 會先鎖拳頭、等這拳收回才抓）
     cat.getAnimations().forEach(a=>a.cancel()); clearTimeout(backT); clearTimeout(hitT);
     cat.innerHTML=punch;
     // 拳頭在出拳圖的右上（第 31.5 欄、第 9.5 列）→ 算出要衝多遠才會打到惡魔本體
