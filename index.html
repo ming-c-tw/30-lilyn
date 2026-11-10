@@ -1791,11 +1791,11 @@ const SND=(()=>{
     return fetch(base+'sfx/'+name+'.mp3').then(r=>r.arrayBuffer()).then(ab=>new Promise((res,rej)=>c.decodeAudioData(ab,res,rej))).then(b=>{ bufs[name]=b; return b; }).catch(()=>null); }
   const SFX_ALL=['burn','breakdown','invite','ticket','fairy','yum','mystery','director','aura','gift','gold_ignite','wish_n1','wish_n2','wish_n3','wish_n4','wish_n5','wish_n6','wish','finale','click','correct','wrong','candle_lit','candle_blow','digit','shutter','train','card_flip','ball_hit','jump','cat','punch','devil','glitch','charge','ignite','rainbow','smoke','locker','heart','page','growl','win','badge','merge','unseal','throw','land','rift','defeat','rift_close','fall','bump','pop','exile','trap','arrow','arrow_bad','escape','banish','heal','dim','purr','gauge_full','ult_spin','ult_slam','grip','shake','grip_free'];
   function preload(){ let i=0; const next=()=>{ if(i>=SFX_ALL.length) return; load(SFX_ALL[i++]).then(()=>setTimeout(next,30)); }; next(); }
-  /* 一個動作一個音效（Ming 2026-11-10）：按鈕聲延後 80ms 才響，這段時間內有別的音效（或 hush() 預告稍後有）就取消按鈕聲 */
-  let clickT=0; const hush=()=>{ clearTimeout(clickT); clickT=0; };
+  /* 一個動作一個音效（Ming 2026-11-10）：按鈕聲立刻響（延後會覺得不即時），0.2 秒內有別的音效（或 hush() 預告稍後有）就把按鈕聲瞬間收掉 */
+  let clk=null; const hush=()=>{ if(clk && performance.now()-clk.t<200){ try{ const c=ctx(); clk.g.gain.setTargetAtTime(0,c.currentTime,.004); clk.src.stop(c.currentTime+.03); }catch(e){} } clk=null; };
   function sfx(name,vol=.9){ if(name!=='click') hush(); play(name,vol); }
   function play(name,vol=.9){ if(!on()||!unlocked) return; const c=ctx(), b=bufs[name];
-    if(c&&b){ if(c.state==='suspended') c.resume().catch(()=>{}); const src=c.createBufferSource(); src.buffer=b; const g=c.createGain(); g.gain.value=vol; src.connect(g); g.connect(c.destination); src.start(0); return; }
+    if(c&&b){ if(c.state==='suspended') c.resume().catch(()=>{}); const src=c.createBufferSource(); src.buffer=b; const g=c.createGain(); g.gain.value=vol; src.connect(g); g.connect(c.destination); src.start(0); return {src,g}; }
     load(name); const a=el('sfx',name); if(!a) return; const cl=a.cloneNode(); cl.volume=Math.min(1,vol);   /* <audio> 音量只能 0～1（Web Audio 可以 >1），手機還沒解碼完時會走這條 */ cl.play().catch(()=>{}); }
   function toggle(){ state.extra.sound=!on(); save(); if(!on()){ if(cur){ cur.stop(0); cur=null; } pending=curName; curName=''; } else { unlocked=true; const n=pending||curName; curName=''; bgm(n||page(true)); } }
   function page(justName){   // 依目前關卡／步驟挑 BGM
@@ -1823,7 +1823,7 @@ const SND=(()=>{
   ['pointerdown','pointerup','touchend','click','keydown'].forEach(ev=>window.addEventListener(ev,unlock,{capture:true}));
   setTimeout(()=>{ if(pending||curName) loadBgm(pending||curName); preload(); },600);   // 背景音樂先抓先解碼，第一下點擊就能直接響   // 開頁就先把全部音效解碼進記憶體（都很小，總共不到 1 MB）
   document.addEventListener('visibilitychange',()=>{ if(document.hidden){ if(ac) ac.suspend().catch(()=>{}); if(cur) cur.pause(); } else if(on()){ if(ac) ac.resume().catch(()=>{}); if(cur) cur.play(); } });
-  document.addEventListener('click',e=>{ const b=e.target.closest('button.nes-btn, label.nes-btn, .progbtn, .bkbtn'); if(b && !b.closest('#gamebox')){ hush(); clickT=setTimeout(()=>{ clickT=0; play('click',.5); },80); } },{capture:true});
+  document.addEventListener('click',e=>{ const b=e.target.closest('button.nes-btn, label.nes-btn, .progbtn, .bkbtn'); if(b && !b.closest('#gamebox')){ hush(); const r=play('click',.5); if(r) clk={...r,t:performance.now()}; } },{capture:true});
   /* 手機：開了選照片、沒選就按上一頁退出後，再按上傳沒反應（Ming 2026-11-10 回報，之前「每次 .click() 一個新 input」的修法沒用）。
      改成：上傳 input 透明蓋滿整顆按鈕（CSS .upfile），手指直接點到 input 本身、不再用程式 .click()；
      選擇器關掉回到頁面（cancel／focus／visibilitychange）時，沒選到檔就把 input 換成全新的一個（沿用 onchange）。 */
