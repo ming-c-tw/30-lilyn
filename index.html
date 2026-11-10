@@ -1798,6 +1798,7 @@ const SND=(()=>{
     if(c&&b){ if(c.state==='suspended') c.resume().catch(()=>{}); const src=c.createBufferSource(); src.buffer=b; const g=c.createGain(); g.gain.value=vol; src.connect(g); g.connect(c.destination); src.start(0); return {src,g}; }
     load(name); const a=el('sfx',name); if(!a) return; const cl=a.cloneNode(); cl.volume=Math.min(1,vol);   /* <audio> 音量只能 0～1（Web Audio 可以 >1），手機還沒解碼完時會走這條 */ cl.play().catch(()=>{}); }
   function toggle(){ state.extra.sound=!on(); save(); if(!on()){ if(cur){ cur.stop(0); cur=null; } pending=curName; curName=''; } else { unlocked=true; const n=pending||curName; curName=''; bgm(n||page(true)); } }
+  let finT=0;
   function page(justName){   // 依目前關卡／步驟挑 BGM
     const s=CONFIG.stages[state.stage]; let n='travel';
     if(!state.started && state.stage===0 && !state.done.s0) n='title';
@@ -1808,7 +1809,9 @@ const SND=(()=>{
     else if(s.type==='director') n='fashion';   // 導演關：時尚伸展台（Ming 2026-11-10）
     else if(s.type==='photo_task') n='cute';
     else if(s.type==='spot'){ const d=state.extra[s.id+'_quiz']||{}; n=d.step==='boss'?(state.extra[s.id+'_won']||d.boss==='won'?'victory':'boss'):'eerie'; if(state.done[s.id]) n='travel'; }
-    else if(s.type==='final'){ n=state.extra.s7_blown?'final':(state.extra.s7_step==='wish'||state.extra.s7_step==='smoke')?'final':'final'; }
+    else if(s.type==='final'){   // 終點：金色蠟燭點燃、畫面黑掉（許願頁 .wish-dim 2 秒淡入）之後才開始放 final；之前安靜（Ming 2026-11-10）
+      const st=state.extra.s7_step; n=(state.extra.s7_blown||st==='smoke')?'final':'';
+      if(st==='wish' && !state.extra.s7_blown){ if(justName) return 'final'; if(curName==='final') return; bgm(''); clearTimeout(finT); finT=setTimeout(()=>{ if(state.extra.s7_step==='wish'||state.extra.s7_step==='smoke') bgm('final'); },2000); return; } }
     else if(s.type==='ticket_puzzle') n=state.extra.s0_tp?'travel':'title';
     if(document.querySelector('#main .stripwrap')) n='birthday';
     if(justName) return n; bgm(n); }
