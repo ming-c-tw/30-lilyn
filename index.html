@@ -633,6 +633,7 @@ const CONFIG = {
   testMode: false,          // 測試模式：控制者介面常開＋底部上一頁／下一頁。正式版 false（控制者介面要備援密碼或頁尾連點 5 下才開、可關閉）；網址加 ?test 可暫時打開
   npcPin: '0501',            // 備援密碼＝控制者介面密碼（每關「機器壞了？」輸入，或頁尾連點 5 下）
   lockerNumber: '2',         // 麟光站置物櫃號碼（Ming 2026-11-11：櫃子最多只到 11 號，改 2）
+  lockerBackup: '11',        // 備援櫃（Ming 2026-11-11：怕當天 2 號被租走）；控制者介面按「改用備援櫃」切換
   // 五碼＝起點麟光 + 四個解謎站（科技大樓、大安、大安森林公園、忠孝新生）
   // 置物櫃密碼就設成這五碼連起來：11520（Ming 2026-11-02 定）
   // 5 碼只從 App 小遊戲拿（Ming 2026-11-03）；g5＝第 5 個小遊戲，還沒設計
@@ -1322,9 +1323,10 @@ function npcInner(s, idx){
   </div></div>${s.id==='s7'&&state.extra.s7_step==='inject'&&!state.extra.s7_goldLit?'<p class="tag" id="gmeter" style="margin:8px 0 0">鏡頭讀數：按「開始注入魔力」後顯示</p>':''}${s.type==='game' && !state.extra[s.id+'_won']?'<button class="nes-btn is-warning btn small" id="npcwin" style="margin-top:8px;width:100%">小遊戲通關</button>':''}
   ${s.type==='firebadge' && !(state.extra[s.id+'_fb']||{}).summoned?`<div class="row" style="margin-top:8px"><button class="nes-btn is-warning btn small" id="npcL" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('winter')?'disabled':''}>完成左半</button><button class="nes-btn is-warning btn small" id="npcR" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('flower')?'disabled':''}>完成右半</button></div>`:''}
   ${s.type==='spot' && ['look','find'].includes((state.extra[s.id+'_quiz']||{step:'look'}).step)?'<button class="nes-btn is-warning btn small" id="npcphoto" style="margin-top:8px;width:100%">完成這張圖</button>':''}
+  ${s.type==='final'?`<button class="nes-btn is-warning btn small" id="npclk" style="margin-top:8px;width:100%">${state.extra.locker_bk?'改回 '+CONFIG.lockerNumber+' 號櫃':'改用備援櫃 '+CONFIG.lockerBackup+' 號'}</button>`:''}
   ${s.type==='library'&&s.backup?`<button class="nes-btn is-warning btn small" id="npcbk" style="margin-top:8px;width:100%">${state.extra[s.id+'_bk']?'改回主書':'改用備案書（'+s.backup.book.title+'）'}</button>`:''}
   ${s.type==='firebadge'?'<p class="tag" id="ardbg" style="margin:8px 0 0">AR：未啟動</p>':''}
-  ${answerNote(s)}<p class="tag" style="margin-top:8px">頁面代號：${pageKey()}　5 碼：${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}　櫃號：${CONFIG.lockerNumber}</p></div>`;
+  ${answerNote(s)}<p class="tag" style="margin-top:8px">頁面代號：${pageKey()}　5 碼：${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}　櫃號：${lockerNo()}</p></div>`;
 }
 /* 控制者看的解答（依關卡型別）；要輸入的答案附「複製」鈕 */
 function answerNote(s){
@@ -1339,7 +1341,7 @@ function answerNote(s){
   else if(s.type==='ticket_puzzle'){ items.push({label:'過關',value:'合照上傳就點蠟燭'}); }
   else if(s.type==='photo_task'){ items.push({label:'過關',value:s.preStep?`先按「${s.preStep.button}」再上傳合照`:'上傳合照就過'}); }
   else if(s.type==='director'){ items.push({label:'過關',value:'按「IG 總編給過」'}); }
-  else if(s.type==='final'){ items.push({label:'櫃號',value:CONFIG.lockerNumber,copy:true},{label:'密碼',value:CODE_ORDER.map(k=>CONFIG.digits[k]).join(''),copy:true}); }
+  else if(s.type==='final'){ items.push({label:state.extra.locker_bk?'櫃號（備援）':'櫃號',value:lockerNo(),copy:true},{label:'密碼',value:CODE_ORDER.map(k=>CONFIG.digits[k]).join(''),copy:true}); }
   if(!items.length) return '';
   return `<div class="ans">${items.map(it=>`<div class="ans-row"><span class="tag">${it.label}：<b>${it.value}</b></span>${it.copy?`<button class="nes-btn btn small copy" data-copy="${it.value}">複製</button>`:''}</div>`).join('')}</div>`;
 }
@@ -1350,6 +1352,7 @@ function bindNpcPanel(s, idx){
   const bk=$('#npcbk'); if(bk) bk.onclick=()=>{ const k=s.id+'_bk'; state.extra[k]=!state.extra[k]; delete state.extra[s.id+'_guess'];   // 換書：清掉舊的猜測紀錄
     const lk=s.id+'_lib'; if(['code_ok','find'].includes(state.extra[lk])) state.extra[lk]='code';   // 已猜過索書號的退回猜題
     save(); render(); };
+  const lkb=$('#npclk'); if(lkb) lkb.onclick=()=>{ state.extra.locker_bk=!state.extra.locker_bk; save(); render(); };
   const nw=$('#npcwin'); if(nw) nw.onclick=()=>{ if(window.__MG_WIN) window.__MG_WIN(); };   // 走遊戲自己的通關畫面
   // AR 關：控制者直接給左半／右半（兩半都有就跟真的掃到一樣，出現「解除封印」）
   const fbGive=key=>{ SND.sfx('badge'); stopCamera(); const k=s.id+'_fb', d=state.extra[k]||{got:[]}; if(!d.got.includes(key)) d.got.push(key); state.extra[k]=d; save(); render(); };
@@ -1410,6 +1413,7 @@ function cardBlock(){
   return `<p class="center" style="margin:12px 0 4px">今天的生日卡</p><img class="photo" src="${u}" alt=""><a class="nes-btn btn small" style="display:inline-block;margin-top:8px" download="生日卡.jpg" href="${u}">⬇ 存到手機</a>`;
 }
 function showLetter(s, next){
+  stopGlitch();   // 控制者在 boss 關直接過會走這裡、不經 render()，混亂特效要在這裡收掉（Ming 2026-11-11）
   setTimeout(recordPage,0);
   const idx=CONFIG.stages.indexOf(s), nx=CONFIG.stages[idx+1];
   if(litStep(s,idx)) return;
@@ -2719,6 +2723,7 @@ function renderGpsQr(s, idx){
 function haversine(a,b,c,d){ const R=6371000, toR=x=>x*Math.PI/180; const dLat=toR(c-a), dLng=toR(d-b); const h=Math.sin(dLat/2)**2+Math.cos(toR(a))*Math.cos(toR(c))*Math.sin(dLng/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
 
 /* 1 圖書館：已抵達 → 謎語猜書名 → 找書輸入 ISBN 末 4 碼 */
+function lockerNo(){ return state.extra.locker_bk ? CONFIG.lockerBackup : CONFIG.lockerNumber; }   // 控制者切了備援櫃就換號
 function libStage(s){ return (s.backup && state.extra[s.id+'_bk']) ? {...s, ...s.backup} : s; }   // 控制者切了備案書就換成備案的書／索書號／ISBN
 function renderLibrary(s, idx){
   s=libStage(s);
@@ -3142,7 +3147,7 @@ function renderFinal(s, idx){
   const expect = CODE_ORDER.map(k=>CONFIG.digits[k]).join('');
   const dial = state.extra.s7_dial || [0,0,0,0,0];
   main.innerHTML = ticket(s, `${steps()}
-    <p>置物櫃 <span class="big">${CONFIG.lockerNumber}</span> 號。把妳在車上拿到的 5 碼轉出來，打開它。</p>
+    <p>置物櫃 <span class="big">${lockerNo()}</span> 號。把妳在車上拿到的 5 碼轉出來，打開它。</p>
     <div class="dials" id="dials">${dial.map((v,i)=>`<div class="dial"><button data-i="${i}" data-d="1">▲</button><div class="v">${v}</div><button data-i="${i}" data-d="-1">▼</button></div>`).join('')}</div>
     <div id="res"></div><button class="nes-btn is-primary btn" id="chk" style="margin-top:6px">轉開</button>
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
@@ -3290,7 +3295,7 @@ function renderSmoke(){
   main.innerHTML = ticket(s, `
     <div class="candles mid" id="fc">${candleHTML('gold out')}${Array.from({length:MID},()=>candleHTML('out')).join('')}</div>
     <progress class="nes-progress is-warning" value="0" max="100" style="visibility:hidden"></progress>
-    <div class="smoke-wrap"><div class="smoke-num" id="smokenum">${CONFIG.lockerNumber}</div><p class="tag center smoke-late" style="margin:0">煙霧慢慢聚成了一個數字。</p></div>
+    <div class="smoke-wrap"><div class="smoke-num" id="smokenum">${lockerNo()}</div><p class="tag center smoke-late" style="margin:0">煙霧慢慢聚成了一個數字。</p></div>
     <button class="nes-btn is-primary btn smoke-late" id="gocode" style="margin-top:18px">這...這難道是寶藏的座標？<br>去置物櫃試試看</button>${npcBox(s,CONFIG.stages.indexOf(s))}`);
   $('#gocode').onclick=()=>{ state.extra.s7_blown=true; save(); render(); }; bindNpc(s,CONFIG.stages.indexOf(s));
 }
@@ -3301,7 +3306,7 @@ function renderLocker(){
   main.innerHTML = `<section class="ticket nes-container is-rounded with-title" style="--line-color:var(--brown)">
     <p class="title">三十而莉</p>
     <div class="station"><span class="code">BR03</span><span class="name">麟光置物櫃</span></div>
-    <p class="center" style="font-size:20px;margin:6px 0 10px">去 ${CONFIG.lockerNumber} 號櫃找寶藏！</p>
+    <p class="center" style="font-size:20px;margin:6px 0 10px">去 ${lockerNo()} 號櫃找寶藏！</p>
     <div class="center" style="margin:0 0 6px">${CHEST.replace('width:1.2em','width:120px')}</div>
     ${CONFIG.codeMeaning?`<p class="center" style="margin:0 0 4px;font-size:22px;color:var(--red)">${CONFIG.codeMeaning}</p>`:''}
     <button class="nes-btn is-success btn" id="next" style="margin-top:14px">拿到禮物了！</button>${npcBox(s,idx)}</section>`;
