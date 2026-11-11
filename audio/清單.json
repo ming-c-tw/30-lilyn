@@ -900,12 +900,11 @@
     "smirk": {
       "file": "sfx/smirk.mp3",
       "loop": false,
-      "desc": "ㄏㄏ頁：列車長奸笑",
-      "duration": 1.35,
+      "desc": "ㄏㄏ頁：列車長奸笑（Ming 自錄，去雜音＋小回音）",
+      "duration": 2.56,
       "sample_rate": 44100,
-      "samples": 59535,
-      "source": "freesound 610935「Laugh 2」（經 Openverse）",
-      "license": "CC0"
+      "source": "Ming 自錄（原檔 音效工程/備用音效/ㄏㄏ_原始錄音.aac），ffmpeg 後製",
+      "license": "自錄"
     },
     "sparkle": {
       "file": "sfx/sparkle.mp3",
