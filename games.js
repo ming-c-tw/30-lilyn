@@ -287,7 +287,7 @@ function song(el, cfg, onWin){
   window.__MG_WIN=()=>{ i=songs.length; draw(); };                         // 控制者「小遊戲通關」：走正常通關畫面
   const norm=s=>(s||'').toLowerCase().replace(/[\s\-—_~～'’"“”「」『』《》〈〉.,，。!！?？:：、]/g,'');
   const draw=()=>{
-    if(i>=songs.length){ if(!done){ done=true; SFX('win'); el.innerHTML='<div class="mg-lyric" style="min-height:140px"></div>'; banner(el.firstChild,'全部答對！'); setTimeout(onWin,1400); } return; }
+    if(i>=songs.length){ if(!done){ done=true; SFX('game_win'); el.innerHTML='<div class="mg-lyric" style="min-height:140px"></div>'; banner(el.firstChild,'全部答對！'); setTimeout(onWin,1400); } return; }
     const s=songs[i];
     el.innerHTML='';
     const w=h(`<div class="mg-wrap">
@@ -339,7 +339,7 @@ function memory(el, cfg, onWin){
   el.innerHTML='';
   const w=h(`<div class="mg-wrap"><div class="mg-hud"><span id="mgname">　</span><span id="mgmv">步數 0</span></div><div class="mg-mem" style="grid-template-columns:repeat(${cols},1fr)"></div></div>`);
   el.appendChild(w); const grid=w.querySelector('.mg-mem');
-  window.__MG_WIN=()=>{ if(done) return; done=true; grid.querySelectorAll('.mg-card').forEach(c=>c.classList.add('open','done')); setTimeout(()=>{ SFX('win'); banner(grid,'全部翻開了！'); setTimeout(onWin,1400); },400); };   // 控制者「小遊戲通關」
+  window.__MG_WIN=()=>{ if(done) return; done=true; grid.querySelectorAll('.mg-card').forEach(c=>c.classList.add('open','done')); setTimeout(()=>{ SFX('game_win'); banner(grid,'全部翻開了！'); setTimeout(onWin,1400); },400); };   // 控制者「小遊戲通關」
   const face=v=>/^data:image|\.(png|jpe?g|gif|svg|webp)$/i.test(v)?`<img src="${v}" alt="">`:v;
   deck.forEach(c=>{
     const d=h(`<div class="mg-card"><div class="in"><div class="f"></div><div class="b">${face(c.v)}</div></div></div>`);
@@ -351,7 +351,7 @@ function memory(el, cfg, onWin){
         moves++; w.querySelector('#mgmv').textContent='步數 '+moves;
         const [a,b]=open;
         if(a.v===b.v){ SFX('correct'); a.el.classList.add('done'); b.el.classList.add('done'); open=[]; matched++;
-          if(matched===icons.length && !done){ done=true; setTimeout(()=>{ SFX('win'); banner(grid,'全部翻開了！'); setTimeout(onWin,1400); },400); } }
+          if(matched===icons.length && !done){ done=true; setTimeout(()=>{ SFX('game_win'); banner(grid,'全部翻開了！'); setTimeout(onWin,1400); },400); } }
         else { SFX('wrong',.5); lock=true; setTimeout(()=>{ a.el.classList.remove('open'); b.el.classList.remove('open'); open=[]; lock=false; },750); }
       }
     };
@@ -468,7 +468,7 @@ function mario(el, cfg, onWin){
       }
     });
     // 碰到男主角就過關
-    if(P.x+P.w>=BOY_X-1 && !won){ won=1; SFX('win'); P.x=BOY_X-11; P.vx=0; if(P.vy<0) P.vy=0; P.face=1; addHearts(BOY_X,12*T-20,4); }
+    if(P.x+P.w>=BOY_X-1 && !won){ won=1; SFX('game_win'); P.x=BOY_X-11; P.vx=0; if(P.vy<0) P.vy=0; P.face=1; addHearts(BOY_X,12*T-20,4); }
   };
 
   const heart=(x,y,c)=>{ g.fillStyle=c||'#e76e8a'; g.fillRect(x,y,2,2); g.fillRect(x+3,y,2,2); g.fillRect(x-1,y+1,7,2); g.fillRect(x,y+3,5,1); g.fillRect(x+1,y+4,3,1); g.fillRect(x+2,y+5,1,1); };
@@ -532,7 +532,7 @@ function volley(el, cfg, onWin){
   const newRally=(toLeft)=>{ me={x:100,y:GROUND-PR,vy:0}; ai={x:W-100,y:GROUND-PR,vy:0,react:0}; ball={x:toLeft?100:W-100,y:60,vx:0,vy:0}; pause=50; };
   newRally(true);
   const score=(leftWins)=>{ SFX(leftWins?'correct':'wrong'); if(leftWins) s1++; else s2++; w.querySelector('#mgs1').textContent=s1; w.querySelector('#mgs2').textContent=s2;
-    if(s1>=TARGET){ over=true; SFX('win'); overText=mercy()?['為了讓莉莉過關，','墨墨放水了！']:['莉莉贏了！']; setTimeout(onWin,2500); return; }
+    if(s1>=TARGET){ over=true; SFX('game_win'); overText=mercy()?['為了讓莉莉過關，','墨墨放水了！']:['莉莉贏了！']; setTimeout(onWin,2500); return; }
     // 墨墨先拿到分數也算通關
     if(s2>=TARGET){ over=true; setTimeout(()=>SFX('heart'),900); overText=['妳輸了','但墨墨愛妳','所以妳贏了','♥']; setTimeout(onWin,3500); return; }
     newRally(leftWins); };
@@ -626,7 +626,7 @@ function puzzle(el, cfg, onWin){
   el.innerHTML='';
   const w=h(`<div class="mg-wrap"><div class="mg-hud"><span class="tag">${lockOK?'拼對的格子會鎖住。':''}</span><span class="tag" id="mgleft"></span></div><div class="grid" style="display:grid;grid-template-columns:repeat(${n},1fr);gap:2px;aspect-ratio:1;background:#000;border:4px solid #000"></div></div>`);
   el.appendChild(w); const g=w.querySelector('.grid'); const pct=100/(n-1); g.parentElement.style.position='relative';
-  const finish=()=>{ SFX('win'); done=true; g.style.gap='0'; draw(); banner(g.parentElement,'拼好了！'); setTimeout(()=>{ const b=g.parentElement.querySelector('.mg-banner'); if(b) b.remove(); onWin(); },1400); };   // 拼好：去分隔線與鎖定框、字幕 1.4 秒後收掉，讓她看整張圖
+  const finish=()=>{ SFX('game_win'); done=true; g.style.gap='0'; draw(); banner(g.parentElement,'拼好了！'); setTimeout(()=>{ const b=g.parentElement.querySelector('.mg-banner'); if(b) b.remove(); onWin(); },1400); };   // 拼好：去分隔線與鎖定框、字幕 1.4 秒後收掉，讓她看整張圖
   window.__MG_WIN=()=>{ if(done) return; order=[...Array(n*n).keys()]; finish(); };
   const draw=()=>{ const lk=locked(); const left=order.filter((t,i)=>t!==i).length; w.querySelector('#mgleft').textContent=left?`還差 ${left} 格`:''; g.innerHTML=''; order.forEach((t,pos)=>{ const d=document.createElement('div');
     d.style.cssText=`background-image:url(${img});background-size:${n*100}% ${n*100}%;background-position:${(t%n)*pct}% ${Math.floor(t/n)*pct}%;cursor:${lk[pos]?'default':'pointer'};${sel===pos?'outline:4px solid #f7d51d;outline-offset:-4px;':''}${lk[pos]&&!done?'box-shadow:inset 0 0 0 2px #92cc41;':''}`;

@@ -865,7 +865,7 @@ function preloadAhead(){   // 2026-11-06 Ming：第一次打開就在背景照�
   if(preloadDone) return; preloadDone=true;
   const A='audio/', B=A+'bgm/', X=A+'sfx/', mp3=(d,n)=>d+n+'.mp3';
   const list=[ mp3(X,'click'), mp3(B,'title'), mp3(B,'travel'), mp3(X,'shutter'), mp3(X,'candle_lit'), mp3(X,'train'),
-    mp3(B,'volley'), mp3(X,'ball_hit'), mp3(X,'correct'), mp3(X,'wrong'), mp3(X,'digit'),
+    mp3(B,'volley'), mp3(X,'ball_hit'), mp3(X,'correct'), mp3(X,'wrong'), mp3(X,'digit'), mp3(X,'game_win'),
     mp3(B,'puzzle'), A+'clip_lily.m4a', A+'clip_chandelier.m4a', A+'clip_lillian.m4a', A+'clip_lydia.m4a',
     mp3(B,'adventure'), 'img/targets_all.mind', mp3(X,'card_flip'), mp3(B,'cute'), mp3(B,'fashion'), mp3(B,'runner'), mp3(X,'jump'), mp3(X,'cat'), mp3(X,'page') ];
   CONFIG.stages.forEach(st=>(st.photos||[]).forEach(p=>{ if(p.image) list.push(p.image); (p.qs||[]).forEach(q=>{ (q.choices||[]).forEach(c=>c.img&&list.push(c.img)); (q.seq||[]).forEach(it=>it.img&&list.push(it.img)); }); }));
@@ -1780,8 +1780,8 @@ const SND=(()=>{
     const vol=(v,ms)=>{ const t=c.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value,t); g.gain.linearRampToValueAtTime(v,t+ms/1000); };
     return { vol, loop, get dead(){ return dead; }, stop(ms){ vol(0,ms); setTimeout(()=>{ try{ s.stop(); }catch(e){} g.disconnect(); },ms+60); }, pause(){}, play(){} }; }
   function elTrack(name,loop){ const a=el('bgm',name); if(!a) return null; a.loop=loop; a.currentTime=0; a.volume=0;
-    const t={ el:a, loop, get dead(){ return a.paused; }, vol(v,ms){ fade(a,v,ms); }, stop(ms){ fade(a,0,ms,()=>a.pause()); }, pause(){ a.pause(); }, play(){ if(a.paused) a.play().then(()=>fade(a,ducked?DUCKV:VOL,600)).catch(()=>{}); } };
-    a.play().then(()=>fade(a,ducked?DUCKV:VOL,600)).catch(()=>{}); return t; }
+    const t={ el:a, loop, get dead(){ return a.paused; }, vol(v,ms){ fade(a,v,ms); }, stop(ms){ fade(a,0,ms,()=>a.pause()); }, pause(){ a.pause(); }, play(){ if(a.paused) a.play().then(()=>fade(a,tv(),600)).catch(()=>{}); } };
+    a.play().then(()=>fade(a,tv(),600)).catch(()=>{}); return t; }
   /* 背景音樂巡檢（Ming 2026-11-10：控制台速通後拼圖頁只有音效沒音樂，電腦重現不出來）：
      該有音樂卻沒在播（載入失敗退回被擋的 <audio>、循環音軌意外停掉、沒有音軌）就重播一次 */
   let loading='';
@@ -1791,22 +1791,29 @@ const SND=(()=>{
     if(cur){ cur.stop(500); cur=null; }
     if(!name) return; const loop=true;   // victory 也改成可循環（Ming 2026-11-11：打贏後還有兩頁）
     loading=name; loadBgm(name).then(buf=>{ if(loading===name) loading=''; if(curName!==name || cur || !on()) return; const c=ctx();
-      if(buf && c){ if(c.state!=='running') c.resume().catch(()=>{}); cur=waTrack(c,buf,loop); cur.vol(ducked?DUCKV:VOL,600);
+      if(buf && c){ if(c.state!=='running') c.resume().catch(()=>{}); cur=waTrack(c,buf,loop); cur.vol(tv(),600);
         Object.keys(bgBufs).forEach(k=>{ if(k!==name) delete bgBufs[k]; }); }   // 解碼後一首十幾 MB，只留正在播的
       else if(!c || location.protocol==='file:') cur=elTrack(name,loop); }); }   // 有 Web Audio 但這次抓／解碼失敗：不退回會被手機擋的 <audio>，留空讓巡檢 2.5 秒後重試
-  let ducked=false; const VOL=.55, DUCKV=0;   // 猜歌播片段時背景音樂完全靜音（Ming 2026-11-11）
-  function duck(on){ ducked=!!on; if(cur) cur.vol(ducked?DUCKV:VOL, 400); }
+  let ducked=false, jing=null; const VOL=.55, DUCKV=0; const tv=()=>(ducked||jing)?DUCKV:VOL;   // 過關曲播放中背景音樂也靜音   // 猜歌播片段時背景音樂完全靜音（Ming 2026-11-11）
+  function duck(on){ ducked=!!on; if(cur) cur.vol(tv(), 400); }
   /* 音效走 Web Audio：先把 mp3 解碼成 AudioBuffer 放記憶體，播的時候零延遲（2026-11-07 Ming：音效會 lag）。
      解碼好之前（或 file: 本機測試 fetch 不到）退回 <audio> 複製播放。 */
   let ac=null; const bufs={};
   const ctx=()=>{ if(!ac){ const C=window.AudioContext||window.webkitAudioContext; if(C) try{ ac=new C(); ac.onstatechange=()=>{ if(ac.state!=='running' && ac.state!=='closed' && unlocked && on() && !document.hidden) setTimeout(()=>ac.resume().catch(()=>{}),60); }; }catch(e){} } return ac; };   // 被系統打斷（不是切到背景）就自己接回來
   function load(name){ if(name in bufs) return Promise.resolve(bufs[name]); bufs[name]=null; const c=ctx(); if(!c||location.protocol==='file:') return Promise.resolve(null);
     return fetch(base+'sfx/'+name+'.mp3').then(r=>r.arrayBuffer()).then(ab=>new Promise((res,rej)=>c.decodeAudioData(ab,res,rej))).then(b=>{ bufs[name]=b; return b; }).catch(()=>null); }
-  const SFX_ALL=['sparkle','smirk','burn','breakdown','invite','ticket','fairy','yum','mystery','director','aura','gift','gold_ignite','wish_n1','wish_n2','wish_n3','wish_n4','wish_n5','wish_n6','wish','finale','click','correct','wrong','candle_lit','candle_blow','digit','shutter','train','card_flip','ball_hit','jump','cat','punch','devil','glitch','charge','ignite','rainbow','smoke','locker','heart','page','growl','win','badge','merge','unseal','throw','land','rift','defeat','rift_close','fall','bump','pop','exile','trap','arrow','arrow_bad','escape','banish','heal','dim','purr','gauge_full','ult_spin','ult_slam','grip','shake','grip_free'];
+  const SFX_ALL=['sparkle','smirk','burn','breakdown','invite','ticket','fairy','yum','mystery','director','aura','gift','gold_ignite','wish_n1','wish_n2','wish_n3','wish_n4','wish_n5','wish_n6','wish','finale','click','correct','wrong','candle_lit','candle_blow','digit','game_win','shutter','train','card_flip','ball_hit','jump','cat','punch','devil','glitch','charge','ignite','rainbow','smoke','locker','heart','page','growl','win','badge','merge','unseal','throw','land','rift','defeat','rift_close','fall','bump','pop','exile','trap','arrow','arrow_bad','escape','banish','heal','dim','purr','gauge_full','ult_spin','ult_slam','grip','shake','grip_free'];
   function preload(){ let i=0; const next=()=>{ if(i>=SFX_ALL.length) return; load(SFX_ALL[i++]).then(next); }; for(let k=0;k<6;k++) next(); }   // 6 條同時解碼：還沒解碼好的會退回 <audio>，手機上那條慢半拍（Ming 2026-11-10：音效有 delay 感）
   /* 一個動作一個音效（Ming 2026-11-10）：按鈕聲立刻響（延後會覺得不即時），0.2 秒內有別的音效（或 hush() 預告稍後有）就把按鈕聲瞬間收掉 */
   let clk=null; const hush=()=>{ if(clk && performance.now()-clk.t<450){ try{ const c=ctx(); clk.g.gain.setTargetAtTime(0,c.currentTime,.004); clk.src.stop(c.currentTime+.03); }catch(e){} } clk=null; };
-  function sfx(name,vol=.9){ if(name!=='click') hush(); play(name,vol); }
+  function sfx(name,vol=.9){ if(name!=='click') hush();
+    if(name==='game_win'){   // 小遊戲過關曲（原 boss 勝利樂句，Ming 2026-11-11）：播的時候背景音樂靜音，播完淡回；換頁就收掉
+      endJingle(0); const h=play(name,vol); const me=jing={h}; if(cur) cur.vol(0,200);
+      jing.t=setTimeout(()=>{ if(jing===me){ jing=null; if(cur) cur.vol(tv(),1200); } },6200); return; }
+    play(name,vol); }
+  function endJingle(ms=300){ if(!jing) return; const j=jing; jing=null; clearTimeout(j.t);
+    try{ if(j.h){ const c=ctx(); j.h.g.gain.setTargetAtTime(0,c.currentTime,ms/3000||.001); j.h.src.stop(c.currentTime+ms/1000+.05); } }catch(e){}
+    if(cur) cur.vol(tv(),800); }
   function play(name,vol=.9){ if(!on()||!unlocked) return; const c=ctx(), b=bufs[name];
     if(c&&b){ if(c.state==='suspended') c.resume().catch(()=>{}); const src=c.createBufferSource(); src.buffer=b; const g=c.createGain(); g.gain.value=vol; src.connect(g); g.connect(c.destination); src.start(0); return {src,g}; }
     load(name); const a=el('sfx',name); if(!a) return; const cl=a.cloneNode(); cl.volume=Math.min(1,vol);   /* <audio> 音量只能 0～1（Web Audio 可以 >1），手機還沒解碼完時會走這條 */ cl.play().catch(()=>{}); }
@@ -1861,7 +1868,7 @@ const SND=(()=>{
   document.addEventListener('change',e=>{ if(e.target===picking) picking=null; },{capture:true});
   /* 叫醒：AudioContext 被系統打斷（iOS 開麥克風會變 interrupted／suspended）就 resume；循環音軌掛了就重播 */
   function wake(){ const c=ac; if(c && c.state!=='running' && !document.hidden) c.resume().catch(()=>{}); if(on()&&unlocked&&curName&&(!cur||(cur.loop&&cur.dead))){ const n=curName; if(cur){ cur.stop(0); cur=null; } curName=''; bgm(n); } }
-  return {on,bgm,sfx,hush,toggle,page,duck,wake,ctx:()=>ac,ready:()=>SFX_ALL.filter(n=>bufs[n]).length,dbg:()=>({curName,pending,unlocked,has:!!cur,wa:!!(cur&&!cur.el)})};
+  return {on,bgm,sfx,hush,endJingle,toggle,page,duck,wake,ctx:()=>ac,ready:()=>SFX_ALL.filter(n=>bufs[n]).length,dbg:()=>({curName,pending,unlocked,jing:!!jing,has:!!cur,wa:!!(cur&&!cur.el)})};
 })();
 window.SND=SND;
 /* 控制台音效鈕的像素喇叭（開：有聲波；關：打叉） */
@@ -1871,7 +1878,7 @@ const sndIcon=()=>spriteSVG(SND.on()?SND_ON_ROWS:SND_OFF_ROWS,{B:'#111'},'22px',
 /* 換頁音效：同一頁只響一次 */
 let lastSfxPk='';
 const PAGE_SFX={'m1:next':'smirk','s1:sit':'fairy','s4:pre':'yum','s9:end':'finale'};
-function sfxPage(){ const pk=pageKey(); if(pk===lastSfxPk) return; lastSfxPk=pk; const m=document.querySelector('#main'); const name=(m.querySelector('.name')||{}).textContent||'';
+function sfxPage(){ const pk=pageKey(); if(pk===lastSfxPk) return; lastSfxPk=pk; SND.endJingle(); const m=document.querySelector('#main'); const name=(m.querySelector('.name')||{}).textContent||'';
   if(m.querySelector('.candle.ignite')){ SND.hush(); setTimeout(()=>SND.sfx('burn'),320); }   /* 點亮頁：真的火柴燃燒聲，劃燃那下對準火冒出來（570ms）（Ming 2026-11-10） */
   else if(/專屬$/.test(name)) SND.sfx('invite'); else if(m.querySelector('#got')) SND.sfx('ticket');   // 歡迎頁／拿車票頁
   else if(PAGE_SFX[pk]) SND.sfx(PAGE_SFX[pk]); else if(/:number$/.test(pk)) SND.sfx('digit'); else if(/:(go|depart)$/.test(pk)) SND.sfx('train');

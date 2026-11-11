@@ -917,6 +917,15 @@
       "samples": 97020,
       "source": "freesound 639429「Crystal Twinkle」（經 Openverse）＋回音",
       "license": "CC0"
+    },
+    "game_win": {
+      "file": "sfx/game_win.mp3",
+      "loop": false,
+      "desc": "小遊戲過關：勝利短曲（原 boss 勝利樂句，播時背景音樂靜音）",
+      "duration": 6.4,
+      "sample_rate": 44100,
+      "source": "自製：樂譜.mjs＋合成核心.mjs（舊版 victory）",
+      "license": "自製 CC0"
     }
   },
   "授權": "每個檔案的來源與授權分別記於 bgm／sfx 各項 source、license。所有合成錄音及原創編曲：自製 CC0。birthday 的 Happy Birthday 旋律按使用者提供的公共領域條件使用；未使用任何第三方錄音、音源、採樣或素材。",
