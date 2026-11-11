@@ -539,11 +539,12 @@
   .boss-hp b{font-size:13px;line-height:1;color:#fff;font-weight:normal;text-shadow:2px 2px 0 #000!important;animation:none!important}
   .hp-bar{position:relative;flex:1;height:14px;box-sizing:border-box;border:3px solid #fff;background:#2a0f1c;box-shadow:3px 3px 0 #000}
   .hp-bar i{position:absolute;left:0;top:0;bottom:0;display:block}
-  .hp-lag{background:#ffe066;transition:width .45s steps(5) .3s}
-  .hp-fill{background:#e63946;transition:width .1s steps(2)}
+  .hp-lag{background:#fff;transition:width .45s steps(5) .3s}
+  .hp-fill{background:#4fd36a;transition:width .1s steps(2)}
+  .boss-hp.hp-y .hp-fill{background:#ffd23f}.boss-hp.hp-r .hp-fill{background:#e63946}   /* 綠 → 被打 30 下變黃 → 60 下變紅（Ming 2026-11-11） */
   .boss-hp.low .hp-fill{animation:hplow .5s steps(1) infinite}
   @keyframes hplow{50%{background:#ff8a94}}
-  .boss-hp.healing .hp-fill{background:#4fd36a;transition:width .8s steps(8);animation:none}
+  .boss-hp.healing .hp-fill{transition:width .8s steps(8);animation:none}
   .boss-hp.healing .hp-lag{opacity:0}
   .boss-hp.healing .hp-bar{border-color:#b6ffbf;animation:hpglow .3s steps(1) 3}
   @keyframes hpglow{50%{border-color:#fff;box-shadow:3px 3px 0 #000,0 0 0 3px #4fd36a}}
@@ -2422,7 +2423,7 @@ function renderBoss(s, idx, d, k){
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);   // 離開這頁就全部作廢
   const HPMAX=100, hpEl=$('#bosshp');
   const hpNow=()=>Math.max(0,HPMAX-(d.hits||0));   // HP 100，一拳扣 1；打滿 90 下剩 10，留給必殺技壓斷
-  const hpSet=()=>{ if(!hpEl) return; const w=hpNow()/HPMAX*100+'%'; hpEl.querySelector('.hp-fill').style.width=w; hpEl.querySelector('.hp-lag').style.width=w; hpEl.classList.toggle('low',hpNow()<=20); };
+  const hpSet=()=>{ if(!hpEl) return; const w=hpNow()/HPMAX*100+'%'; hpEl.querySelector('.hp-fill').style.width=w; hpEl.querySelector('.hp-lag').style.width=w; hpEl.classList.toggle('low',hpNow()<=20); const h=d.hits||0; hpEl.classList.toggle('hp-y',h>=30&&h<60); hpEl.classList.toggle('hp-r',h>=60); };
   const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; hpSet(); };   // 每揍一下彩度降低，打滿變灰階（Ming）
   if(hpEl) hpEl.querySelectorAll('i').forEach(x=>x.style.transition='none'); fade(); if(hpEl) requestAnimationFrame(()=>requestAnimationFrame(()=>hpEl.querySelectorAll('i').forEach(x=>x.style.transition='')));
   const back=spriteSVG(CAT_BACK_ROWS, CAT_PAL, '150px', 'aria-label="胖貓"'), punch=spriteSVG(CAT_PUNCH_ROWS, CAT_PAL, '170px', 'aria-label="胖貓出拳"'), belly=spriteSVG(flip180(SPRITE_ROWS), CAT_PAL, '150px', 'aria-label="胖貓翻肚"');
@@ -2559,11 +2560,11 @@ function renderBoss(s, idx, d, k){
   function breakHP(){ if(!hpEl || hpBroken) return; hpBroken=true; const bar=hpEl.querySelector('.hp-bar'), ar=arena.getBoundingClientRect(), r=bar.getBoundingClientRect(), half=r.width/2;
     const fillW=r.width*hpNow()/HPMAX; hpEl.style.visibility='hidden';
     [0,1].forEach(i=>{ const h=document.createElement('div'); h.className='hp-half'; h.style.left=(r.left-ar.left+i*half)+'px'; h.style.top=(r.top-ar.top)+'px'; h.style.width=half+'px';
-      const f=document.createElement('i'); f.style.width=Math.max(0,Math.min(half,fillW-i*half))+'px'; h.appendChild(f); arena.appendChild(h);
+      const f=document.createElement('i'); f.style.background=getComputedStyle(hpEl.querySelector('.hp-fill')).backgroundColor; f.style.width=Math.max(0,Math.min(half,fillW-i*half))+'px'; h.appendChild(f); arena.appendChild(h);
       h.style.transformOrigin=i?'0% 100%':'100% 100%';   // 以斷點為軸往下折
       const sx=i?1:-1; h.animate([{transform:'translate(0,0) rotate(0deg)'},{transform:`translate(0,12px) rotate(${-sx*35}deg)`,offset:.18},{transform:`translate(${sx*40}px,80px) rotate(${-sx*55}deg)`,offset:.6,opacity:1},{transform:`translate(${sx*75}px,190px) rotate(${-sx*70}deg)`,opacity:0}],{duration:1100,easing:'steps(14)',fill:'forwards'});   // 中間被壓下去成 V 字，再往兩邊外側掉
       setTimeout(()=>h.remove(),1200); });
-    for(let j=0;j<8;j++){ const p=document.createElement('i'); p.className='hp-shard'; p.style.left=(r.left-ar.left+half-3)+'px'; p.style.top=(r.top-ar.top+3)+'px'; if(j%3===0) p.style.background='#e63946'; arena.appendChild(p);
+    for(let j=0;j<8;j++){ const p=document.createElement('i'); p.className='hp-shard'; p.style.left=(r.left-ar.left+half-3)+'px'; p.style.top=(r.top-ar.top+3)+'px'; if(j%3===0) p.style.background=getComputedStyle(hpEl.querySelector('.hp-fill')).backgroundColor; arena.appendChild(p);
       const ang=Math.PI*(1.1+j/8*.8+Math.random()*.1), dist=30+Math.random()*30;
       p.animate([{transform:'translate(0,0)',opacity:1},{transform:`translate(${Math.cos(ang)*dist*-1}px,${Math.sin(ang)*dist}px)`,offset:.5,opacity:1},{transform:`translate(${Math.cos(ang)*dist*-1.3}px,${Math.sin(ang)*dist+60}px)`,opacity:0}],{duration:800,easing:'steps(8)',fill:'forwards'}); setTimeout(()=>p.remove(),900); } }
   // ---- 必殺技：往天上旋轉飛起，落到惡魔頭頂翻肚壓下去 ----
