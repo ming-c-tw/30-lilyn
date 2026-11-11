@@ -251,11 +251,10 @@
     "digit": {
       "file": "sfx/digit.mp3",
       "loop": false,
-      "desc": "獲得秘密數字：獎勵琶音",
-      "duration": 1.12,
+      "desc": "獲得秘密數字：神秘增和弦鈴聲琶音（Ming 2026-11-11 選 A）",
+      "duration": 1.9,
       "sample_rate": 44100,
-      "samples": 49392,
-      "source": "自製：音效.mjs＋合成核心.mjs",
+      "source": "自製：合成核心.mjs（候選腳本 音效工程/備用音效/數字音效候選_gen.mjs）",
       "license": "自製 CC0"
     },
     "shutter": {
