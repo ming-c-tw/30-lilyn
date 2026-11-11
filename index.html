@@ -62,7 +62,7 @@
   .station .name{font-size:26px;letter-spacing:.08em}
   .station .name.route{font-size:19px;letter-spacing:.04em;white-space:nowrap;line-height:44px}   /* 路段關：起站 >> 到站，字縮小但列高跟一般站名一樣，版面不動 */
   .sub{color:var(--muted);font-size:14px;margin:0 0 10px}
-  p{margin:8px 0}
+  p{margin:8px 0;text-wrap:pretty}   /* 避免最後一行只剩一兩個字（Ming 2026-11-11 全 App 間距檢查） */
   .nes-btn{border-image-repeat:stretch}
   .nes-btn.is-arrive{--arrive:var(--red);background:var(--arrive);color:#fff}   /* 已抵達專用：底色＝到站的路線色 */
   .nes-btn.is-arrive::after{box-shadow:inset -4px -4px color-mix(in srgb,var(--arrive),#000 28%)}
