@@ -463,7 +463,9 @@
   .fist:focus,.fist:focus-visible{outline:none}
   .fist svg{display:block}   /* 不加陰影，跟翻面前的徽章對得上（Ming） */
   .fist:active svg{transform:translate(2px,2px);filter:brightness(.9)}
-  .throwbox{margin-top:14px;text-align:center}
+  .throwbox{margin-top:14px;text-align:center;position:relative}
+  .cmdwrap{position:absolute;left:0;right:0;top:0;display:block}   /* 指令＋時間條疊在原本一行字的位置，不撐高（Ming 2026-11-11） */
+  .throwbox .dpad{position:absolute;left:0;right:0;top:0;margin:0;visibility:visible}   /* 方向鍵疊在徽章區，版面不動 */
   .tb-badge{width:56px;margin:0 auto;touch-action:none;cursor:grab;animation:fbfloat 1.2s steps(6) infinite alternate}
   .tb-badge.drag{animation:none}
   .tb-badge.fly{animation:tbfly .55s steps(6) forwards}
@@ -2457,7 +2459,8 @@ function renderBoss(s, idx, d, k){
   const DIRS=['up','down','left','right'];
   const drawCmd=()=>{ const html=d.seq.map((x,i)=>`<span class="${i<d.pos?'done':i===d.pos?'now':''}">${arrowSVG(x,'#222','100%')}</span>`).join('');
     const c=call.querySelector('.cmd'); if(c){ c.innerHTML=html; return; }   // 只換箭頭，時間條不重畫
-    call.innerHTML=`<span class="cmd">${html}</span><span class="cmdtime" style="width:${d.seq.length*34-4}px"><i></i></span>`; };
+    if(!call.style.height) call.style.height=call.offsetHeight+'px';   // 鎖住原本一行字的高度
+    call.innerHTML=`<span class="cmdwrap"><span class="cmd">${html}</span><span class="cmdtime" style="width:${d.seq.length*34-4}px"><i></i></span></span>`; };
   let cmdT=0;
   const cmdTimer=()=>{ clearTimeout(cmdT); const bar=call.querySelector('.cmdtime i'); if(!bar) return; const dur=d.seq.length>4?11000:7000;   // 4 個指令 7 秒、8 個 11 秒（原 4／6.5 秒來不及按，Ming 2026-11-10）
     bar.getAnimations().forEach(a=>a.cancel());
@@ -2507,15 +2510,15 @@ function renderBoss(s, idx, d, k){
       };
       swirl(born); cat.classList.add('trapped');
       drawCmd(); cmdTimer();
-      const tb=$('#throwbox'); if(tb) tb.style.display='none';
+      const tb=$('#throwbox');
       const pad=document.createElement('div'); pad.className='dpad noglitch'; pad.id='dpad';
       pad.innerHTML=['left','up','down','right'].map(x=>`<button class="nes-btn is-primary" data-dir="${x}">${arrowSVG(x,'#fff','40px')}</button>`).join('');
-      arena.after(pad);
+      if(tb) tb.appendChild(pad); else arena.after(pad);
       pad.querySelectorAll('button').forEach(b=>b.onclick=()=>{ if(d.boss!=='trap') return;
         if(b.dataset.dir===d.seq[d.pos]){ d.pos++; keep(); SND.sfx('arrow'); drawCmd(); if(d.pos>=d.seq.length) escape(); }
         else banish(); }); });
   }
-  const clearPad=()=>{ clearTimeout(cmdT); const pad=$('#dpad'); if(pad) pad.remove(); const tb=$('#throwbox'); if(tb) tb.style.display=''; };
+  const clearPad=()=>{ clearTimeout(cmdT); const pad=$('#dpad'); if(pad) pad.remove(); };
   const undim=()=>{ devil.classList.remove('taunt'); const dm=$('#trapdim'); if(dm){ dm.classList.add('off'); setTimeout(()=>dm.remove(),400); } };
   function escape(){ undim();
     SND.sfx('escape'); const tr=$('#trap'); if(tr){ tr.classList.add('break'); setTimeout(()=>tr.remove(),450); }
