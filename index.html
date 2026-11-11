@@ -1807,7 +1807,7 @@ const SND=(()=>{
   /* 一個動作一個音效（Ming 2026-11-10）：按鈕聲立刻響（延後會覺得不即時），0.2 秒內有別的音效（或 hush() 預告稍後有）就把按鈕聲瞬間收掉 */
   let clk=null; const hush=()=>{ if(clk && performance.now()-clk.t<450){ try{ const c=ctx(); clk.g.gain.setTargetAtTime(0,c.currentTime,.004); clk.src.stop(c.currentTime+.03); }catch(e){} } clk=null; };
   function sfx(name,vol=.9){ if(name!=='click') hush();
-    if(name==='game_win'){   // 小遊戲過關曲（原 boss 勝利樂句，Ming 2026-11-11）：播的時候背景音樂靜音，播完淡回；換頁就收掉
+    if(name==='game_win'){   // 小遊戲過關曲（原 boss 勝利樂句，Ming 2026-11-11）：播的時候背景音樂靜音，播完淡回；換頁也播完（Ming）
       endJingle(0); const h=play(name,vol); const me=jing={h}; if(cur) cur.vol(0,200);
       jing.t=setTimeout(()=>{ if(jing===me){ jing=null; if(cur) cur.vol(tv(),1200); } },6200); return; }
     play(name,vol); }
@@ -1878,7 +1878,7 @@ const sndIcon=()=>spriteSVG(SND.on()?SND_ON_ROWS:SND_OFF_ROWS,{B:'#111'},'22px',
 /* 換頁音效：同一頁只響一次 */
 let lastSfxPk='';
 const PAGE_SFX={'m1:next':'smirk','s1:sit':'fairy','s4:pre':'yum','s9:end':'finale'};
-function sfxPage(){ const pk=pageKey(); if(pk===lastSfxPk) return; lastSfxPk=pk; SND.endJingle(); const m=document.querySelector('#main'); const name=(m.querySelector('.name')||{}).textContent||'';
+function sfxPage(){ const pk=pageKey(); if(pk===lastSfxPk) return; lastSfxPk=pk; const m=document.querySelector('#main'); const name=(m.querySelector('.name')||{}).textContent||'';
   if(m.querySelector('.candle.ignite')){ SND.hush(); setTimeout(()=>SND.sfx('burn'),320); }   /* 點亮頁：真的火柴燃燒聲，劃燃那下對準火冒出來（570ms）（Ming 2026-11-10） */
   else if(/專屬$/.test(name)) SND.sfx('invite'); else if(m.querySelector('#got')) SND.sfx('ticket');   // 歡迎頁／拿車票頁
   else if(PAGE_SFX[pk]) SND.sfx(PAGE_SFX[pk]); else if(/:number$/.test(pk)) SND.sfx('digit'); else if(/:(go|depart)$/.test(pk)) SND.sfx('train');
