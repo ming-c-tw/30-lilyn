@@ -403,7 +403,7 @@
   @keyframes holeline{from{clip-path:polygon(49.00% 49.52%,49.14% 49.52%,49.29% 49.54%,49.43% 49.50%,49.57% 49.50%,49.71% 49.55%,49.86% 49.50%,50.00% 49.52%,50.14% 49.55%,50.29% 49.50%,50.43% 49.55%,50.57% 49.52%,50.71% 49.50%,50.86% 49.50%,50.94% 49.50%,50.94% 49.58%,51.00% 49.67%,50.98% 49.75%,51.00% 49.83%,50.92% 49.92%,50.94% 50.00%,51.00% 50.08%,50.92% 50.17%,51.00% 50.25%,50.98% 50.33%,50.92% 50.42%,51.00% 50.50%,50.86% 50.45%,50.71% 50.45%,50.57% 50.46%,50.43% 50.50%,50.29% 50.48%,50.14% 50.50%,50.00% 50.45%,49.86% 50.48%,49.71% 50.48%,49.57% 50.46%,49.43% 50.48%,49.29% 50.45%,49.14% 50.50%,49.08% 50.50%,49.04% 50.42%,49.08% 50.33%,49.02% 50.25%,49.00% 50.17%,49.08% 50.08%,49.08% 50.00%,49.02% 49.92%,49.04% 49.83%,49.00% 49.75%,49.08% 49.67%,49.00% 49.58%)}to{clip-path:polygon(49.00% 2.50%,49.14% 1.50%,49.29% 4.00%,49.43% 0.00%,49.57% 0.00%,49.71% 5.00%,49.86% 0.00%,50.00% 2.50%,50.14% 5.00%,50.29% 0.00%,50.43% 5.00%,50.57% 1.50%,50.71% 0.00%,50.86% 0.00%,50.94% 0.00%,50.94% 8.30%,51.00% 16.70%,50.98% 25.00%,51.00% 33.30%,50.92% 41.70%,50.94% 50.00%,51.00% 58.30%,50.92% 66.70%,51.00% 75.00%,50.98% 83.30%,50.92% 91.70%,51.00% 100.00%,50.86% 95.00%,50.71% 95.00%,50.57% 96.00%,50.43% 100.00%,50.29% 98.50%,50.14% 100.00%,50.00% 95.00%,49.86% 98.50%,49.71% 97.50%,49.57% 96.00%,49.43% 98.50%,49.29% 95.00%,49.14% 100.00%,49.08% 100.00%,49.04% 91.70%,49.08% 83.30%,49.02% 75.00%,49.00% 66.70%,49.08% 58.30%,49.08% 50.00%,49.02% 41.70%,49.04% 33.30%,49.00% 25.00%,49.08% 16.70%,49.00% 8.30%)}}   /* 一條裂痕：從一個點往上下拉長 */
   .arena-hole.opening .hole-edge,.arena-hole.opening .arena-clip{animation:holeopen2 1.4s linear both}
   @keyframes holeopen{from{transform:scaleX(.02)}to{transform:scaleX(1)}}
-  .devil-ghost{position:absolute;right:40px;top:40px;width:112px;mix-blend-mode:screen;z-index:3;pointer-events:none}
+  .devil-ghost{position:absolute;right:40px;top:58px;width:112px;mix-blend-mode:screen;z-index:3;pointer-events:none}
   .devil-ghost svg{display:block}
   .dg0{animation:ghostL 1.4s steps(14) both}.dg1{animation:ghostR 1.4s steps(14) both}
   @keyframes ghostL{0%{transform:translate(-70px,20px) skewX(30deg) scale(1.3);opacity:0}15%{opacity:.9}30%{opacity:.2}45%{opacity:.9;transform:translate(-40px,-10px) skewX(-25deg) scaleY(1.4)}60%{opacity:.3}75%{opacity:1;transform:translate(-12px,4px) skewX(12deg)}100%{transform:translate(0,0) skewX(0);opacity:.9}}
@@ -429,7 +429,7 @@
   .arena-clip{position:absolute;inset:0;overflow:hidden;clip-path:var(--hole);background:#140a22}   /* 底色：背景雜訊錯位時不會露出底下的紅藍邊 */
   .arena-bg{position:absolute;inset:0;background:#140a22}
   body.glitch .arena-bg{background:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 2px,transparent 2px 4px),linear-gradient(90deg,rgba(255,42,109,.25),transparent 35%,transparent 65%,rgba(5,217,232,.25)),#140a22}
-  .devil{position:absolute;right:40px;top:40px;width:112px;z-index:2;animation:devilbob .9s steps(2) infinite alternate}
+  .devil{position:absolute;right:40px;top:58px;width:112px;z-index:2;animation:devilbob .9s steps(2) infinite alternate}
   .devil svg{display:block}
   .devil .df2{position:absolute;left:0;top:0;visibility:hidden;animation:devflip .5s steps(1) infinite}
   .devil .df1{animation:devflip .5s steps(1) infinite reverse}
@@ -535,7 +535,7 @@
   @keyframes catpurr{from{transform:rotate(-3deg) scale(1.03)}to{transform:rotate(3deg) scale(1.03)}}
   #bosscall.boss-cap.dimcap{color:var(--gold)!important;text-shadow:2px 2px 0 #000}   /* 爽摸時畫面暗下，上方提示字改金色才看得到（次元之握照原本紅字） */
   /* 惡魔頭上的 HP 條（Ming 2026-11-11）：總共 100，一拳扣 1，被放逐回 30（綠色漲回＋「+30」），必殺壓下去連 HP 條一起壓斷 */
-  .boss-hp{position:absolute;right:30px;top:12px;width:132px;z-index:2;pointer-events:none;display:flex;align-items:center;gap:5px}
+  .boss-hp{position:absolute;right:30px;top:30px;width:132px;z-index:2;pointer-events:none;display:flex;align-items:center;gap:5px}
   .boss-hp b{font-size:13px;line-height:1;color:#fff;font-weight:normal;text-shadow:2px 2px 0 #000!important;animation:none!important}
   .hp-bar{position:relative;flex:1;height:14px;box-sizing:border-box;border:3px solid #fff;background:#2a0f1c;box-shadow:3px 3px 0 #000}
   .hp-bar i{position:absolute;left:0;top:0;bottom:0;display:block}
@@ -554,6 +554,7 @@
   @keyframes hpspark{0%{transform:translateY(6px);opacity:0}20%{opacity:1}100%{transform:translateY(-30px);opacity:0}}
   .hp-half{position:absolute;height:14px;box-sizing:border-box;border:3px solid #fff;background:#2a0f1c;box-shadow:3px 3px 0 #000;z-index:3;pointer-events:none;overflow:hidden}
   .hp-half i{position:absolute;left:0;top:0;bottom:0;background:#e63946}
+  .heal-mote{position:absolute;width:8px;height:8px;z-index:3;pointer-events:none}
   .hp-shard{position:absolute;width:6px;height:6px;background:#fff;z-index:4;pointer-events:none}
   .gauge{position:absolute;width:130px;height:22px;box-sizing:border-box;border:4px solid #fff;background:#3a3a3a;z-index:5;box-shadow:4px 4px 0 #000}
   .gauge i{display:block;height:100%;width:0;background:#f5a2af;transition:width .15s steps(3)}
@@ -2530,6 +2531,11 @@ function renderBoss(s, idx, d, k){
       if(tr){ tr.style.animation='none'; const t=tr.getBoundingClientRect(), c=cat.getBoundingClientRect();   // 共用世界座標中心、關鍵影格與起始時間，胖貓跟著旋渦一起被吸走
         cat.style.transformOrigin=`${t.left+t.width/2-c.left}px ${t.top+t.height/2-c.top}px`; tr.animate(kf,op).startTime=at; }
       cat.animate(kf,op).startTime=at; });
+    T(1200,()=>{ const ar=arena.getBoundingClientRect(), dr=devil.getBoundingClientRect(), cx=dr.left-ar.left+dr.width/2, cy=dr.top-ar.top+dr.height*.55;   // 回血：四周的紅藍粒子被吸進惡魔身體（Ming 2026-11-11）
+      for(let i=0;i<34;i++){ const m=document.createElement('i'); m.className='heal-mote'; m.style.background=i%2?'#ff2a6d':'#05d9e8'; const a=Math.random()*Math.PI*2, r=90+Math.random()*80, sx=Math.cos(a)*r, sy=Math.sin(a)*r*.8;
+        m.style.left=(cx-3)+'px'; m.style.top=(cy-3)+'px'; arena.appendChild(m);
+        const an=m.animate([{transform:`translate(${sx}px,${sy}px)`,opacity:0},{transform:`translate(${sx*.8}px,${sy*.8}px)`,opacity:1,offset:.2},{transform:`translate(${sx*.15}px,${sy*.15}px) scale(.8)`,opacity:1,offset:.85},{transform:'translate(0,0) scale(.3)',opacity:0}],{duration:700+Math.random()*350,delay:i*35,easing:'steps(10)',fill:'both'}); an.onfinish=()=>m.remove(); }
+      devil.animate([0,1,2,3,4,5,6,7,8].map((k,j,arr)=>({transform:j===arr.length-1?'translate(0,0)':`translate(${k%2?12:-12}px,${k%4<2?0:-6}px) rotate(${k%2?8:-8}deg)`})),{duration:1300,easing:'steps(9)'}); });   // 左右跳舞
     T(1300,()=>{ SND.sfx('heal'); devil.classList.add('heal'); const before=hpNow(); d.hits=Math.max(0,(d.hits||0)-HEAL);
       if(hpEl){ hpEl.classList.add('healing'); const pl=document.createElement('span'); pl.className='hp-plus'; pl.textContent='+'+(hpNow()-before); hpEl.appendChild(pl);   // 回血：條變綠慢慢漲回去、跳「+30」、冒綠色光點
         const bw=hpEl.querySelector('.hp-bar'); for(let i=0;i<6;i++){ const sp=document.createElement('i'); sp.className='hp-spark'; sp.style.left=(bw.offsetLeft+bw.offsetWidth*(before/HPMAX)+i*10-10)+'px'; sp.style.top='2px'; sp.style.animationDelay=(i*70)+'ms'; hpEl.appendChild(sp); setTimeout(()=>sp.remove(),1300); }
