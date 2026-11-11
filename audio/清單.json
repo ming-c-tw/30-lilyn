@@ -900,8 +900,8 @@
     "smirk": {
       "file": "sfx/smirk.mp3",
       "loop": false,
-      "desc": "ㄏㄏ頁：列車長奸笑（Ming 自錄，去雜音＋小回音）",
-      "duration": 2.56,
+      "desc": "ㄏㄏ頁：列車長奸笑（Ming 自錄，去雜音＋8bit 像素化＋小回音）",
+      "duration": 2.62,
       "sample_rate": 44100,
       "source": "Ming 自錄（原檔 音效工程/備用音效/ㄏㄏ_原始錄音.aac），ffmpeg 後製",
       "license": "自錄"
