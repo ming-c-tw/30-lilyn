@@ -502,7 +502,7 @@
   .fly-badge svg{display:block}
   .coin-fly{position:absolute;z-index:5;pointer-events:none;perspective:420px}   /* 徽章飛回：有厚度的立體硬幣，正面徽章、背面拳頭（Ming） */
   .coin3d{position:absolute;inset:0;transform-style:preserve-3d}
-  label:not(.slot):has(>input[type=file]){position:relative;overflow:hidden}   /* 拼貼格本身是 absolute，不能改 */
+  label:not(.slot):has(>input[type=file]){position:relative}   /* 拼貼格本身是 absolute，不能改 */
   label>input[type=file]{display:block!important;position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0;z-index:2}   /* 透明蓋滿按鈕：手指直接點到 input（程式 .click() 在選擇器被返回鍵取消後會失效） */
   .coin3d>*{position:absolute;left:50%;top:50%}
   .coin-edge{border-radius:50%;background:#8a5a26;box-shadow:inset 0 0 0 2px #3a200c}
