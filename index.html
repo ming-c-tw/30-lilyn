@@ -3126,7 +3126,7 @@ function renderGame(s, idx){
   $('#won').onclick=()=>{ state.extra[s.id+'_shown']=true; giveDigit(s.id); save(); render(); };   // 數字到秘密數字頁才填進上方
   if(!won){
     const cfg = s.game==='song'?{songs:s.songs} : s.game==='memory'?{icons:s.icons} : s.game==='puzzle'?{grid:s.grid,image:s.image} : s.game==='volley'?{target:CONFIG.volleyTarget} : {};
-    gameCleanup = MiniGames[s.game]($('#gamebox'), cfg, ()=>{ state.extra[s.id+'_won']=true; state.done[s.id]=true; save(); $('#won').style.display=''; SND.page(); });   // 一過關就換成過關後的音樂（Ming 2026-11-11），不等按「已過關」   // 遊戲畫面留著，只冒出「已過關」
+    const gb=$('#gamebox'); gameCleanup = MiniGames[s.game](gb, cfg, ()=>{ if(!document.body.contains(gb)) return;   /* 過關是延遲 1～3 秒才回呼；這段時間已換頁（控制者直接過、選關）就不管，不然找不到 #won 會報錯（Ming 2026-11-11 boss 關看到 @3129） */ state.extra[s.id+'_won']=true; state.done[s.id]=true; save(); $('#won').style.display=''; SND.page(); });   // 一過關就換成過關後的音樂（Ming 2026-11-11），不等按「已過關」   // 遊戲畫面留著，只冒出「已過關」
   }
   bindBackupScan(s); bindNpc(s,idx);
 }
