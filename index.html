@@ -1880,7 +1880,7 @@ const SND=(()=>{
   /* 按鈕一按下就觸發（Ming 2026-11-10：音效要按下就響、不等手指起來）：pointerdown 直接 b.click()，之後手指放開那次原生 click 吞掉（畫面可能已換頁、手指底下是別顆鈕，不能讓它再觸發）。
      權限鈕（iOS 要放開才算使用者操作）、上傳 label、小遊戲裡的鈕照舊等 click */
   let swallow=0;
-  document.addEventListener('pointerdown',e=>{ if(e.button>0) return; const b=e.target.closest('button.nes-btn'); if(!b || b.disabled || b.closest('#gamebox') || b.matches('[data-p], #permskip, [data-slow]')) return;
+  document.addEventListener('pointerdown',e=>{ if(e.button>0) return; const b=e.target.closest('button.nes-btn'); if(!b || b.disabled || b.closest('#gamebox') || b.matches('[data-p], #permskip, [data-slow], [data-replay]')) return;   // 選關清單要放開才進（按下就進會沒辦法往下滑，Ming 2026-11-11）
     swallow=performance.now(); b.click(); },{capture:false});
   const unswallow=()=>{ if(swallow) setTimeout(()=>{ swallow=0; },400); };
   window.addEventListener('pointerup',unswallow,true); window.addEventListener('pointercancel',()=>{ swallow=0; },true);
