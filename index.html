@@ -890,7 +890,7 @@ function preloadAhead(){   // 2026-11-06 Ming：第一次打開就在背景照�
   const A='audio/', B=A+'bgm/', X=A+'sfx/', mp3=(d,n)=>d+n+'.mp3';
   const list=[ mp3(X,'click'), mp3(B,'title'), mp3(B,'travel'), mp3(X,'shutter'), mp3(X,'candle_lit'), mp3(X,'train'),
     mp3(B,'volley'), mp3(X,'ball_hit'), mp3(X,'correct'), mp3(X,'wrong'), mp3(X,'digit'), mp3(X,'game_win'),
-    mp3(B,'puzzle'), A+'clip_lily.m4a', A+'clip_chandelier.m4a', A+'clip_lillian.m4a', A+'clip_lydia.m4a',
+    mp3(B,'puzzle'), mp3(B,'sweet'), A+'clip_lily.m4a', A+'clip_chandelier.m4a', A+'clip_lillian.m4a', A+'clip_lydia.m4a',
     mp3(B,'adventure'), 'img/targets_all.mind', mp3(X,'card_flip'), mp3(B,'cute'), mp3(B,'fashion'), mp3(B,'runner'), mp3(X,'jump'), mp3(X,'cat'), mp3(X,'page') ];
   CONFIG.stages.forEach(st=>(st.photos||[]).forEach(p=>{ if(p.image) list.push(p.image); (p.qs||[]).forEach(q=>{ (q.choices||[]).forEach(c=>c.img&&list.push(c.img)); (q.seq||[]).forEach(it=>it.img&&list.push(it.img)); }); }));
   list.push(mp3(B,'eerie'), mp3(X,'glitch'), mp3(X,'devil'), mp3(B,'boss'), mp3(X,'punch'), mp3(B,'victory'), 'img/s0_puzzle_pixel.png',
@@ -1846,7 +1846,7 @@ const SND=(()=>{
   function page(justName){   // 依目前關卡／步驟挑 BGM
     const s=CONFIG.stages[state.stage]; let n='travel';
     if(!state.started && state.stage===0 && !state.done.s0) n='title';
-    else if(s.type==='game'){ n={g1:'volley',g2:'travel',g3:'travel',g4:'runner',g5:'puzzle'}[s.id]||'travel'; if(state.extra[s.id+'_won']) n='travel'; }
+    else if(s.type==='game'){ n={g1:'volley',g2:'travel',g3:'travel',g4:'runner',g5:'sweet'}[s.id]||'travel'; if(state.extra[s.id+'_won']) n='travel'; }
     else if(s.type==='library') n='puzzle';
     else if(s.type==='firebadge') n='adventure';
     else if(s.finalPhoto||s.id==='s9') n='birthday';

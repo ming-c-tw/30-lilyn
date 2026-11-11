@@ -195,6 +195,20 @@
       "loopEnd": 68.571428571,
       "source": "自製：樂譜.mjs＋合成核心.mjs",
       "license": "自製 CC0"
+    },
+    "sweet": {
+      "file": "bgm/sweet.mp3",
+      "loop": true,
+      "desc": "拼圖小遊戲：甜蜜可愛的捷運約會冒險、可循環",
+      "duration": 32,
+      "sample_rate": 44100,
+      "samples": 1411200,
+      "bpm": 120,
+      "key": "C 大調",
+      "loopStart": 0,
+      "loopEnd": 32,
+      "source": "自製：樂譜.mjs＋合成核心.mjs",
+      "license": "自製 CC0"
     }
   },
   "sfx": {
