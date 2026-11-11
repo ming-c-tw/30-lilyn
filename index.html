@@ -3257,7 +3257,7 @@ function renderWish(s){   // 第 3 頁：7 根一字排開，四周變暗，2～
   main.innerHTML = ticket(s, `${steps()}
     <div class="wish-front">
       <div class="wish-row" id="wishrow"><i class="wish-rays" id="rays"></i><div class="candles mid" id="fc">${candleHTML('gold lit')}${Array.from({length:MID},()=>candleHTML('lit')).join('')}</div></div>
-      <p class="wish-text" id="wtext">蠟燭的魔力進化成許願之力了！許下 3 個願望後，吹熄蠟燭！</p>
+      <p class="wish-text" id="wtext">蠟燭的魔力進化成許願之力了！<br>許下 3 個願望後，吹熄蠟燭！</p>
       <progress class="nes-progress is-warning" id="mic" value="0" max="100" style="display:none"></progress>
       <button class="nes-btn is-primary btn wish-late" id="wished">許完願了！</button>
       <button class="nes-btn is-success btn" id="wish" style="display:none">願望會實現！</button><div id="micmsg"></div>
@@ -3306,7 +3306,7 @@ function renderLocker(){
   main.innerHTML = `<section class="ticket nes-container is-rounded with-title" style="--line-color:var(--brown)">
     <p class="title">三十而莉</p>
     <div class="station"><span class="code">BR03</span><span class="name">麟光置物櫃</span></div>
-    <p class="center" style="font-size:20px;margin:6px 0 10px">去 ${lockerNo()} 號櫃找寶藏！</p>
+    <p class="center" style="font-size:20px;margin:6px 0 10px">去 <span style="color:var(--pink)">${lockerNo()}</span> 號櫃找寶藏！</p>
     <div class="center" style="margin:0 0 6px">${CHEST.replace('width:1.2em','width:120px')}</div>
     ${CONFIG.codeMeaning?`<p class="center" style="margin:0 0 4px;font-size:22px;color:var(--red)">${CONFIG.codeMeaning}</p>`:''}
     <button class="nes-btn is-success btn" id="next" style="margin-top:14px">拿到禮物了！</button>${npcBox(s,idx)}</section>`;
