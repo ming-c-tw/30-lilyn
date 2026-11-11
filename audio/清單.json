@@ -924,6 +924,15 @@
       "sample_rate": 44100,
       "source": "自製：樂譜.mjs＋合成核心.mjs（舊版 victory）",
       "license": "自製 CC0"
+    },
+    "omen": {
+      "file": "sfx/omen.mp3",
+      "loop": false,
+      "desc": "忠孝復興看破全部虛假：地鳴警報，準備進 boss 戰",
+      "duration": 2.6,
+      "sample_rate": 44100,
+      "source": "自製：合成核心.mjs（候選腳本 音效工程/備用音效/boss前音效候選_gen.mjs）",
+      "license": "自製 CC0"
     }
   },
   "授權": "每個檔案的來源與授權分別記於 bgm／sfx 各項 source、license。所有合成錄音及原創編曲：自製 CC0。birthday 的 Happy Birthday 旋律按使用者提供的公共領域條件使用；未使用任何第三方錄音、音源、採樣或素材。",
