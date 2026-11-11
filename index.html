@@ -534,6 +534,26 @@
   .cat.purr{animation:catpurr .25s steps(2) 1}
   @keyframes catpurr{from{transform:rotate(-3deg) scale(1.03)}to{transform:rotate(3deg) scale(1.03)}}
   #bosscall.boss-cap.dimcap{color:var(--gold)!important;text-shadow:2px 2px 0 #000}   /* 爽摸時畫面暗下，上方提示字改金色才看得到（次元之握照原本紅字） */
+  /* 惡魔頭上的 HP 條（Ming 2026-11-11）：總共 100，一拳扣 1，被放逐回 30（綠色漲回＋「+30」），必殺壓下去連 HP 條一起壓斷 */
+  .boss-hp{position:absolute;right:30px;top:12px;width:132px;z-index:2;pointer-events:none;display:flex;align-items:center;gap:5px}
+  .boss-hp b{font-size:13px;line-height:1;color:#fff;font-weight:normal;text-shadow:2px 2px 0 #000!important;animation:none!important}
+  .hp-bar{position:relative;flex:1;height:14px;box-sizing:border-box;border:3px solid #fff;background:#2a0f1c;box-shadow:3px 3px 0 #000}
+  .hp-bar i{position:absolute;left:0;top:0;bottom:0;display:block}
+  .hp-lag{background:#ffe066;transition:width .45s steps(5) .3s}
+  .hp-fill{background:#e63946;transition:width .1s steps(2)}
+  .boss-hp.low .hp-fill{animation:hplow .5s steps(1) infinite}
+  @keyframes hplow{50%{background:#ff8a94}}
+  .boss-hp.healing .hp-fill{background:#4fd36a;transition:width .8s steps(8);animation:none}
+  .boss-hp.healing .hp-lag{opacity:0}
+  .boss-hp.healing .hp-bar{border-color:#b6ffbf;animation:hpglow .3s steps(1) 3}
+  @keyframes hpglow{50%{border-color:#fff;box-shadow:3px 3px 0 #000,0 0 0 3px #4fd36a}}
+  .hp-plus{position:absolute;right:-4px;top:-24px;font-size:18px;color:#4fd36a;text-shadow:2px 2px 0 #000!important;animation:hpplus 1.1s steps(11) forwards;z-index:4;pointer-events:none}
+  @keyframes hpplus{0%{transform:translateY(8px);opacity:0}15%{transform:translateY(0);opacity:1}70%{opacity:1}100%{transform:translateY(-26px);opacity:0}}
+  .hp-spark{position:absolute;width:6px;height:6px;background:#d8ffdc;box-shadow:0 0 0 2px #4fd36a;animation:hpspark .8s steps(8) forwards;pointer-events:none;z-index:4}
+  @keyframes hpspark{0%{transform:translateY(6px);opacity:0}20%{opacity:1}100%{transform:translateY(-30px);opacity:0}}
+  .hp-half{position:absolute;height:14px;box-sizing:border-box;border:3px solid #fff;background:#2a0f1c;box-shadow:3px 3px 0 #000;z-index:3;pointer-events:none;overflow:hidden}
+  .hp-half i{position:absolute;left:0;top:0;bottom:0;background:#e63946}
+  .hp-shard{position:absolute;width:6px;height:6px;background:#fff;z-index:4;pointer-events:none}
   .gauge{position:absolute;width:130px;height:22px;box-sizing:border-box;border:4px solid #fff;background:#3a3a3a;z-index:5;box-shadow:4px 4px 0 #000}
   .gauge i{display:block;height:100%;width:0;background:#f5a2af;transition:width .15s steps(3)}
   .gauge.full i{background:#ffe066;animation:cmdblink .3s steps(1) infinite}
@@ -2256,7 +2276,7 @@ function bossIntro(done){
   T(3300,()=>startGlitch());                                                                         // 畫面開始混亂
   T(4100,()=>{ const one=c=>Object.fromEntries(Object.keys(DEVIL_PAL).map(k=>[k,c]));
     ['#ff2a6d','#05d9e8'].forEach((c,i)=>{ const g=document.createElement('div'); g.className='devil-ghost dg'+i; g.innerHTML=spriteSVG(DEVIL_ROWS, one(c), '112px', 'aria-hidden="true"'); arena.appendChild(g); setTimeout(()=>g.remove(),1500); }); });   // 紅光、藍光閃爍扭曲
-  T(5500,()=>{ SND.sfx('devil'); devil.classList.remove('pre-intro'); devil.classList.add('born'); if(glow) glow.remove(); setTimeout(()=>devil.classList.remove('born'),650); });   // 合成次元惡魔
+  T(5500,()=>{ SND.sfx('devil'); devil.classList.remove('pre-intro'); const hp=$('#bosshp'); if(hp) hp.classList.remove('pre-intro'); devil.classList.add('born'); if(glow) glow.remove(); setTimeout(()=>devil.classList.remove('born'),650); });   // 合成次元惡魔
   T(6200,()=>{ call.classList.remove('pre-intro'); call.classList.add('pop'); setTimeout(()=>call.classList.remove('pop'),450); });                       // 跳字
   T(6600,()=>{ if(tbox) tbox.classList.remove('pre-intro'); done(); });
 }
@@ -2384,6 +2404,7 @@ function renderBoss(s, idx, d, k){
     <p class="center noglitch ${won?'':'boss-call'} ${intro?'pre-intro':''}" id="bosscall" style="font-size:20px;color:var(--red)">${won?'次元惡魔被打敗了！':d.exiled?'使用徽章重新召喚':fighting?'&nbsp;':'次元惡魔出現了！'}</p>
     ${won?`<div class="hero" style="display:flex;justify-content:center" id="arena">${spriteSVG(SPRITE_ROWS, CAT_PAL, '190px', 'aria-label="胖貓"')}</div>`:`<div class="arena" id="arena"><div class="arena-hole hs-${CONFIG.holeStyle||'rect'} ${intro?'pre-intro':''} ${won?'shut':''}" id="hole"><i class="hole-edge he-p"></i><i class="hole-edge he-c"></i>${FRAME_WIRE}<div class="arena-clip"><div class="arena-bg"></div><div class="crack ${fighting||won||d.exiled?'':'off'}" id="crack" style="left:${crackLeft()}px;bottom:${crackBottom()}px">${crackHTML()}</div></div></div>
       <div class="devil ${intro?'pre-intro':''}" id="devil" ${won?'hidden':''}><div class="df1">${spriteSVG(DEVIL_ROWS, DEVIL_PAL, '112px', 'aria-label="次元惡魔"')}</div><div class="df2">${spriteSVG(DEVIL_ROWS2, DEVIL_PAL, '112px', 'aria-hidden="true"')}</div><div class="dfh">${spriteSVG(DEVIL_HIT_ROWS, DEVIL_PAL, '112px', 'aria-hidden="true"')}</div></div>
+      <div class="boss-hp noglitch ${intro?'pre-intro':''}" id="bosshp"><b>HP</b><div class="hp-bar"><i class="hp-lag"></i><i class="hp-fill"></i></div></div>
 
       <div class="cat ${won?'rest':''}" id="cat" ${fighting||won?'':'hidden'}>${won?spriteSVG(SPRITE_ROWS, CAT_PAL, '190px', 'aria-label="胖貓"'):spriteSVG(CAT_BACK_ROWS, CAT_PAL, '150px', 'aria-label="胖貓"')}</div>
       <button class="fist" id="fist" ${fighting?'':'hidden'} aria-label="出拳">${FIST_SVG}</button>
@@ -2399,8 +2420,11 @@ function renderBoss(s, idx, d, k){
   const cat=$('#cat'), devil=$('#devil'), fist=$('#fist'), arena=$('#arena'), call=$('#bosscall');
   const MAX=s.bossHits||30, EXILE_MS=()=>{ const ph=Math.min(2,Math.floor((d.hits||0)/30)), [lo,hi]=[[3000,5000],[2000,3600],[1400,2400]][ph]; return lo+Math.random()*(hi-lo); },   /* 次元之握改回計時（Ming 2026-11-10），依血量分三階段：第 1 階段（0～29 下）3～5 秒、第 2 階段（30～59）2～3.6 秒、第 3 階段（60～89）1.4～2.4 秒（原本太頻繁，乘 2）；回到戰鬥就開始倒數，出拳不會重置 */ HEAL=30;   /* 被放逐惡魔回 30 下（＝退回上一階段起點） */
   const T=(ms,f)=>setTimeout(()=>{ if(document.body.contains(arena)) f(); },ms);   // 離開這頁就全部作廢
-  const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; };   // 每揍一下彩度降低，打滿變灰階（Ming）
-  fade();
+  const HPMAX=100, hpEl=$('#bosshp');
+  const hpNow=()=>Math.max(0,HPMAX-(d.hits||0));   // HP 100，一拳扣 1；打滿 90 下剩 10，留給必殺技壓斷
+  const hpSet=()=>{ if(!hpEl) return; const w=hpNow()/HPMAX*100+'%'; hpEl.querySelector('.hp-fill').style.width=w; hpEl.querySelector('.hp-lag').style.width=w; hpEl.classList.toggle('low',hpNow()<=20); };
+  const fade=()=>{ devil.style.filter=`saturate(${Math.max(0,1-(d.hits||0)/MAX)})`; hpSet(); };   // 每揍一下彩度降低，打滿變灰階（Ming）
+  if(hpEl) hpEl.querySelectorAll('i').forEach(x=>x.style.transition='none'); fade(); if(hpEl) requestAnimationFrame(()=>requestAnimationFrame(()=>hpEl.querySelectorAll('i').forEach(x=>x.style.transition='')));
   const back=spriteSVG(CAT_BACK_ROWS, CAT_PAL, '150px', 'aria-label="胖貓"'), punch=spriteSVG(CAT_PUNCH_ROWS, CAT_PAL, '170px', 'aria-label="胖貓出拳"'), belly=spriteSVG(flip180(SPRITE_ROWS), CAT_PAL, '150px', 'aria-label="胖貓翻肚"');
   const vib=p=>{ try{ navigator.vibrate&&navigator.vibrate(p); }catch(e){} };
   const quake=()=>{ document.body.classList.remove('quake'); void document.body.offsetWidth; document.body.classList.add('quake'); setTimeout(()=>document.body.classList.remove('quake'),900); };
@@ -2505,8 +2529,12 @@ function renderBoss(s, idx, d, k){
       if(tr){ tr.style.animation='none'; const t=tr.getBoundingClientRect(), c=cat.getBoundingClientRect();   // 共用世界座標中心、關鍵影格與起始時間，胖貓跟著旋渦一起被吸走
         cat.style.transformOrigin=`${t.left+t.width/2-c.left}px ${t.top+t.height/2-c.top}px`; tr.animate(kf,op).startTime=at; }
       cat.animate(kf,op).startTime=at; });
-    T(1300,()=>{ SND.sfx('heal'); devil.classList.add('heal'); d.hits=Math.max(0,(d.hits||0)-HEAL); fade(); });
-    T(2100,()=>{ d.boss='wait'; d.introDone=true; d.returned=true; d.exiled=true; delete d.seq; delete d.pos; keep(); render(); });   // 徽章回到手上，重丟再召喚
+    T(1300,()=>{ SND.sfx('heal'); devil.classList.add('heal'); const before=hpNow(); d.hits=Math.max(0,(d.hits||0)-HEAL);
+      if(hpEl){ hpEl.classList.add('healing'); const pl=document.createElement('span'); pl.className='hp-plus'; pl.textContent='+'+(hpNow()-before); hpEl.appendChild(pl);   // 回血：條變綠慢慢漲回去、跳「+30」、冒綠色光點
+        const bw=hpEl.querySelector('.hp-bar'); for(let i=0;i<6;i++){ const sp=document.createElement('i'); sp.className='hp-spark'; sp.style.left=(bw.offsetLeft+bw.offsetWidth*(before/HPMAX)+i*10-10)+'px'; sp.style.top='2px'; sp.style.animationDelay=(i*70)+'ms'; hpEl.appendChild(sp); setTimeout(()=>sp.remove(),1300); }
+        setTimeout(()=>pl.remove(),1200); setTimeout(()=>hpEl.classList.remove('healing'),1000); }
+      fade(); });
+    T(2500,()=>{ d.boss='wait'; d.introDone=true; d.returned=true; d.exiled=true; delete d.seq; delete d.pos; keep(); render(); });   // 徽章回到手上，重丟再召喚
   }
   // ---- 打滿：畫面暗下只剩胖貓，翻肚子；來回摸讓爽爽刻度集滿 → 必殺技 ----
   function startRub(){
@@ -2526,6 +2554,18 @@ function renderBoss(s, idx, d, k){
         if(d.rub>=100){ last=null; g.classList.add('full'); keep(); ult(); } };
       cat.onpointerup=cat.onpointercancel=()=>{ last=null; keep(); }; });
   }
+  // HP 條從中間被壓成 V 字斷成兩截，各自翻落，碎片噴出
+  let hpBroken=false;
+  function breakHP(){ if(!hpEl || hpBroken) return; hpBroken=true; const bar=hpEl.querySelector('.hp-bar'), ar=arena.getBoundingClientRect(), r=bar.getBoundingClientRect(), half=r.width/2;
+    const fillW=r.width*hpNow()/HPMAX; hpEl.style.visibility='hidden';
+    [0,1].forEach(i=>{ const h=document.createElement('div'); h.className='hp-half'; h.style.left=(r.left-ar.left+i*half)+'px'; h.style.top=(r.top-ar.top)+'px'; h.style.width=half+'px';
+      const f=document.createElement('i'); f.style.width=Math.max(0,Math.min(half,fillW-i*half))+'px'; h.appendChild(f); arena.appendChild(h);
+      h.style.transformOrigin=i?'0% 100%':'100% 100%';   // 以斷點為軸往下折
+      const sx=i?1:-1; h.animate([{transform:'translate(0,0) rotate(0deg)'},{transform:`translate(0,12px) rotate(${-sx*35}deg)`,offset:.18},{transform:`translate(${sx*40}px,80px) rotate(${-sx*55}deg)`,offset:.6,opacity:1},{transform:`translate(${sx*75}px,190px) rotate(${-sx*70}deg)`,opacity:0}],{duration:1100,easing:'steps(14)',fill:'forwards'});   // 中間被壓下去成 V 字，再往兩邊外側掉
+      setTimeout(()=>h.remove(),1200); });
+    for(let j=0;j<8;j++){ const p=document.createElement('i'); p.className='hp-shard'; p.style.left=(r.left-ar.left+half-3)+'px'; p.style.top=(r.top-ar.top+3)+'px'; if(j%3===0) p.style.background='#e63946'; arena.appendChild(p);
+      const ang=Math.PI*(1.1+j/8*.8+Math.random()*.1), dist=30+Math.random()*30;
+      p.animate([{transform:'translate(0,0)',opacity:1},{transform:`translate(${Math.cos(ang)*dist*-1}px,${Math.sin(ang)*dist}px)`,offset:.5,opacity:1},{transform:`translate(${Math.cos(ang)*dist*-1.3}px,${Math.sin(ang)*dist+60}px)`,opacity:0}],{duration:800,easing:'steps(8)',fill:'forwards'}); setTimeout(()=>p.remove(),900); } }
   // ---- 必殺技：往天上旋轉飛起，落到惡魔頭頂翻肚壓下去 ----
   function ult(){
     d.boss='ult'; keep(); SND.sfx('gauge_full');
@@ -2535,6 +2575,8 @@ function renderBoss(s, idx, d, k){
     T(1900,()=>{ const dr=devil.getBoundingClientRect(); const dx=(dr.left+dr.width/2)-(cr0.left+cr0.width/2), dy=(dr.bottom+10)-cr0.bottom;   // 整隻壓在惡魔身上：胖貓底邊對齊惡魔腳底
       cat.getAnimations().forEach(a=>a.cancel());
       cat.animate([{transform:`translate(${dx}px,-560px) rotate(1440deg)`},{transform:`translate(${dx}px,${dy}px) rotate(1440deg)`}],{duration:420,easing:'cubic-bezier(.6,0,1,.6)',fill:'forwards'}); });
+    T(1900,()=>{ const bar=hpEl&&hpEl.querySelector('.hp-bar'); if(!bar) return; const y=bar.getBoundingClientRect().bottom; const chk=()=>{ if(hpBroken||!document.body.contains(arena)) return; if(cat.getBoundingClientRect().bottom>=y) breakHP(); else requestAnimationFrame(chk); }; requestAnimationFrame(chk); });   // 胖貓從天上壓下來，底部碰到 HP 條就壓斷（Ming 2026-11-11）
+    T(2320,breakHP);
     T(2320,()=>{ SND.sfx('ult_slam'); SND.bgm('victory');   /* 壓扁就進勝利音樂（Ming 2026-11-10） */ vib([120,40,200]); devil.classList.remove('stun'); devil.classList.add('squash'); quake(); const dr=devil.getBoundingClientRect(), ar=arena.getBoundingClientRect(); dust(dr.left-ar.left+dr.width/2);
       const c=CRACKS[CONFIG.crackStyle]||CRACKS.branch, ck=document.createElement('div'); ck.className='crack grow devil-crack'; ck.innerHTML=crackHTML();   // 惡魔被壓扁的地方也裂開（Ming 2026-11-10）
       const clip=arena.querySelector('.arena-clip')||arena, kr=clip.getBoundingClientRect();   // 放進裂隙內層：只在裂隙裡看得到，裂隙收合時一起被收掉
