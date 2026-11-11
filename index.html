@@ -1833,6 +1833,7 @@ const SND=(()=>{
       const st=state.extra.s7_step; n=(state.extra.s7_blown||st==='smoke')?'final':'final_pre';   // 黑屏前放原本設計的終點曲
       if(st==='wish' && !state.extra.s7_blown){ if(justName) return 'final'; if(curName==='final') return; bgm('final_pre'); clearTimeout(finT); finT=setTimeout(()=>{ if(state.extra.s7_step==='wish'||state.extra.s7_step==='smoke') bgm('final'); },2000); return; } }
     else if(s.type==='ticket_puzzle') n=state.extra.s0_tp?'travel':'title';
+    if(s.arriveArt==='rift' && document.querySelector('#main .is-arrive')) n='eerie';   // 往忠孝復興的抵達頁（次元裂縫）就換神秘音樂，接到忠孝復興同一首（Ming 2026-11-11）
     if(document.querySelector('#main .stripwrap')) n='birthday';
     if(justName) return n; bgm(n); }
   /* 手機只承認「手指放開／點擊／按鍵」是使用者操作（按下的瞬間不算），所以每種都試著解鎖；
