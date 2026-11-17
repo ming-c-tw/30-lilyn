@@ -1731,7 +1731,7 @@ async function arPreload(mindUrl){
 let arMind=null, arThree=null;
 async function arScan(container, mindUrl, onFound){
   const dbg=window.__AR={stage:'載入引擎',found:0,t0:Date.now()};
-  const show=()=>{ const box=document.getElementById('ardbg'); if(box) box.textContent=`AR：${dbg.stage}｜命中 ${dbg.found}${dbg.by?'（'+dbg.by+'）':''}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
+  const show=()=>{ const box=document.getElementById('ardbg'); if(box) box.textContent=`AR：${dbg.stage}｜命中 ${dbg.found}${dbg.by?'（'+dbg.by+'）':''}${dbg.ai!=null?'｜AI '+dbg.ai.toFixed(2):''}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
   show();
   if(!arThree) arThree = await import('./vendor/mindar/mindar-image-three.prod.js');   /* 自己放：worker 要同網域 */
   // 目標檔自己先抓（顯示下載 %），抓完用 blob 交給 MindAR；預載過就直接用
@@ -1747,6 +1747,53 @@ async function arScan(container, mindUrl, onFound){
   for(let i=0;i<8;i++){ try{ const an=m.addAnchor(i); an.onTargetFound=()=>{ dbg.found++; show(); onFound(i); }; }catch(e){ break; } }
   await m.start(); dbg.stage='辨識中'; show();
   const tick=()=>{ if(!arMind) return; show(); setTimeout(tick,500); }; tick();
+}
+/* 花的 AI 形狀辨識（2026-11-17）：MobileNet v3 特徵向量，跟現場影片＋照片做的參考比相似度；跟 MindAR 並行，誰先中算誰。
+   不看顏色：亂掃不會中（現場測：花 ≥0.74、非花 ≤0.50），門檻 0.64 連續 2 次 */
+let aiLib=null, aiLoading=null;
+function loadScript(src){ return new Promise((ok,ng)=>{ const t=document.createElement('script'); t.src=src; t.onload=ok; t.onerror=()=>ng(new Error('載入失敗 '+src)); document.head.appendChild(t); }); }
+function aiLoad(){
+  if(aiLib) return Promise.resolve(aiLib);
+  if(aiLoading) return aiLoading;
+  aiLoading=(async()=>{
+    if(!window.tf) await loadScript('vendor/ai/tf.min.js');
+    const [model, refs]=await Promise.all([ tf.loadGraphModel('vendor/ai/model.json'), fetch('vendor/ai/flower_refs.json').then(r=>r.json()) ]);
+    const q=new Int8Array(Uint8Array.from(atob(refs.b64),c=>c.charCodeAt(0)).buffer);
+    const R=tf.tidy(()=>tf.tensor2d(Float32Array.from(q),[refs.n,refs.dim]).mul(refs.scale).transpose());
+    aiLib={model,R}; return aiLib;
+  })();
+  aiLoading.catch(()=>{ aiLoading=null; });
+  return aiLoading;
+}
+async function aiFlowerScan(video, onFound){
+  const dbg=window.__AR||{};
+  const {model,R}=await aiLoad();
+  const T=0.64, NEED=2; let streak=0;
+  const cv=document.createElement('canvas'), cx=cv.getContext('2d');
+  // 多尺度正方形格狀裁切（短邊的 100%／70%／50%），花在畫面哪裡、多大都抓得到
+  const pos=(L,s)=>{ if(L-s<1) return [0]; const n=Math.ceil((L-s)/(s/2))+1; return Array.from({length:n},(_,i)=>(L-s)*i/(n-1)); };
+  const tick=async()=>{
+    if(!arMind || !video.isConnected) return;
+    if(video.readyState>=2 && video.videoWidth){
+      const k=540/Math.min(video.videoWidth,video.videoHeight), w=Math.round(video.videoWidth*k), h=Math.round(video.videoHeight*k);
+      cv.width=w; cv.height=h; cx.drawImage(video,0,0,w,h);
+      const m=Math.min(w,h), boxes=[];
+      for(const f of [1,0.7,0.5]){ const s=m*f; for(const y of pos(h,s)) for(const x of pos(w,s)) boxes.push(y/h,x/w,(y+s)/h,(x+s)/w); }
+      const nb=boxes.length/4;
+      const best=tf.tidy(()=>{
+        const img=tf.browser.fromPixels(cv).toFloat().div(255).expandDims(0);
+        const crops=tf.image.cropAndResize(img, tf.tensor2d(boxes,[nb,4]), tf.zeros([nb],'int32'), [224,224]);
+        const e=model.predict(crops);
+        return e.div(e.norm('euclidean',1,true)).matMul(R).max();
+      });
+      const v=(await best.data())[0]; best.dispose();
+      dbg.ai=v;
+      streak = v>=T ? streak+1 : 0;
+      if(streak>=NEED){ dbg.by='AI '+v.toFixed(2); onFound(); return; }
+    }
+    setTimeout(tick,200);
+  };
+  tick();
 }
 function scanQR(container, onText){
   openCamera(container).then(v=>{
@@ -3057,7 +3104,7 @@ function renderFireBadge(s, idx){
     }catch(e){ perm.textContent='輪盤啟用失敗：'+(e.message||e); }
   };
   const sc=$('#scan'); if(sc) sc.onclick=async()=>{
-    // 兩半同時找、不分先後：牆走 MindAR、花走顏色；哪個先命中就收哪一半
+    // 兩半同時找、不分先後：牆走 MindAR、花走 MindAR＋AI 形狀辨識；哪個先命中就收哪一半
     const todo=s.targets.filter(t=>!has(t.key)); const flower=todo.find(t=>t.key==='flower'); const keyOfIdx=i=>(s.targets.find(t=>(t.mindIdx||[]).includes(i))||{}).key;
     /* 找到一片不關相機、繼續找另一片；兩片都找到才出「收下徽章」、按了才關相機（Ming 2026-11-11） */
     const found=(key)=>{ if(has(key)) return; SND.sfx('badge'); d.got.push(key); state.extra[k]=d; save();
@@ -3070,9 +3117,10 @@ function renderFireBadge(s, idx){
       sc.onclick=()=>{ stopCamera(); render(); }; };   // 兩半都到手後不自動解封，要點徽章
     sc.textContent='對準中…'; sc.disabled=true;
     try{
-      let v=null;
+      if(flower) aiLoad().catch(()=>{});   /* AI 模型跟 MindAR 一起先載 */
       await arScan($('#cam'), s.mind, (i)=>{ const key=keyOfIdx(i); if(!key || has(key)) return;
-        if(window.__AR) window.__AR.by='影像#'+i; found(key); }); v=arMind && arMind.video;
+        if(window.__AR) window.__AR.by='影像#'+i; found(key); });
+      if(flower && arMind && arMind.video) aiFlowerScan(arMind.video, ()=>{ if(!has('flower')) found('flower'); }).catch(e=>{ if(window.__AR) window.__AR.by='AI 失敗：'+(e.message||e); });
     }catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
   };
   const sm=$('#summon'); if(sm) sm.onclick=()=>{ SND.sfx('unseal'); d.summoned=true; state.extra[k]=d; state.done[s.id]=true; save(); render(); };
