@@ -1731,7 +1731,7 @@ async function arPreload(mindUrl){
 let arMind=null, arThree=null;
 async function arScan(container, mindUrl, onFound){
   const dbg=window.__AR={stage:'載入引擎',found:0,t0:Date.now()};
-  const show=()=>{ const box=document.getElementById('ardbg'); if(box) box.textContent=`AR：${dbg.stage}｜命中 ${dbg.found}${dbg.by?'（'+dbg.by+'）':''}${dbg.ai!=null?'｜AI '+dbg.ai.toFixed(2):''}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
+  const show=()=>{ const box=document.getElementById('ardbg'); if(box) box.textContent=`AR：${dbg.stage}｜命中 ${dbg.found}${dbg.by?'（'+dbg.by+'）':''}${dbg.ai!=null?'｜AI '+dbg.ai.toFixed(2):(dbg.aiSt?'｜AI '+dbg.aiSt:'')}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
   show();
   if(!arThree) arThree = await import('./vendor/mindar/mindar-image-three.prod.js');   /* 自己放：worker 要同網域 */
   // 目標檔自己先抓（顯示下載 %），抓完用 blob 交給 MindAR；預載過就直接用
@@ -1766,8 +1766,8 @@ function aiLoad(){
   return aiLoading;
 }
 async function aiFlowerScan(video, onFound){
-  const dbg=window.__AR||{};
-  const {model,R}=await aiLoad();
+  const dbg=window.__AR||{}; dbg.aiSt='載入中';
+  const {model,R}=await aiLoad(); dbg.aiSt='辨識中';
   const T=0.64, NEED=2; let streak=0;
   const cv=document.createElement('canvas'), cx=cv.getContext('2d');
   // 多尺度正方形格狀裁切（短邊的 100%／70%／50%），花在畫面哪裡、多大都抓得到
@@ -3120,7 +3120,7 @@ function renderFireBadge(s, idx){
       if(flower) aiLoad().catch(()=>{});   /* AI 模型跟 MindAR 一起先載 */
       await arScan($('#cam'), s.mind, (i)=>{ const key=keyOfIdx(i); if(!key || has(key)) return;
         if(window.__AR) window.__AR.by='影像#'+i; found(key); });
-      if(flower && arMind && arMind.video) aiFlowerScan(arMind.video, ()=>{ if(!has('flower')) found('flower'); }).catch(e=>{ if(window.__AR) window.__AR.by='AI 失敗：'+(e.message||e); });
+      if(flower){ if(arMind && arMind.video) aiFlowerScan(arMind.video, ()=>{ if(!has('flower')) found('flower'); }).catch(e=>{ if(window.__AR) window.__AR.aiSt='失敗：'+(e.message||e); }); else if(window.__AR) window.__AR.aiSt='拿不到鏡頭'; }
     }catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
   };
   const sm=$('#summon'); if(sm) sm.onclick=()=>{ SND.sfx('unseal'); d.summoned=true; state.extra[k]=d; state.done[s.id]=true; save(); render(); };
