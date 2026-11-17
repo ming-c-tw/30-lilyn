@@ -235,6 +235,8 @@
   #testbar b{font-size:13px;white-space:nowrap}
   #testbar .nes-btn{flex:1;margin:0;font-size:14px;padding:4px 6px}
   /* 徽章區固定 128×128：左右半片各佔一半、中間不留縫，跟合成後的整枚徽章位置完全一樣（Ming） */
+  .fb-tel{position:relative;width:84px;margin:14px auto}
+  .fb-tel .g-edge{position:absolute;left:0;top:0;animation:teledge 1.4s steps(7) infinite}
   .fb-slots{position:relative;width:128px;height:128px;margin:14px auto}
   .fb-slot{position:absolute;top:0;width:64px;height:128px;outline:4px dashed #b9a98f;outline-offset:-4px;display:flex;align-items:center;justify-content:center;background:#fff9db}
   .fb-slot svg{flex:none}   /* 槽內半片徽章要剛好是完整 128px 的一半（64×128），不被擠扁 */
@@ -3085,8 +3087,7 @@ function renderFireBadge(s, idx){
     ${both?`<div class="fb-slots"><div class="fb-whole">${badgeSVG('',  '128px')}</div></div>
       <div class="frame" style="margin-top:14px"></div>
       <button class="nes-btn is-primary btn" id="summon" style="margin-top:14px">解除封印</button>   <!-- 跟「開啟異次元觀測器」同一個位置（Ming） -->`   /* 兩半合起來 → 按「解除封印」才進解封動畫（Ming） */
-    :`<div class="fb-slots"><div class="fb-slot L ${has('winter')?'got':''}">${has('winter')?badgeSVG('L','64px'):'?'}</div><div class="fb-slot R ${has('flower')?'got':''}">${has('flower')?badgeSVG('R','64px'):'?'}</div></div>
-      <div class="frame" id="cam" style="margin-top:14px"></div>
+    :`<div class="frame" id="cam" style="margin-top:14px"><div class="fb-tel">${spriteSVG(GUY_TEL, GRANNY_PAL, '84px', 'aria-hidden="true"')}<div class="g-edge">${spriteSVG(GUY_TEL_LENS, RAINBOW_PAL, '84px', 'aria-hidden="true"')}</div></div></div>   <!-- 上方的徽章槽拿掉，改放異次元觀測器；開相機後觀測器消失、半片徽章直接浮在相機畫面上（Ming 2026-11-17） -->
       <button class="nes-btn is-primary btn" id="scan" style="margin-top:14px">開啟異次元觀測器</button>`}
     <!-- 頁面上的地點提示已拿掉（2026-11-05 Ming），改放旅程進度的每頁提示 -->
     ${backupScanBox()}${npcBox(s,idx)}`);
@@ -3106,20 +3107,21 @@ function renderFireBadge(s, idx){
   const sc=$('#scan'); if(sc) sc.onclick=async()=>{
     // 兩半同時找、不分先後：牆走 MindAR、花走 MindAR＋AI 形狀辨識；哪個先命中就收哪一半
     const todo=s.targets.filter(t=>!has(t.key)); const flower=todo.find(t=>t.key==='flower'); const keyOfIdx=i=>(s.targets.find(t=>(t.mindIdx||[]).includes(i))||{}).key;
-    /* 找到一片不關相機、繼續找另一片；兩片都找到才出「收下徽章」、按了才關相機（Ming 2026-11-11） */
+    /* 找到一片不關相機、繼續找另一片；兩片都找到才出「合成徽章」、按了才關相機（Ming 2026-11-11） */
     const found=(key)=>{ if(has(key)) return; SND.sfx('badge'); d.got.push(key); state.extra[k]=d; save();
       const cam=$('#cam'); cam.querySelectorAll('.ar-found-text').forEach(x=>x.remove());
       cam.appendChild(el(`<div class="overlay ar-found ${key==='winter'?'L':'R'}">${badgeSVG(key==='winter'?'L':'R','64px')}</div>`));   // 半片＝完整徽章 128px 的一半（64px），跟合成後切半一樣大
       const tx=el(`<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div>`); cam.appendChild(tx);                          // 字置中在下方（el() 只回第一個元素，要分開加）
       const slot=main.querySelector('.fb-slot.'+(key==='winter'?'L':'R')); if(slot){ slot.classList.add('got'); slot.innerHTML=badgeSVG(key==='winter'?'L':'R','64px'); }
       if(s.targets.some(t=>!has(t.key))){ setTimeout(()=>tx.remove(),2200); return; }   // 還差一片：字 2.2 秒後收掉，繼續辨識
-      sc.textContent='收下徽章'; sc.disabled=false; sc.className='nes-btn is-primary btn';                                   // 按了才跳下一步
+      sc.textContent='合成徽章'; sc.disabled=false; sc.className='nes-btn is-primary btn';                                   // 按了才跳下一步
       sc.onclick=()=>{ stopCamera(); render(); }; };   // 兩半都到手後不自動解封，要點徽章
     sc.textContent='對準中…'; sc.disabled=true;
     try{
       if(flower) aiLoad().catch(()=>{});   /* AI 模型跟 MindAR 一起先載 */
       await arScan($('#cam'), s.mind, (i)=>{ const key=keyOfIdx(i); if(!key || has(key)) return;
         if(window.__AR) window.__AR.by='影像#'+i; found(key); });
+      s.targets.filter(t=>has(t.key)).forEach(t=>{ const side=t.key==='winter'?'L':'R'; $('#cam').appendChild(el(`<div class="overlay ar-found ${side}">${badgeSVG(side,'64px')}</div>`)); });   /* 之前已找到的那半片，開相機就浮在畫面上 */
       if(flower){ if(arMind && arMind.video) aiFlowerScan(arMind.video, ()=>{ if(!has('flower')) found('flower'); }).catch(e=>{ if(window.__AR) window.__AR.aiSt='失敗：'+(e.message||e); }); else if(window.__AR) window.__AR.aiSt='拿不到鏡頭'; }
     }catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
   };
