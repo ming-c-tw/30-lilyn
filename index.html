@@ -697,8 +697,8 @@ const CONFIG = {
       story:'抵達胖貓的封印之地。用異次元觀測器找到藏在異次元的徽章，合成後就能解開胖貓的封印。',
       clue:'11 月盛開的美麗',
       // 輪盤上的兩個方位（度，0＝北）；〈四季〉在穿堂層北側牆面、〈大安之花〉在車站西側空橋旁廣場，現勘校正
-      mind:'img/targets_all.mind',   // 一個目標檔：索引 0–1＝〈四季〉牆、2–4＝〈大安之花〉
-      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mindIdx:[0,1]}, {key:'flower', icon:'✿', name:'花', heading:222, mindIdx:[2,3,4], color:{pink:0.02, red:0.004, blueMax:0.08}} ],   // 花：影像辨識為主；顏色是備援，控制者按「花改用顏色辨識」才跑（Ming 2026-11-12：顏色太容易誤掃）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
+      mind:'img/targets_all.mind',   // 一個目標檔：索引 0–1＝〈四季〉牆、2–6＝〈大安之花〉
+      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mindIdx:[0,1]}, {key:'flower', icon:'✿', name:'花', heading:222, mindIdx:[2,3,4,5,6],   /* 5＝2026-11-17 晚上現場截圖（ar_flower_night_live.jpg）、6＝臺北市公共藝術網白天照（ar_flower_day.jpg）；原本 2–4 現場 0 命中 */ color:{pink:0.02, red:0.004, blueMax:0.08}} ],   // 花：影像辨識為主；顏色是備援，控制者按「花改用顏色辨識」才跑（Ming 2026-11-12：顏色太容易誤掃）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
       // 正式版用 MindAR 辨識：現勘拍〈四季〉冬天段、〈大安之花〉正面當目標圖；草版先對準 3 秒就出現
       hints:['地點：一半在站內、一半在站外。','左半：藏在牆上的季節。','右半：藏在一朵大花內。'],
       nextText:'' },
