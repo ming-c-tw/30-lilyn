@@ -699,8 +699,8 @@ const CONFIG = {
       story:'抵達胖貓的封印之地。用異次元觀測器找到藏在異次元的徽章，合成後就能解開胖貓的封印。',
       clue:'11 月盛開的美麗',
       // 輪盤上的兩個方位（度，0＝北）；〈四季〉在穿堂層北側牆面、〈大安之花〉在車站西側空橋旁廣場，現勘校正
-      mind:'img/targets_all.mind',   // 一個目標檔：索引 0–1＝〈四季〉牆、2–6＝〈大安之花〉
-      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mindIdx:[0,1]}, {key:'flower', icon:'✿', name:'花', heading:222, mindIdx:[2,3,4,5,6],   /* 5＝2026-11-17 晚上現場截圖（ar_flower_night_live.jpg）、6＝臺北市公共藝術網白天照（ar_flower_day.jpg）；原本 2–4 現場 0 命中 */ } ],   // 花：只用影像辨識（顏色辨識 2026-11-17 拿掉：亂掃會成功）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
+      mind:'img/targets_all.mind',   // 一個目標檔：索引 0–1＝〈四季〉牆（花的 MindAR 目標 2026-11-17 拿掉：現場幾乎不中，改全靠 AI 形狀辨識）
+      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mindIdx:[0,1]}, {key:'flower', icon:'✿', name:'花', heading:222, mindIdx:[],   /* 花不走 MindAR，走 aiFlowerScan */ } ],   // 花：只用影像辨識（顏色辨識 2026-11-17 拿掉：亂掃會成功）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
       // 正式版用 MindAR 辨識：現勘拍〈四季〉冬天段、〈大安之花〉正面當目標圖；草版先對準 3 秒就出現
       hints:['地點：一半在站內、一半在站外。','左半：藏在牆上的季節。','右半：藏在一朵大花內。'],
       nextText:'' },
@@ -1751,7 +1751,7 @@ async function arScan(container, mindUrl, onFound){
   const tick=()=>{ if(!arMind) return; show(); setTimeout(tick,500); }; tick();
 }
 /* 花的 AI 形狀辨識（2026-11-17）：MobileNet v3 特徵向量，跟現場影片＋照片做的參考比相似度；跟 MindAR 並行，誰先中算誰。
-   不看顏色：亂掃不會中（現場測：花 ≥0.74、非花 ≤0.50），門檻 0.64 連續 2 次 */
+   不看顏色；花只靠這個（MindAR 的花目標已拿掉）。門檻見 aiFlowerScan */
 let aiLib=null, aiLoading=null;
 function loadScript(src){ return new Promise((ok,ng)=>{ const t=document.createElement('script'); t.src=src; t.onload=ok; t.onerror=()=>ng(new Error('載入失敗 '+src)); document.head.appendChild(t); }); }
 function aiLoad(){
@@ -1760,17 +1760,20 @@ function aiLoad(){
   aiLoading=(async()=>{
     if(!window.tf) await loadScript('vendor/ai/tf.min.js');
     const [model, refs]=await Promise.all([ tf.loadGraphModel('vendor/ai/model.json'), fetch('vendor/ai/flower_refs.json').then(r=>r.json()) ]);
-    const q=new Int8Array(Uint8Array.from(atob(refs.b64),c=>c.charCodeAt(0)).buffer);
-    const R=tf.tidy(()=>tf.tensor2d(Float32Array.from(q),[refs.n,refs.dim]).mul(refs.scale).transpose());
-    aiLib={model,R}; return aiLib;
+    const mat=(b64,n)=>{ const q=new Int8Array(Uint8Array.from(atob(b64),c=>c.charCodeAt(0)).buffer); return tf.tidy(()=>tf.tensor2d(Float32Array.from(q),[n,refs.dim]).mul(refs.scale).transpose()); };
+    const R=mat(refs.b64,refs.n), N=mat(refs.nb64,refs.nn);
+    /* 暖機：先跑一次，之後第一次辨識才不會卡 */
+    const warm=tf.tidy(()=>model.predict(tf.zeros([1,224,224,3])).matMul(R).max()); await warm.data(); warm.dispose();
+    aiLib={model,R,N}; return aiLib;
   })();
   aiLoading.catch(()=>{ aiLoading=null; });
   return aiLoading;
 }
 async function aiFlowerScan(video, onFound){
   const dbg=window.__AR||{}; dbg.aiSt='載入中';
-  const {model,R}=await aiLoad(); dbg.aiSt='辨識中';
-  const T=0.64, NEED=2; let streak=0;
+  const {model,R,N}=await aiLoad(); dbg.aiSt='辨識中';
+  /* 像花 ≥T，而且比「像公園其他景物」高出 M 以上，連續 NEED 次（現場測：花的差距 ≥+0.34，非花全是負的） */
+  const T=0.58, M=0.15, NEED=2; let streak=0;
   const cv=document.createElement('canvas'), cx=cv.getContext('2d');
   // 多尺度正方形格狀裁切（短邊的 100%／70%／50%），花在畫面哪裡、多大都抓得到
   const pos=(L,s)=>{ if(L-s<1) return [0]; const n=Math.ceil((L-s)/(s/2))+1; return Array.from({length:n},(_,i)=>(L-s)*i/(n-1)); };
@@ -1785,12 +1788,14 @@ async function aiFlowerScan(video, onFound){
       const best=tf.tidy(()=>{
         const img=tf.browser.fromPixels(cv).toFloat().div(255).expandDims(0);
         const crops=tf.image.cropAndResize(img, tf.tensor2d(boxes,[nb,4]), tf.zeros([nb],'int32'), [224,224]);
-        const e=model.predict(crops);
-        return e.div(e.norm('euclidean',1,true)).matMul(R).max();
+        const e=model.predict(crops), u=e.div(e.norm('euclidean',1,true));
+        const sp=u.matMul(R).max(1), gap=sp.sub(u.matMul(N).max(1));
+        const i=sp.mul(gap.greaterEqual(M).toFloat()).argMax();
+        return tf.stack([sp.gather(i), gap.gather(i), sp.max()]);
       });
-      const v=(await best.data())[0]; best.dispose();
-      dbg.ai=v;
-      streak = v>=T ? streak+1 : 0;
+      const [v,g,top]=await best.data(); best.dispose();
+      dbg.ai = g>=M ? v : top;
+      streak = (v>=T && g>=M) ? streak+1 : 0;
       if(streak>=NEED){ dbg.by='AI '+v.toFixed(2); onFound(); return; }
     }
     setTimeout(tick,200);
@@ -3059,6 +3064,7 @@ let fbOri=null;
 function renderFireBadge(s, idx){
   const k=s.id+'_fb'; const d=state.extra[k]||{got:[]};
   if(s.mind && !d.summoned) arPreload(s.mind);
+  if(!d.summoned && !d.got.includes('flower')) aiLoad().catch(()=>{});   /* 一進這站就在背景啟動 AI 模型，按觀測器時不用等 */
   const nx=CONFIG.stages[idx+1];
   const has=key=>d.got.includes(key);
   if(fbOri){ window.removeEventListener('deviceorientation',fbOri); window.removeEventListener('deviceorientationabsolute',fbOri); fbOri=null; }
