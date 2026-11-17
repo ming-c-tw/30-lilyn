@@ -698,7 +698,7 @@ const CONFIG = {
       clue:'11 月盛開的美麗',
       // 輪盤上的兩個方位（度，0＝北）；〈四季〉在穿堂層北側牆面、〈大安之花〉在車站西側空橋旁廣場，現勘校正
       mind:'img/targets_all.mind',   // 一個目標檔：索引 0–1＝〈四季〉牆、2–6＝〈大安之花〉
-      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mindIdx:[0,1]}, {key:'flower', icon:'✿', name:'花', heading:222, mindIdx:[2,3,4,5,6],   /* 5＝2026-11-17 晚上現場截圖（ar_flower_night_live.jpg）、6＝臺北市公共藝術網白天照（ar_flower_day.jpg）；原本 2–4 現場 0 命中 */ color:{pink:0.02, red:0.004, blueMax:0.08}} ],   // 花：影像辨識為主；顏色是備援，控制者按「花改用顏色辨識」才跑（Ming 2026-11-12：顏色太容易誤掃）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
+      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mindIdx:[0,1]}, {key:'flower', icon:'✿', name:'花', heading:222, mindIdx:[2,3,4,5,6],   /* 5＝2026-11-17 晚上現場截圖（ar_flower_night_live.jpg）、6＝臺北市公共藝術網白天照（ar_flower_day.jpg）；原本 2–4 現場 0 命中 */ color:{min:0.03, max:0.30, densMin:0.45, densMax:0.92, blueMax:0.08}} ],   // 花：影像辨識為主；顏色是備援，控制者按「花改用顏色辨識」才跑（Ming 2026-11-12：顏色太容易誤掃）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
       // 正式版用 MindAR 辨識：現勘拍〈四季〉冬天段、〈大安之花〉正面當目標圖；草版先對準 3 秒就出現
       hints:['地點：一半在站內、一半在站外。','左半：藏在牆上的季節。','右半：藏在一朵大花內。'],
       nextText:'' },
@@ -1721,12 +1721,12 @@ async function openCamera(container, facing='environment'){
   }
 }
 function stopCamera(){ window.__FB_COLOR=null; if(colorTimer){ clearInterval(colorTimer); colorTimer=null; } if(arMind){ try{ arMind.stop(); }catch(e){} arMind=null; const c=document.getElementById('cam'); if(c) c.classList.remove('ar'); } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
-/* 顏色辨識：每 200ms 抓一張小圖，算粉紅／紅／藍像素比例；連續 3 次符合才算找到 */
+/* 顏色辨識（備援）：每 200ms 抓一張小圖，看紅粉色塊的大小、位置、集中度；連續 5 次（1 秒）符合才算找到 */
 let colorTimer=null;
 function colorScan(video, spec, onFound){
   const dbg=window.__ARC={stage:'顏色辨識中',found:0,t0:Date.now(),pink:0,red:0,blue:0,ok:0};
   const getBox=()=>{ let box=document.getElementById('ardbg2'); if(!box){ const b1=document.getElementById('ardbg'); if(b1){ box=document.createElement('p'); box.className='tag'; box.id='ardbg2'; box.style.margin='4px 0 0'; b1.after(box); } } return box; };   // 每次重抓：控制台晚開也看得到
-  const show=()=>{ const box=getBox(); if(box) box.textContent=`花：${dbg.stage}｜粉 ${(dbg.pink*100).toFixed(1)}% 紅 ${(dbg.red*100).toFixed(1)}% 藍 ${(dbg.blue*100).toFixed(1)}%｜連續 ${dbg.ok}｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
+  const show=()=>{ const box=getBox(); if(box) box.textContent=`花：${dbg.stage}｜紅粉 ${(dbg.f*100).toFixed(1)}% 集中 ${Math.round(dbg.dens*100)}% 中心 ${dbg.cx},${dbg.cy}｜連續 ${dbg.ok}/5｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
   const c=document.createElement('canvas'); c.width=96; c.height=96; const g=c.getContext('2d',{willReadFrequently:true});
   const hsl=(r,gg,b)=>{ r/=255; gg/=255; b/=255; const mx=Math.max(r,gg,b), mn=Math.min(r,gg,b), l=(mx+mn)/2; if(mx===mn) return [0,0,l]; const d=mx-mn, sat=l>.5? d/(2-mx-mn) : d/(mx+mn); let h; if(mx===r) h=((gg-b)/d+(gg<b?6:0)); else if(mx===gg) h=(b-r)/d+2; else h=(r-gg)/d+4; return [h*60,sat,l]; };
   if(colorTimer) clearInterval(colorTimer);
@@ -1734,13 +1734,15 @@ function colorScan(video, spec, onFound){
     if(!video.videoWidth){ return; }
     const vw=video.videoWidth, vh=video.videoHeight, m=Math.min(vw,vh);
     g.drawImage(video,(vw-m)/2,(vh-m)/2,m,m,0,0,96,96); const d=g.getImageData(0,0,96,96).data;
-    let pink=0, red=0, blue=0, n=96*96;
-    for(let i=0;i<d.length;i+=4){ const [h,sat,l]=hsl(d[i],d[i+1],d[i+2]); if(sat<.25) continue;
-      if(h>=285 && h<=345 && l>.35) pink++; else if((h>=345||h<=12) && l>.2 && l<.7) red++; else if(h>=195 && h<=250 && l>.2) blue++; }
-    dbg.pink=pink/n; dbg.red=red/n; dbg.blue=blue/n;
-    const hit = dbg.pink>=spec.pink && dbg.red>=spec.red && dbg.blue<=spec.blueMax;
+    let pink=0, red=0, blue=0, n=96*96, sx=0, sy=0; const px=[];
+    for(let i=0;i<d.length;i+=4){ const [h,sat,l]=hsl(d[i],d[i+1],d[i+2]); if(sat<.25) continue; const x=(i>>2)%96, y=(i>>2)/96|0;
+      if(h>=285 && h<=345 && l>.35){ pink++; px.push(x,y); sx+=x; sy+=y; } else if((h>=345||h<=12) && l>.2 && l<.7){ red++; px.push(x,y); sx+=x; sy+=y; } else if(h>=195 && h<=250 && l>.2) blue++; }
+    /* 2026-11-17 Ming：現場亂掃也會成功 → 改看形狀：紅粉色塊要佔 3～30%、重心在畫面中央、重心半徑 12 內要夠密（花心＋花瓣）但不能實心（大紅招牌、紅包包） */
+    const tot=pink+red, cx=tot?sx/tot:0, cy=tot?sy/tot:0; let core=0; for(let j=0;j<px.length;j+=2){ const dx=px[j]-cx, dy=px[j+1]-cy; if(dx*dx+dy*dy<144) core++; }
+    dbg.pink=pink/n; dbg.red=red/n; dbg.blue=blue/n; dbg.f=tot/n; dbg.cx=Math.round(cx); dbg.cy=Math.round(cy); dbg.dens=core/(Math.PI*144);
+    const hit = dbg.f>=spec.min && dbg.f<=spec.max && cx>=24 && cx<=72 && cy>=24 && cy<=72 && dbg.dens>=spec.densMin && dbg.dens<=spec.densMax && dbg.blue<=spec.blueMax;
     dbg.ok = hit? dbg.ok+1 : 0; show();
-    if(dbg.ok>=2){ clearInterval(colorTimer); colorTimer=null; dbg.found=1; dbg.stage='找到'; show(); onFound(); if(window.__AR){ window.__AR.by='顏色'; } }
+    if(dbg.ok>=5){   /* 連續 1 秒都像花才算 */ clearInterval(colorTimer); colorTimer=null; dbg.found=1; dbg.stage='找到'; show(); onFound(); if(window.__AR){ window.__AR.by='顏色'; } }
   },200);
 }
 /* 預載：進到這一關就先把引擎（3 MB）跟目標檔抓下來，按掃描時立刻能用 */
@@ -3094,7 +3096,7 @@ function renderFireBadge(s, idx){
     sc.textContent='對準中…'; sc.disabled=true;
     try{
       let v=null;
-      await arScan($('#cam'), s.mind, (i)=>{ const key=keyOfIdx(i); if(!key || has(key)) return; if(key==='winter'){ const c=window.__ARC; if(flower && c && c.pink>=flower.color.pink) return; }   // 畫面一片粉紅＝在花前面，牆的命中當誤判
+      await arScan($('#cam'), s.mind, (i)=>{ const key=keyOfIdx(i); if(!key || has(key)) return; if(key==='winter'){ const c=window.__ARC; if(flower && c && c.ok>=1) return; }   // 顏色辨識正覺得像花＝在花前面，牆的命中當誤判
         if(window.__AR) window.__AR.by='影像#'+i; found(key); }); v=arMind && arMind.video;
       window.__FB_COLOR=()=>{ if(flower && v && !has(flower.key) && !colorTimer) colorScan(v, flower.color, ()=>{ if(window.__AR) window.__AR.by='顏色'; found(flower.key); }); };   // 花先靠影像辨識；顏色是備援，控制者按「花改用顏色辨識」才跑
       if(state.extra[s.id+'_color']) window.__FB_COLOR();
