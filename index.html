@@ -698,7 +698,7 @@ const CONFIG = {
       clue:'11 月盛開的美麗',
       // 輪盤上的兩個方位（度，0＝北）；〈四季〉在穿堂層北側牆面、〈大安之花〉在車站西側空橋旁廣場，現勘校正
       mind:'img/targets_all.mind',   // 一個目標檔：索引 0–1＝〈四季〉牆、2–6＝〈大安之花〉
-      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mindIdx:[0,1]}, {key:'flower', icon:'✿', name:'花', heading:222, mindIdx:[2,3,4,5,6],   /* 5＝2026-11-17 晚上現場截圖（ar_flower_night_live.jpg）、6＝臺北市公共藝術網白天照（ar_flower_day.jpg）；原本 2–4 現場 0 命中 */ color:{min:0.03, max:0.30, densMin:0.45, densMax:0.92, blueMax:0.08}} ],   // 花：影像辨識為主；顏色是備援，控制者按「花改用顏色辨識」才跑（Ming 2026-11-12：顏色太容易誤掃）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
+      targets:[ {key:'winter', icon:'❄', name:'冬', heading:0, mindIdx:[0,1]}, {key:'flower', icon:'✿', name:'花', heading:222, mindIdx:[2,3,4,5,6],   /* 5＝2026-11-17 晚上現場截圖（ar_flower_night_live.jpg）、6＝臺北市公共藝術網白天照（ar_flower_day.jpg）；原本 2–4 現場 0 命中 */ } ],   // 花：只用影像辨識（顏色辨識 2026-11-17 拿掉：亂掃會成功）；Ming：不要保險   // mind＝MindAR 目標檔（有就真的辨識，沒有就對準 3 秒）
       // 正式版用 MindAR 辨識：現勘拍〈四季〉冬天段、〈大安之花〉正面當目標圖；草版先對準 3 秒就出現
       hints:['地點：一半在站內、一半在站外。','左半：藏在牆上的季節。','右半：藏在一朵大花內。'],
       nextText:'' },
@@ -1321,7 +1321,7 @@ function npcInner(s, idx){
     <button class="nes-btn btn small" id="npcredo">這關重來</button>
     <button class="nes-btn is-error btn small" id="npcreset">全部重來</button>
   </div></div>${s.id==='s7'&&state.extra.s7_step==='inject'&&!state.extra.s7_goldLit?'<p class="tag" id="gmeter" style="margin:8px 0 0">鏡頭讀數：按「開始注入魔力」後顯示</p>':''}${s.type==='game' && !state.extra[s.id+'_won']?'<button class="nes-btn is-warning btn small" id="npcwin" style="margin-top:8px;width:100%">小遊戲通關</button>':''}
-  ${s.type==='firebadge' && !(state.extra[s.id+'_fb']||{}).summoned?`<div class="row" style="margin-top:8px"><button class="nes-btn is-warning btn small" id="npcL" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('winter')?'disabled':''}>完成左半</button><button class="nes-btn is-warning btn small" id="npcR" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('flower')?'disabled':''}>完成右半</button></div>${(state.extra[s.id+'_fb']||{got:[]}).got.includes('flower')?'':`<button class="nes-btn is-warning btn small" id="npcColor" style="margin-top:8px;width:100%" ${state.extra[s.id+'_color']?'disabled':''}>${state.extra[s.id+'_color']?'花：顏色辨識已啟用':'花改用顏色辨識'}</button>`}`:''}
+  ${s.type==='firebadge' && !(state.extra[s.id+'_fb']||{}).summoned?`<div class="row" style="margin-top:8px"><button class="nes-btn is-warning btn small" id="npcL" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('winter')?'disabled':''}>完成左半</button><button class="nes-btn is-warning btn small" id="npcR" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('flower')?'disabled':''}>完成右半</button></div>`:''}
   ${s.type==='spot' && ['look','find'].includes((state.extra[s.id+'_quiz']||{step:'look'}).step)?'<button class="nes-btn is-warning btn small" id="npcphoto" style="margin-top:8px;width:100%">完成這張圖</button>':''}
   ${s.type==='final'?`<button class="nes-btn is-warning btn small" id="npclk" style="margin-top:8px;width:100%">${state.extra.locker_bk?'改回 '+CONFIG.lockerNumber+' 號櫃':'改用備援櫃 '+CONFIG.lockerBackup+' 號'}</button>`:''}
   ${s.type==='library'&&s.backup?`<button class="nes-btn is-warning btn small" id="npcbk" style="margin-top:8px;width:100%">${state.extra[s.id+'_bk']?'改回主書':'改用備案書（'+s.backup.book.title+'）'}</button>`:''}
@@ -1357,7 +1357,6 @@ function bindNpcPanel(s, idx){
   // AR 關：控制者直接給左半／右半（兩半都有就跟真的掃到一樣，出現「解除封印」）
   const fbGive=key=>{ SND.sfx('badge'); stopCamera(); const k=s.id+'_fb', d=state.extra[k]||{got:[]}; if(!d.got.includes(key)) d.got.push(key); state.extra[k]=d; save(); render(); };
   const nL=$('#npcL'); if(nL) nL.onclick=()=>fbGive('winter');
-  const nC=$('#npcColor'); if(nC) nC.onclick=()=>{ state.extra[s.id+'_color']=true; save(); nC.textContent='花：顏色辨識已啟用'; nC.disabled=true; if(window.__FB_COLOR) window.__FB_COLOR(); };   // 花的顏色辨識是備援，控制者按了才跑（相機還沒開就等按掃描時一起開；Ming 2026-11-12：顏色太容易誤掃） const nR=$('#npcR'); if(nR) nR.onclick=()=>fbGive('flower');
   // 忠孝復興：控制者直接算這張圖看破（最後一張就進魔王戰前的「已看破全部虛假」）
   const nph=$('#npcphoto'); if(nph) nph.onclick=()=>{ const k=s.id+'_quiz', d=state.extra[k]||{cur:0,step:'look'}; const n=(s.photos||[1]).length;
     Object.assign(d,{step:d.cur>=n-1?'all':'ok', got:spotQs((s.photos||[s])[d.cur]).map((_,i)=>i), open:null, seqi:0}); state.extra[k]=d; save(); render(); };
@@ -1720,31 +1719,8 @@ async function openCamera(container, facing='environment'){
     return null;
   }
 }
-function stopCamera(){ window.__FB_COLOR=null; if(colorTimer){ clearInterval(colorTimer); colorTimer=null; } if(arMind){ try{ arMind.stop(); }catch(e){} arMind=null; const c=document.getElementById('cam'); if(c) c.classList.remove('ar'); } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
-/* 顏色辨識（備援）：每 200ms 抓一張小圖，看紅粉色塊的大小、位置、集中度；連續 5 次（1 秒）符合才算找到 */
-let colorTimer=null;
-function colorScan(video, spec, onFound){
-  const dbg=window.__ARC={stage:'顏色辨識中',found:0,t0:Date.now(),pink:0,red:0,blue:0,ok:0};
-  const getBox=()=>{ let box=document.getElementById('ardbg2'); if(!box){ const b1=document.getElementById('ardbg'); if(b1){ box=document.createElement('p'); box.className='tag'; box.id='ardbg2'; box.style.margin='4px 0 0'; b1.after(box); } } return box; };   // 每次重抓：控制台晚開也看得到
-  const show=()=>{ const box=getBox(); if(box) box.textContent=`花：${dbg.stage}｜紅粉 ${(dbg.f*100).toFixed(1)}% 集中 ${Math.round(dbg.dens*100)}% 中心 ${dbg.cx},${dbg.cy}｜連續 ${dbg.ok}/5｜${Math.round((Date.now()-dbg.t0)/1000)}s`; };
-  const c=document.createElement('canvas'); c.width=96; c.height=96; const g=c.getContext('2d',{willReadFrequently:true});
-  const hsl=(r,gg,b)=>{ r/=255; gg/=255; b/=255; const mx=Math.max(r,gg,b), mn=Math.min(r,gg,b), l=(mx+mn)/2; if(mx===mn) return [0,0,l]; const d=mx-mn, sat=l>.5? d/(2-mx-mn) : d/(mx+mn); let h; if(mx===r) h=((gg-b)/d+(gg<b?6:0)); else if(mx===gg) h=(b-r)/d+2; else h=(r-gg)/d+4; return [h*60,sat,l]; };
-  if(colorTimer) clearInterval(colorTimer);
-  colorTimer=setInterval(()=>{
-    if(!video.videoWidth){ return; }
-    const vw=video.videoWidth, vh=video.videoHeight, m=Math.min(vw,vh);
-    g.drawImage(video,(vw-m)/2,(vh-m)/2,m,m,0,0,96,96); const d=g.getImageData(0,0,96,96).data;
-    let pink=0, red=0, blue=0, n=96*96, sx=0, sy=0; const px=[];
-    for(let i=0;i<d.length;i+=4){ const [h,sat,l]=hsl(d[i],d[i+1],d[i+2]); if(sat<.25) continue; const x=(i>>2)%96, y=(i>>2)/96|0;
-      if(h>=285 && h<=345 && l>.35){ pink++; px.push(x,y); sx+=x; sy+=y; } else if((h>=345||h<=12) && l>.2 && l<.7){ red++; px.push(x,y); sx+=x; sy+=y; } else if(h>=195 && h<=250 && l>.2) blue++; }
-    /* 2026-11-17 Ming：現場亂掃也會成功 → 改看形狀：紅粉色塊要佔 3～30%、重心在畫面中央、重心半徑 12 內要夠密（花心＋花瓣）但不能實心（大紅招牌、紅包包） */
-    const tot=pink+red, cx=tot?sx/tot:0, cy=tot?sy/tot:0; let core=0; for(let j=0;j<px.length;j+=2){ const dx=px[j]-cx, dy=px[j+1]-cy; if(dx*dx+dy*dy<144) core++; }
-    dbg.pink=pink/n; dbg.red=red/n; dbg.blue=blue/n; dbg.f=tot/n; dbg.cx=Math.round(cx); dbg.cy=Math.round(cy); dbg.dens=core/(Math.PI*144);
-    const hit = dbg.f>=spec.min && dbg.f<=spec.max && cx>=24 && cx<=72 && cy>=24 && cy<=72 && dbg.dens>=spec.densMin && dbg.dens<=spec.densMax && dbg.blue<=spec.blueMax;
-    dbg.ok = hit? dbg.ok+1 : 0; show();
-    if(dbg.ok>=5){   /* 連續 1 秒都像花才算 */ clearInterval(colorTimer); colorTimer=null; dbg.found=1; dbg.stage='找到'; show(); onFound(); if(window.__AR){ window.__AR.by='顏色'; } }
-  },200);
-}
+function stopCamera(){ if(colorTimer){ clearInterval(colorTimer); colorTimer=null; } if(arMind){ try{ arMind.stop(); }catch(e){} arMind=null; const c=document.getElementById('cam'); if(c) c.classList.remove('ar'); } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+let colorTimer=null;   // 金色蠟燭鏡頭計時也用這個（花的顏色辨識 2026-11-17 Ming 拿掉：亂掃會成功）
 /* 預載：進到這一關就先把引擎（3 MB）跟目標檔抓下來，按掃描時立刻能用 */
 const arBlob={};
 async function arPreload(mindUrl){
@@ -3082,10 +3058,9 @@ function renderFireBadge(s, idx){
   };
   const sc=$('#scan'); if(sc) sc.onclick=async()=>{
     // 兩半同時找、不分先後：牆走 MindAR、花走顏色；哪個先命中就收哪一半
-    window.__ARC=null; const todo=s.targets.filter(t=>!has(t.key)); const flower=todo.find(t=>t.color); const keyOfIdx=i=>(s.targets.find(t=>(t.mindIdx||[]).includes(i))||{}).key;
+    const todo=s.targets.filter(t=>!has(t.key)); const flower=todo.find(t=>t.key==='flower'); const keyOfIdx=i=>(s.targets.find(t=>(t.mindIdx||[]).includes(i))||{}).key;
     /* 找到一片不關相機、繼續找另一片；兩片都找到才出「收下徽章」、按了才關相機（Ming 2026-11-11） */
     const found=(key)=>{ if(has(key)) return; SND.sfx('badge'); d.got.push(key); state.extra[k]=d; save();
-      if(flower && key===flower.key && colorTimer){ clearInterval(colorTimer); colorTimer=null; }
       const cam=$('#cam'); cam.querySelectorAll('.ar-found-text').forEach(x=>x.remove());
       cam.appendChild(el(`<div class="overlay ar-found ${key==='winter'?'L':'R'}">${badgeSVG(key==='winter'?'L':'R','64px')}</div>`));   // 半片＝完整徽章 128px 的一半（64px），跟合成後切半一樣大
       const tx=el(`<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div>`); cam.appendChild(tx);                          // 字置中在下方（el() 只回第一個元素，要分開加）
@@ -3096,10 +3071,8 @@ function renderFireBadge(s, idx){
     sc.textContent='對準中…'; sc.disabled=true;
     try{
       let v=null;
-      await arScan($('#cam'), s.mind, (i)=>{ const key=keyOfIdx(i); if(!key || has(key)) return; if(key==='winter'){ const c=window.__ARC; if(flower && c && c.ok>=1) return; }   // 顏色辨識正覺得像花＝在花前面，牆的命中當誤判
+      await arScan($('#cam'), s.mind, (i)=>{ const key=keyOfIdx(i); if(!key || has(key)) return;
         if(window.__AR) window.__AR.by='影像#'+i; found(key); }); v=arMind && arMind.video;
-      window.__FB_COLOR=()=>{ if(flower && v && !has(flower.key) && !colorTimer) colorScan(v, flower.color, ()=>{ if(window.__AR) window.__AR.by='顏色'; found(flower.key); }); };   // 花先靠影像辨識；顏色是備援，控制者按「花改用顏色辨識」才跑
-      if(state.extra[s.id+'_color']) window.__FB_COLOR();
     }catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
   };
   const sm=$('#summon'); if(sm) sm.onclick=()=>{ SND.sfx('unseal'); d.summoned=true; state.extra[k]=d; state.done[s.id]=true; save(); render(); };
