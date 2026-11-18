@@ -1879,12 +1879,20 @@ const SND=(()=>{
   let loading='';
   setInterval(()=>{ if(!on()||!unlocked||!curName||document.hidden||loading) return;
     if(!cur || (cur.loop && cur.dead)){ const n=curName; if(cur){ cur.stop(0); cur=null; } curName=''; bgm(n); } },2500);
-  function bgm(name){ if(name===curName) return; curName=name; if(!on()||!unlocked){ pending=name; return; } pending='';
+  /* 預先解碼接下來的音樂（2026-11-19 Ming：音樂好慢才出來）：每首第一次播要先解碼約 1 秒，
+     所以進一關就把「這關會用到的＋下一關開頭的＋移動中 travel」先解碼好放記憶體，其他的丟掉 */
+  const stageBgm=st=>!st?'':st.type==='game'?({g1:'volley',g2:'travel',g3:'travel',g4:'runner',g5:'sweet'}[st.id]||'travel'):st.type==='library'?'puzzle':st.type==='firebadge'?'adventure'
+    :(st.finalPhoto||st.id==='s9')?'birthday':st.type==='director'?'fashion':st.type==='photo_task'?'cute':st.type==='spot'?'eerie':st.type==='final'?'final_pre':'travel';
+  let keep=new Set(), aheadT=0;
+  function ahead(){ const S=CONFIG.stages, i=state.started?state.stage:0, s=S[i]; keep=new Set(['travel',stageBgm(s),stageBgm(S[i+1])]);
+    if(s&&s.type==='spot') ['boss','victory'].forEach(x=>keep.add(x)); if(s&&s.type==='final') keep.add('final'); keep.delete('');
+    clearTimeout(aheadT); aheadT=setTimeout(()=>{ const list=[...keep].filter(n=>!bgBufs[n]); const one=()=>{ const n=list.shift(); if(n) loadBgm(n).then(()=>setTimeout(one,300)); }; one(); },1200); }   // 一首一首來，不卡畫面
+  function bgm(name){ if(name===curName) return; curName=name; ahead(); if(!on()||!unlocked){ pending=name; return; } pending='';
     if(cur){ cur.stop(500); cur=null; }
     if(!name) return; const loop=true;   // victory 也改成可循環（Ming 2026-11-11：打贏後還有兩頁）
     loading=name; loadBgm(name).then(buf=>{ if(loading===name) loading=''; if(curName!==name || cur || !on()) return; const c=ctx();
       if(buf && c){ if(c.state!=='running') c.resume().catch(()=>{}); cur=waTrack(c,buf,loop); cur.vol(tv(),600);
-        Object.keys(bgBufs).forEach(k=>{ if(k!==name) delete bgBufs[k]; }); }   // 解碼後一首十幾 MB，只留正在播的
+        Object.keys(bgBufs).forEach(k=>{ if(k!==name && !keep.has(k)) delete bgBufs[k]; }); }   // 解碼後一首十幾 MB，只留正在播的＋接下來會用到的（keep）
       else if(!c || location.protocol==='file:') cur=elTrack(name,loop); }); }   // 有 Web Audio 但這次抓／解碼失敗：不退回會被手機擋的 <audio>，留空讓巡檢 2.5 秒後重試
   let ducked=false, jing=null; const VOL=.55, DUCKV=0; const tv=()=>(ducked||jing)?DUCKV:VOL;   // 過關曲播放中背景音樂也靜音   // 猜歌播片段時背景音樂完全靜音（Ming 2026-11-11）
   function duck(on){ ducked=!!on; if(cur) cur.vol(tv(), 400); }
