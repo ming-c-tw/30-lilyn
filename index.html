@@ -634,7 +634,7 @@ const CONFIG = {
   holeStyle: 'rect',        // 魔王戰裂隙樣式：rect 鋸齒方框／radial 圓形輻射／tear 直向撕裂
   testMode: false,          // 測試模式：控制者介面常開＋底部上一頁／下一頁。正式版 false（控制者介面要備援密碼或頁尾連點 5 下才開、可關閉）；網址加 ?test 可暫時打開
   npcPin: '0501',            // 備援密碼＝控制者介面密碼（每關「機器壞了？」輸入，或頁尾連點 5 下）
-  lockerNumber: '2',         // 麟光站置物櫃號碼（Ming 2026-11-11：櫃子最多只到 11 號，改 2）
+  lockerNumber: '2',         // ⭐ 置物櫃號碼預設（前一天晚上改這裡再發版；控制者介面輸入的會蓋過它）
   lockerBackup: '11',        // 備援櫃（Ming 2026-11-11：怕當天 2 號被租走）；控制者介面按「改用備援櫃」切換
   // 五碼＝起點麟光 + 四個解謎站（科技大樓、大安、大安森林公園、忠孝新生）
   // 置物櫃密碼就設成這五碼連起來：11520（Ming 2026-11-02 定）
@@ -643,7 +643,7 @@ const CONFIG = {
   // 5 碼只從小遊戲拿：目前只有麟光拼圖接上；g2～g5 等小遊戲放進搭車路段再接（猜歌名／翻翻牌／超級莉莉／排球）
   // 2026-11-18 Ming：置物櫃密碼是機器隨機給的 6 碼，不能自己設 → 控制者介面輸入當天的密碼，6 個秘密數字就照那 6 碼給（第 5 碼改在「秘密任務！」合照那關 m1 拿）
   //   5 碼的舊版（11520、m1 是 ㄏㄏ）備案在 _備份/三十而莉/app_5碼備案.html，只放本機不發版
-  digits: { g1:'1', g2:'1', g3:'5', g4:'2', m1:'0', g5:'0' },   // 控制者還沒輸入密碼時的預設值（輸入後會被蓋掉）
+  lockerCode: '115200',      // ⭐ 置物櫃密碼預設 6 碼＝6 個秘密數字（前一天晚上改這裡再發版；控制者介面輸入的會蓋過它）
   codeOrder: ['g1','g2','g3','g4','m1','g5'],
   finalVolley: false,        // 回麟光車上的排球，先關掉
   volleyTarget: 11,          // 排球打 11 分；墨墨超強，莉莉輸了也算通關
@@ -1033,7 +1033,8 @@ function updateBar(){ const b=document.getElementById('candlebar'); if(!b || typ
   const cb=document.getElementById('codebar'); if(cb) cb.innerHTML=CODE_ORDER.map(k=>{ const v=state.codes[k]!=null?CONFIG.digits[k]:null; return `<span class="${v!=null?'got':''}">${v!=null?v:'?'}</span>`; }).join(''); }
 const CODE_ORDER=CONFIG.codeOrder;
 /* 置物櫃密碼（控制者輸入，存在這台手機；全部重來也不會清掉） */
-const LOCKER_KEY='mrt-lockercode', DIGITS0={...CONFIG.digits};
+const LOCKER_KEY='mrt-lockercode', LOCKERNO_KEY='mrt-lockerno', DIGITS0=Object.fromEntries(CONFIG.codeOrder.map((k,i)=>[k,String(CONFIG.lockerCode)[i]||'0']));
+function lockerNoSet(){ try{ return (localStorage.getItem(LOCKERNO_KEY)||'').replace(/\D/g,''); }catch(e){ return ''; } }   // 控制者介面輸入的櫃號
 function lockerCode(){ try{ return (localStorage.getItem(LOCKER_KEY)||'').replace(/\D/g,''); }catch(e){ return ''; } }
 function applyLockerCode(){ const c=lockerCode(); CONFIG.digits = c.length===CODE_ORDER.length ? Object.fromEntries(CODE_ORDER.map((k,i)=>[k,c[i]])) : {...DIGITS0}; }
 applyLockerCode();
@@ -1341,11 +1342,12 @@ function npcInner(s, idx){
   </div></div>${s.id==='s7'&&state.extra.s7_step==='inject'&&!state.extra.s7_goldLit?'<p class="tag" id="gmeter" style="margin:8px 0 0">鏡頭讀數：按「開始注入魔力」後顯示</p>':''}${s.type==='game' && !state.extra[s.id+'_won']?'<button class="nes-btn is-warning btn small" id="npcwin" style="margin-top:8px;width:100%">小遊戲通關</button>':''}
   ${s.type==='firebadge' && !(state.extra[s.id+'_fb']||{}).summoned?`<div class="row" style="margin-top:8px"><button class="nes-btn is-warning btn small" id="npcL" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('winter')?'disabled':''}>完成左半</button><button class="nes-btn is-warning btn small" id="npcR" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('flower')?'disabled':''}>完成右半</button></div>`:''}
   ${s.type==='spot' && ['look','find'].includes((state.extra[s.id+'_quiz']||{step:'look'}).step)?'<button class="nes-btn is-warning btn small" id="npcphoto" style="margin-top:8px;width:100%">完成這張圖</button>':''}
-  ${s.type==='final'?`<button class="nes-btn is-warning btn small" id="npclk" style="margin-top:8px;width:100%">${state.extra.locker_bk?'改回 '+CONFIG.lockerNumber+' 號櫃':'改用備援櫃 '+CONFIG.lockerBackup+' 號'}</button>`:''}
+  ${s.type==='final'&&!lockerNoSet()?`<button class="nes-btn is-warning btn small" id="npclk" style="margin-top:8px;width:100%">${state.extra.locker_bk?'改回 '+CONFIG.lockerNumber+' 號櫃':'改用備援櫃 '+CONFIG.lockerBackup+' 號'}</button>`:''}
   ${s.type==='library'&&s.backup?`<button class="nes-btn is-warning btn small" id="npcbk" style="margin-top:8px;width:100%">${state.extra[s.id+'_bk']?'改回主書':'改用備案書（'+s.backup.book.title+'）'}</button>`:''}
   ${s.type==='firebadge'?'<p class="tag" id="ardbg" style="margin:8px 0 0">AR：未啟動</p>':''}
-  ${answerNote(s)}<p class="tag" style="margin-top:8px">頁面代號：${pageKey()}　密碼：${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}${lockerCode().length===CODE_ORDER.length?'':'（未設定）'}　櫃號：${lockerNo()}</p>
-  <div class="row" style="margin-top:8px"><input class="nes-input" id="lkcode" inputmode="numeric" maxlength="${CODE_ORDER.length}" value="${lockerCode()}" style="flex:1;min-width:0;font-size:18px;padding:4px 8px"><button class="nes-btn is-warning btn small" id="lkset" style="flex:none">設定密碼</button></div></div>`;
+  ${answerNote(s)}<p class="tag" style="margin-top:8px">頁面代號：${pageKey()}　密碼：${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}${lockerCode().length===CODE_ORDER.length?'':'（預設）'}　櫃號：${lockerNo()}${lockerNoSet()?'':'（預設）'}</p>
+  <div class="row" style="margin-top:8px"><input class="nes-input" id="lkno" inputmode="numeric" maxlength="3" value="${lockerNoSet()}" style="flex:1;min-width:0;font-size:18px;padding:4px 8px"><button class="nes-btn is-warning btn small" id="lknoset" style="flex:none;white-space:nowrap;width:auto">設定櫃號</button></div>
+  <div class="row" style="margin-top:8px"><input class="nes-input" id="lkcode" inputmode="numeric" maxlength="${CODE_ORDER.length}" value="${lockerCode()}" style="flex:1;min-width:0;font-size:18px;padding:4px 8px"><button class="nes-btn is-warning btn small" id="lkset" style="flex:none;white-space:nowrap;width:auto">設定密碼</button></div></div>`;
 }
 /* 控制者看的解答（依關卡型別）；要輸入的答案附「複製」鈕 */
 function answerNote(s){
@@ -1375,6 +1377,9 @@ function bindNpcPanel(s, idx){
     if(v && v.length!==CODE_ORDER.length){ lks.textContent=`要 ${CODE_ORDER.length} 碼`; return; }
     try{ if(v) localStorage.setItem(LOCKER_KEY,v); else localStorage.removeItem(LOCKER_KEY); }catch(e){}
     applyLockerCode(); save(); render(); };
+  const lkn=$('#lknoset'); if(lkn) lkn.onclick=()=>{ const v=($('#lkno').value||'').replace(/\D/g,'');
+    try{ if(v) localStorage.setItem(LOCKERNO_KEY,v); else localStorage.removeItem(LOCKERNO_KEY); }catch(e){}
+    save(); render(); };
   const lkb=$('#npclk'); if(lkb) lkb.onclick=()=>{ state.extra.locker_bk=!state.extra.locker_bk; save(); render(); };
   const nw=$('#npcwin'); if(nw) nw.onclick=()=>{ if(window.__MG_WIN) window.__MG_WIN(); };   // 走遊戲自己的通關畫面
   // AR 關：控制者直接給左半／右半（兩半都有就跟真的掃到一樣，出現「解除封印」）
@@ -2783,7 +2788,7 @@ function renderGpsQr(s, idx){
 function haversine(a,b,c,d){ const R=6371000, toR=x=>x*Math.PI/180; const dLat=toR(c-a), dLng=toR(d-b); const h=Math.sin(dLat/2)**2+Math.cos(toR(a))*Math.cos(toR(c))*Math.sin(dLng/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
 
 /* 1 圖書館：已抵達 → 謎語猜書名 → 找書輸入 ISBN 末 4 碼 */
-function lockerNo(){ return state.extra.locker_bk ? CONFIG.lockerBackup : CONFIG.lockerNumber; }   // 控制者切了備援櫃就換號
+function lockerNo(){ return lockerNoSet() || (state.extra.locker_bk ? CONFIG.lockerBackup : CONFIG.lockerNumber); }   // 控制者輸入的櫃號優先，其次備援櫃、預設櫃號
 function libStage(s){ return (s.backup && state.extra[s.id+'_bk']) ? {...s, ...s.backup} : s; }   // 控制者切了備案書就換成備案的書／索書號／ISBN
 function renderLibrary(s, idx){
   s=libStage(s);
