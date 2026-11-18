@@ -1954,7 +1954,14 @@ const SND=(()=>{
      選擇器關掉回到頁面（cancel／focus／visibilitychange）時，沒選到檔就把 input 換成全新的一個（沿用 onchange）。 */
   const freshFile=(inp)=>{ if(!inp.isConnected) return inp; const f=inp.cloneNode(); f.value=''; f.onchange=inp.onchange; inp.replaceWith(f); return f; };
   let picking=null;
-  document.addEventListener('click',e=>{ if(e.target.matches && e.target.matches('input[type=file]')) picking=e.target; },{capture:true});
+  /* 2026-11-19 Ming：選照片按返回取消後，上傳還是會卡住 → Android 自救：按了上傳 1.5 秒內選擇器沒開（頁面沒失焦、沒切到背景），
+     判定瀏覽器卡住，存檔後重新載入這頁（進度在 localStorage，會停在同一頁），再按一次就好。iOS 選單不會讓頁面失焦，所以只在 Android 做；10 秒內最多重載一次。 */
+  let leftAt=0; window.addEventListener('blur',()=>{ leftAt=performance.now(); }); document.addEventListener('visibilitychange',()=>{ if(document.hidden) leftAt=performance.now(); });
+  const watchPick=(inp)=>{ if(!/Android/i.test(navigator.userAgent) || navigator.webdriver) return; const t0=performance.now();
+    setTimeout(()=>{ if(leftAt>=t0 || !document.hasFocus() || (inp.files&&inp.files.length) || !inp.isConnected) return;
+      let last=0; try{ last=+sessionStorage.getItem('mrt-pickreload')||0; }catch(e){} if(Date.now()-last<10000) return;
+      try{ sessionStorage.setItem('mrt-pickreload',String(Date.now())); }catch(e){} try{ save(); }catch(e){} location.reload(); },1500); };
+  document.addEventListener('click',e=>{ if(e.target.matches && e.target.matches('input[type=file]')){ picking=e.target; watchPick(e.target); } },{capture:true});
   document.addEventListener('cancel',e=>{ if(e.target.matches && e.target.matches('input[type=file]')){ if(picking===e.target) picking=null; freshFile(e.target); } },{capture:true});
   const back=()=>{ const p=picking; if(!p) return; setTimeout(()=>{ if(picking!==p) return; picking=null; if(!p.files || !p.files.length) freshFile(p); },700); };   // 等一下：選了檔的話 change 會先到
   window.addEventListener('focus',back); document.addEventListener('visibilitychange',()=>{ if(!document.hidden) back(); });
