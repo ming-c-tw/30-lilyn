@@ -1576,7 +1576,7 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
 };
 function tipHTML(t){ return icons(t.replace(/^提示：/,'')).replace('{heart}', ()=>spriteSVG(HEART_ROWS,{R:'#e63946'},'26px','style="vertical-align:middle"')); }   // 開頭的「提示：」用紅字（Ming 2026-11-06）
 function pageKey(){ const s=CONFIG.stages[state.stage], m=document.querySelector('#main'); if(!m) return s.id+':-';
-  if(!state.started) return 'welcome';   // 歡迎頁（按鈕也叫 go，不另外認會撞到出發頁的提示）
+  if(!state.started) return m.querySelector('#pw')?'invite':'welcome';   // 邀請函（打密碼）／歡迎頁（按鈕也叫 go，不另外認會撞到出發頁的提示）
   // 先認「通用頁型」：同一種頁可能由不同程式畫（按鈕名稱不一樣），用畫面特徵認才穩
   if(m.querySelector('.is-arrive') && s.type!=='library') return s.id+':arrive';   // 已抵達 X
   if(m.querySelector('.secret')) return s.id+':number';                            // 秘密數字
