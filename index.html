@@ -1862,7 +1862,7 @@ const SND=(()=>{
   const base='audio/'; const cache={}; let cur=null, curName='', unlocked=false, pending='';
   const on=()=>state.extra.sound!==false;
   const el=(kind,name)=>{ const k=kind+'/'+name; if(!cache[k]){ const a=new Audio(base+k+'.mp3'); a.preload='auto'; a.onerror=()=>{ cache[k]=null; }; cache[k]=a; } return cache[k]; };
-  const fade=(a,to,ms,done)=>{ const from=a.volume, t0=performance.now(); const tick=()=>{ const r=Math.min(1,(performance.now()-t0)/ms); a.volume=from+(to-from)*r; if(r<1) requestAnimationFrame(tick); else if(done) done(); }; tick(); };
+  const fade=(a,to,ms,done)=>{ const from=a.volume, t0=performance.now(); const tick=()=>{ const r=ms>0?Math.min(1,(performance.now()-t0)/ms):1, v=from+(to-from)*r; if(isFinite(v)) a.volume=Math.max(0,Math.min(1,v));   /* ms=0 會算出 NaN，音量要有限值 */ if(r<1) requestAnimationFrame(tick); else if(done) done(); }; tick(); };
   /* 背景音樂也走 Web Audio（解碼後循環播放，GainNode 控音量）：手機上 <audio> 常被擋、iOS 也不吃 volume，
      音效那條已證實會響，所以 BGM 跟著走同一條（Ming 2026-11-10：手機只聽到音效、沒有背景音樂）。拿不到 AudioContext 或 file: 才退回 <audio>。 */
   const bgBufs={};
@@ -1908,7 +1908,7 @@ const SND=(()=>{
     if(cur) cur.vol(tv(),800); }
   function play(name,vol=.9){ if(!on()||!unlocked) return; const c=ctx(), b=bufs[name];
     if(c&&b){ if(c.state==='suspended') c.resume().catch(()=>{}); const src=c.createBufferSource(); src.buffer=b; const g=c.createGain(); g.gain.value=vol; src.connect(g); g.connect(c.destination); src.start(0); return {src,g}; }
-    load(name); const a=el('sfx',name); if(!a) return; const cl=a.cloneNode(); cl.volume=Math.min(1,vol);   /* <audio> 音量只能 0～1（Web Audio 可以 >1），手機還沒解碼完時會走這條 */ cl.play().catch(()=>{}); }
+    load(name); const a=el('sfx',name); if(!a) return; const cl=a.cloneNode(); cl.volume=Math.max(0,Math.min(1,+vol||0));   /* <audio> 音量只能 0～1（Web Audio 可以 >1），手機還沒解碼完時會走這條 */ cl.play().catch(()=>{}); }
   function toggle(){ state.extra.sound=!on(); save(); if(!on()){ if(cur){ cur.stop(0); cur=null; } pending=curName; curName=''; } else { unlocked=true; const n=pending||curName; curName=''; bgm(n||page(true)); } }
   let finT=0;
   function page(justName){   // 依目前關卡／步驟挑 BGM
