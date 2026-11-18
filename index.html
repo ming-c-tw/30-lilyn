@@ -728,7 +728,7 @@ const CONFIG = {
       nextText:'' },
 
     { id:'s5d', name:'忠孝新生', code:'O07 / BL14', line:'orange', type:'director',
-      goStory:'此時列車長也給妳第 5 個秘密任務，難道要集齊 5 個秘密數字了嗎？',   // 目的地頁（往忠孝復興）上方的敘述
+      goStory:'此時列車長也給妳第 5 個秘密任務，難道要集齊 6 個秘密數字了嗎？',   // 目的地頁（往忠孝復興）上方的敘述
       litStory:'IG 總編替妳點燃蠟燭了！同時他告訴妳，附近出現一隻邪惡的惡魔，似乎打著壞壞的主意，他要求妳前往忠孝復興調查。',   // 點亮第 5 根蠟燭頁上方的故事
       sub:'天地攝影棚 · 好美莉',
       intro:'在忠孝新生站遇到 IG 總編了！這一關妳是模特兼動作指導，總編是攝影師，他只能照妳的話做：拍出一張總編給過並且可以發 IG 的照片，總編會替妳點燃蠟燭。',
@@ -802,7 +802,7 @@ const CONFIG = {
     { id:'s7', name:'麟光', code:'BR03', line:'brown', type:'final',
       sub:'三十而莉',
       intro:'到達麟光後，列車長給了妳第 7 根蠟燭，是金色的，最重要的蠟燭只能由妳自己注入魔力點燃！',
-      hints:['5 碼的順序＝妳拿到的順序。','第 1 碼是在這裡拿到的。','再吹用力一點。'] },
+      hints:['6 碼的順序＝妳拿到的順序。','第 1 碼是在這裡拿到的。','再吹用力一點。'] },
     { id:'s9', name:'麟光', code:'BR03', line:'brown', type:'photo_task', noCandle:true, finalPhoto:true, photoPrompt:'最後的秘密任務，請拍一張合照，合照主題：',
       sub:'生日快樂！',
       theme:'生日快樂！' },
@@ -2263,7 +2263,7 @@ const glR=(a,b)=>a+Math.random()*(b-a);
 function startGlitch(){ document.body.classList.add('glitch'); if(glitchTimer) return; SND.sfx('glitch'); const G='▚▞▛▜░▒▓█ÆØ¥§¿Ω∆ʘɸ҂☰☱☲#%&';
   let layer=document.querySelector('.gl-layer'); if(!layer){ layer=document.createElement('div'); layer.className='gl-layer'; layer.innerHTML='<i></i>'.repeat(7); document.body.appendChild(layer); }
   glitchTimer=setInterval(()=>{
-    document.querySelectorAll('#title,.ticket .sub,.ticket .station .name,.ticket .station .code,#codebar span').forEach(e=>{   // 上方 5 碼數字也會變亂碼（Ming 2026-11-06）
+    document.querySelectorAll('#title,.ticket .sub,.ticket .station .name,.ticket .station .code,#codebar span').forEach(e=>{   // 上方 6 碼數字也會變亂碼（Ming 2026-11-06）
       if(!e.dataset.og) e.dataset.og=e.textContent; const og=e.dataset.og;
       e.textContent=Math.random()<.3?og:[...og].map(c=>Math.random()<.6?G[Math.random()*G.length|0]:c).join(''); });
     // 物件到處錯位（像手機壞掉）：打魔王的場地本身不動，惡魔和胖貓才不受影響
@@ -3202,7 +3202,7 @@ function renderGame(s, idx){
 /* 7 終局：密碼鎖 → 吹蠟燭 → 櫃號 */
 function renderFinal(s, idx){
   if(gameCleanup){ gameCleanup(); gameCleanup=null; }
-  if(CONFIG.finalVolley && state.codes[s.id]==null){   // 回麟光的車上：排球對決拿第 5 碼（目前關閉）
+  if(CONFIG.finalVolley && state.codes[s.id]==null){   // 回麟光的車上：排球對決拿最後一碼（目前關閉）
     main.innerHTML = ticket(s, `${steps()}
       <p>回麟光的車上，跟列車長打一場排球。贏了拿最後 1 碼。</p>
       <div id="gamebox"></div>${backupScanBox()}${npcBox(s,idx)}`);
@@ -3215,7 +3215,7 @@ function renderFinal(s, idx){
   const expect = CODE_ORDER.map(k=>CONFIG.digits[k]).join('');
   const dial = state.extra.s7_dial || [0,0,0,0,0];
   main.innerHTML = ticket(s, `${steps()}
-    <p>置物櫃 <span class="big">${lockerNo()}</span> 號。把妳在車上拿到的 5 碼轉出來，打開它。</p>
+    <p>置物櫃 <span class="big">${lockerNo()}</span> 號。把妳在車上拿到的 6 碼轉出來，打開它。</p>
     <div class="dials" id="dials">${dial.map((v,i)=>`<div class="dial"><button data-i="${i}" data-d="1">▲</button><div class="v">${v}</div><button data-i="${i}" data-d="-1">▼</button></div>`).join('')}</div>
     <div id="res"></div><button class="nes-btn is-primary btn" id="chk" style="margin-top:6px">轉開</button>
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
