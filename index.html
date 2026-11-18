@@ -960,7 +960,9 @@ function walkStage(i){   // 第 i 關從頭走到要離開這一關為止，每�
   return pages; }
 let walking=false;
 function pageBack(){
-  if(walking) return; walking=true;
+  if(walking) return;
+  if(!state.started && state.stage===0) return;   /* 已在歡迎頁 */
+  walking=true;
   const keep=JSON.stringify(state), here=walkKey(), i=state.stage;
   try{
     const pages=walkStage(i); const pos=pages.map(p=>p.key).lastIndexOf(here);
@@ -968,6 +970,7 @@ function pageBack(){
     if(pos>0) target=pages[pos-1].sn;
     else if(pos===-1 && pages.length) target=pages[0].sn;   // 找不到這頁（例如玩到一半）：回到這一關開頭
     else if(i>0){ const prev=walkStage(i-1); target=prev[prev.length-1].sn; }
+    else { stageStart(0); delete state.started; save(); render(); window.scrollTo(0,0); return; }   /* 第一關第一頁再上一頁 → 回歡迎頁「我準備好了！」，時間歸零（Ming 2026-11-18） */
     if(target){ restoreSnap(target); window.scrollTo(0,0); }
     else { const o=JSON.parse(keep); Object.keys(state).forEach(k=>delete state[k]); Object.assign(state,o); save(); render(); }
   } finally { walking=false; }
@@ -1038,7 +1041,7 @@ function reset(){ try{ localStorage.removeItem(STATE_KEY); }catch(e){} location.
 
 /* 時鐘 */
 setInterval(()=>{
-  if(!state.started) return;
+  if(!state.started){ $('#clock').textContent='00:00:00'; return; }   /* 上一頁退回歡迎頁時歸零 */
   const d = Math.floor((Date.now()-state.started)/1000);
   $('#clock').textContent = [d/3600, d%3600/60, d%60].map(n=>String(Math.floor(n)).padStart(2,'0')).join(':');
 },1000);
@@ -1516,7 +1519,7 @@ function autoBrief(s){ const t=[s.intro,s.story,s.arriveStory,state.done[s.id]?s
 /* 旅程進度裡「目前這一站」顯示的提示（不洩漏答案） */
 /* 每一頁自己的提示（Ming 一頁一頁填）：key＝「關卡 id:這頁主按鈕的 id」，控制者介面最下面會顯示目前這頁的代號；沒填的頁先用下面整關的 STAGE_TIPS */
 const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{heart}」＝像素愛心
-  's0:got':['可以色色'],
+  's0:got':['可以色色{devil}'],
   's0:photo':['GO！'],
   's0:lit':['點燃蠟燭了！'],
   's0:go':['貓毛想帶妳去哪裡呢？'],
@@ -1570,7 +1573,7 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   's9:cert':['{heart}'],
   's9:end':['{heart}'],
 };
-function tipHTML(t){ return t.replace(/^提示：/,'').replace('{heart}', ()=>spriteSVG(HEART_ROWS,{R:'#e63946'},'26px','style="vertical-align:middle"')); }   // 開頭的「提示：」用紅字（Ming 2026-11-06）
+function tipHTML(t){ return icons(t.replace(/^提示：/,'')).replace('{heart}', ()=>spriteSVG(HEART_ROWS,{R:'#e63946'},'26px','style="vertical-align:middle"')); }   // 開頭的「提示：」用紅字（Ming 2026-11-06）
 function pageKey(){ const s=CONFIG.stages[state.stage], m=document.querySelector('#main'); if(!m) return s.id+':-';
   // 先認「通用頁型」：同一種頁可能由不同程式畫（按鈕名稱不一樣），用畫面特徵認才穩
   if(m.querySelector('.is-arrive') && s.type!=='library') return s.id+':arrive';   // 已抵達 X
