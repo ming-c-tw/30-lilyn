@@ -1519,6 +1519,7 @@ function autoBrief(s){ const t=[s.intro,s.story,s.arriveStory,state.done[s.id]?s
 /* 旅程進度裡「目前這一站」顯示的提示（不洩漏答案） */
 /* 每一頁自己的提示（Ming 一頁一頁填）：key＝「關卡 id:這頁主按鈕的 id」，控制者介面最下面會顯示目前這頁的代號；沒填的頁先用下面整關的 STAGE_TIPS */
 const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{heart}」＝像素愛心
+  'welcome':['準備出發'],
   's0:got':['可以色色{devil}'],
   's0:photo':['GO！'],
   's0:lit':['點燃蠟燭了！'],
@@ -1546,7 +1547,7 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   's4:lit':['點燃蠟燭了！'],
   's4:go':['會是誰呢？'],
   'g4:play':['秘密任務進行中'],
-  'g4:arrive':['莉莉加油！'],
+  'g4:arrive':['艱難的任務！'],
   's5d:ok':['IG 總編：記得退追蹤'],
   's5d:lit':['點燃蠟燭了！'],
   's5d:go':['東區 東區'],
@@ -1567,7 +1568,7 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   's7:goldok':['燃燒吧！！！'],
   's7:wished':['請許下最棒的願望！'],
   's7:gocode':['請許下最棒的願望！'],
-  // 's7:next':['1 1 5 2 0 莉莉我愛妳'],   // 2026-11-18 Ming：改隨機 6 碼，這句先收起來，之後再想
+  's7:next':['期待期待'],
   's9:photo':['最後的秘密任務進行中'],
   's9:openletter':['{heart}'],
   's9:cert':['{heart}'],
