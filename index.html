@@ -949,15 +949,17 @@ function stageStart(i){   // 回到第 i 關剛開始的狀態（後面的關全
   CONFIG.stages.slice(i).forEach(x=>clearStage(x.id));
   if(i<=CONFIG.stages.findIndex(x=>x.finalPhoto)){ delete state.extra.letterOpen; delete state.extra.endLetter; }
   state.extra.strip=strip; state.stage=i; }
+/* 上一頁用的頁面代號：徽章關「還沒找到／找到一半」畫面長一樣，要再加上已找到幾片才分得出來（不然上一頁會直接退回這關開頭） */
+function walkKey(){ const s=CONFIG.stages[state.stage], d=s&&state.extra[s.id+'_fb']; return pageKey(state)+(d&&Array.isArray(d.got)?'#'+d.got.length:''); }
 function walkStage(i){   // 第 i 關從頭走到要離開這一關為止，每一頁存一份
   const pages=[]; stageStart(i); save(); render();
-  for(let n=0;n<80;n++){ const sn=snapState(), key=pageKey(state); if(!pages.length || pages[pages.length-1].key!==key) pages.push({sn,key});
-    const before=key; pageNext(); if(state.stage!==i) break; if(pageKey(state)===before) break; }
+  for(let n=0;n<80;n++){ const sn=snapState(), key=walkKey(); if(!pages.length || pages[pages.length-1].key!==key) pages.push({sn,key});
+    const before=key; pageNext(); if(state.stage!==i) break; if(walkKey()===before) break; }
   return pages; }
 let walking=false;
 function pageBack(){
   if(walking) return; walking=true;
-  const keep=JSON.stringify(state), here=pageKey(state), i=state.stage;
+  const keep=JSON.stringify(state), here=walkKey(), i=state.stage;
   try{
     const pages=walkStage(i); const pos=pages.map(p=>p.key).lastIndexOf(here);
     let target=null;
@@ -973,7 +975,9 @@ function pageNext(){
   const nl=document.getElementById('nextl'); if(nl){ nl.click(); return; }     // 點亮蠟燭頁 → 目的地
   const wn=document.getElementById('won'); if(wn && wn.style.display!=='none'){ wn.click(); return; }   // 小遊戲打贏 → 看秘密數字
   const go=document.getElementById('go'); if(go){ go.click(); return; }          // 開場
-  if(document.getElementById('fc') && !document.getElementById('gocode')){ renderSmoke(); setTimeout(recordPage,0); return; }   // 吹蠟燭 → 煙霧櫃號（跳過願望鈕）
+  if(document.getElementById('fc') && !document.getElementById('gocode')){
+    if(state.extra.s7_step==='wish'){ const dm=document.querySelector('.wish-dim'); if(dm) dm.remove(); state.extra.s7_step='smoke'; save(); render(); return; }   /* 許願頁（七彩蠟燭、四周變暗）：要把暗幕收掉、步驟記成 smoke，不然畫面會一直黑著（Ming 2026-11-18） */
+    renderSmoke(); setTimeout(recordPage,0); return; }   // 吹蠟燭 → 煙霧櫃號（跳過願望鈕）
   const gc=document.getElementById('gocode'); if(gc){ gc.click(); return; }
   const ol=document.getElementById('openletter')||document.getElementById('cert'); if(ol){ ol.click(); return; }   // 獲得一封信 → 看信 → 領取通關證明
   const s=CONFIG.stages[state.stage]; if(!s || state.done[s.id]) return;
@@ -989,6 +993,8 @@ function pageNext(){
   }
   if(s.type==='photo_task'){ if(s.preStep && !state.extra[s.id+'_pre']){ state.extra[s.id+'_pre']=true; save(); return render(); } state.done[s.id]=true; save(); return render(); }
   if(s.type==='firebadge'){ const k=s.id+'_fb', d=state.extra[k]||{got:[]};
+    if(arMind && window.__fbFound){ const sc=document.getElementById('scan');
+      if(!d.got.includes('winter')) return window.__fbFound('winter'); if(!d.got.includes('flower')) return window.__fbFound('flower'); if(sc && !sc.disabled) return sc.click(); return; }
     if(!d.got.includes('winter')) d.got.push('winter'); else if(!d.got.includes('flower')) d.got.push('flower'); else { d.summoned=true; state.done[s.id]=true; }   // 左半 → 右半（兩半合成、出現解除封印）→ 解封
     state.extra[k]=d; save(); return render(); }
   if(s.type==='game'){ state.extra[s.id+'_won']=true; state.done[s.id]=true; save(); return render(); }
@@ -1357,8 +1363,11 @@ function bindNpcPanel(s, idx){
   const lkb=$('#npclk'); if(lkb) lkb.onclick=()=>{ state.extra.locker_bk=!state.extra.locker_bk; save(); render(); };
   const nw=$('#npcwin'); if(nw) nw.onclick=()=>{ if(window.__MG_WIN) window.__MG_WIN(); };   // 走遊戲自己的通關畫面
   // AR 關：控制者直接給左半／右半（兩半都有就跟真的掃到一樣，出現「解除封印」）
-  const fbGive=key=>{ SND.sfx('badge'); stopCamera(); const k=s.id+'_fb', d=state.extra[k]||{got:[]}; if(!d.got.includes(key)) d.got.push(key); state.extra[k]=d; save(); render(); };
-  const nL=$('#npcL'); if(nL) nL.onclick=()=>fbGive('winter');
+  const fbGive=(key,btn)=>{ if(btn) btn.disabled=true;
+    if(arMind && window.__fbFound){ window.__fbFound(key); return; }   /* 相機開著：跟真的掃到一樣，半片浮在相機畫面上 */
+    SND.sfx('badge'); stopCamera(); const k=s.id+'_fb', d=state.extra[k]||{got:[]}; if(!d.got.includes(key)) d.got.push(key); state.extra[k]=d; save(); render(); };
+  const nL=$('#npcL'); if(nL) nL.onclick=()=>fbGive('winter',nL);
+  const nR=$('#npcR'); if(nR) nR.onclick=()=>fbGive('flower',nR);
   // 忠孝復興：控制者直接算這張圖看破（最後一張就進魔王戰前的「已看破全部虛假」）
   const nph=$('#npcphoto'); if(nph) nph.onclick=()=>{ const k=s.id+'_quiz', d=state.extra[k]||{cur:0,step:'look'}; const n=(s.photos||[1]).length;
     Object.assign(d,{step:d.cur>=n-1?'all':'ok', got:spotQs((s.photos||[s])[d.cur]).map((_,i)=>i), open:null, seqi:0}); state.extra[k]=d; save(); render(); };
@@ -1721,7 +1730,7 @@ async function openCamera(container, facing='environment'){
     return null;
   }
 }
-function stopCamera(){ if(colorTimer){ clearInterval(colorTimer); colorTimer=null; } if(arMind){ try{ arMind.stop(); }catch(e){} arMind=null; const c=document.getElementById('cam'); if(c) c.classList.remove('ar'); } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
+function stopCamera(){ window.__fbFound=null; if(colorTimer){ clearInterval(colorTimer); colorTimer=null; } if(arMind){ try{ arMind.stop(); }catch(e){} arMind=null; const c=document.getElementById('cam'); if(c) c.classList.remove('ar'); } if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; } }
 let colorTimer=null;   // 金色蠟燭鏡頭計時也用這個（花的顏色辨識 2026-11-17 Ming 拿掉：亂掃會成功）
 /* 預載：進到這一關就先把引擎（3 MB）跟目標檔抓下來，按掃描時立刻能用 */
 const arBlob={};
@@ -1777,8 +1786,9 @@ async function aiFlowerScan(video, onFound){
   const cv=document.createElement('canvas'), cx=cv.getContext('2d');
   // 多尺度正方形格狀裁切（短邊的 100%／70%／50%），花在畫面哪裡、多大都抓得到
   const pos=(L,s)=>{ if(L-s<1) return [0]; const n=Math.ceil((L-s)/(s/2))+1; return Array.from({length:n},(_,i)=>(L-s)*i/(n-1)); };
+  const mine=arMind;
   const tick=async()=>{
-    if(!arMind || !video.isConnected) return;
+    if(!arMind || arMind!==mine || !video.isConnected) return;
     if(video.readyState>=2 && video.videoWidth){
       const k=540/Math.min(video.videoWidth,video.videoHeight), w=Math.round(video.videoWidth*k), h=Math.round(video.videoHeight*k);
       cv.width=w; cv.height=h; cx.drawImage(video,0,0,w,h);
@@ -3114,7 +3124,7 @@ function renderFireBadge(s, idx){
     // 兩半同時找、不分先後：牆走 MindAR、花走 MindAR＋AI 形狀辨識；哪個先命中就收哪一半
     const todo=s.targets.filter(t=>!has(t.key)); const flower=todo.find(t=>t.key==='flower'); const keyOfIdx=i=>(s.targets.find(t=>(t.mindIdx||[]).includes(i))||{}).key;
     /* 找到一片不關相機、繼續找另一片；兩片都找到才出「合成徽章」、按了才關相機（Ming 2026-11-11） */
-    const found=(key)=>{ if(has(key)) return; SND.sfx('badge'); d.got.push(key); state.extra[k]=d; save();
+    const found=(key)=>{ if(has(key)) return; SND.sfx('badge'); { const nb=document.getElementById(key==='winter'?'npcL':'npcR'); if(nb) nb.disabled=true; } d.got.push(key); state.extra[k]=d; save();
       const cam=$('#cam'); cam.querySelectorAll('.ar-found-text').forEach(x=>x.remove());
       cam.appendChild(el(`<div class="overlay ar-found ${key==='winter'?'L':'R'}">${badgeSVG(key==='winter'?'L':'R','64px')}</div>`));   // 半片＝完整徽章 128px 的一半（64px），跟合成後切半一樣大
       const tx=el(`<div class="ar-found-text">找到${key==='winter'?'左':'右'}半邊了</div>`); cam.appendChild(tx);                          // 字置中在下方（el() 只回第一個元素，要分開加）
@@ -3123,10 +3133,12 @@ function renderFireBadge(s, idx){
       sc.textContent='合成徽章'; sc.disabled=false; sc.className='nes-btn is-primary btn';                                   // 按了才跳下一步
       sc.onclick=()=>{ stopCamera(); render(); }; };   // 兩半都到手後不自動解封，要點徽章
     sc.textContent='對準中…'; sc.disabled=true;
+    const fbF=found;
     try{
       if(flower) aiLoad().catch(()=>{});   /* AI 模型跟 MindAR 一起先載 */
       await arScan($('#cam'), s.mind, (i)=>{ const key=keyOfIdx(i); if(!key || has(key)) return;
         if(window.__AR) window.__AR.by='影像#'+i; found(key); });
+      window.__fbFound=fbF;
       s.targets.filter(t=>has(t.key)).forEach(t=>{ const side=t.key==='winter'?'L':'R'; $('#cam').appendChild(el(`<div class="overlay ar-found ${side}">${badgeSVG(side,'64px')}</div>`)); });   /* 之前已找到的那半片，開相機就浮在畫面上 */
       if(flower){ if(arMind && arMind.video) aiFlowerScan(arMind.video, ()=>{ if(!has('flower')) found('flower'); }).catch(e=>{ if(window.__AR) window.__AR.aiSt='失敗：'+(e.message||e); }); else if(window.__AR) window.__AR.aiSt='拿不到鏡頭'; }
     }catch(e){ $('#cam').appendChild(el(`<div class="overlay" style="font-size:13px">辨識啟動失敗：${e.message||e}</div>`)); sc.textContent='再試一次'; sc.disabled=false; }
