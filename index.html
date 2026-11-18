@@ -651,7 +651,7 @@ const CONFIG = {
 
   stages: [
     { id:'s0', name:'麟光', code:'BR03', line:'brown', type:'ticket_puzzle',
-      litStory:'合照很可愛，列車長很滿意，用魔力幫妳點燃了 1 根蠟燭，但魔力消耗巨大，妳接下來要用其他方式點燃了。',   // 點亮第 1 根蠟燭頁上方的故事
+      litStory:'合照很可愛，列車長很滿意，用魔力幫妳點燃了一根蠟燭，但魔力消耗巨大，妳接下來要用其他方式點燃了。',   // 點亮第 1 根蠟燭頁上方的故事
       goStory:'妳撿到一根貓毛，上面帶有魔力，似乎想帶妳去一個地方，與此同時，列車長交給妳一個秘密任務。', goVerb:'請跟隨貓毛前往', goHair:true,   // 出發頁：故事＋發光貓毛（Ming）
       sub:'起點 · 列車出發',
       ticketText:'啊！妳沒有車票，請做一件讓列車長舒服的事來換取車票。',   // 小惡魔 2026-11-18 搬到旅程進度提示「可以色色」後面
@@ -665,8 +665,8 @@ const CONFIG = {
       intro:'上車坐好。跟列車長打一場排球。' },
 
     { id:'s1', name:'科技大樓', code:'BR05', line:'brown', type:'library',
-      litStory:'將密碼給小精靈後，小精靈幫妳點燃了 1 根蠟燭，並告訴妳，原來胖貓被封印在大安森林公園，胖貓可以幫妳點燃蠟燭。',   // 點亮第 2 根蠟燭頁上方的故事
-      goStory:'出發！解救胖貓，與此同時列車長給了妳第 2 個秘密任務。',   // 目的地頁跟其他站同格式（Ming）
+      litStory:'將密碼給小精靈後，小精靈幫妳點燃了一根蠟燭，並告訴妳，原來胖貓被封印在大安森林公園，胖貓可以幫妳點燃蠟燭。',   // 點亮第 2 根蠟燭頁上方的故事
+      goStory:'出發！解救胖貓，與此同時列車長給了妳第二個秘密任務。',   // 目的地頁跟其他站同格式（Ming）
       sub:'圖書館 · 一本書',
       intro:'跟隨貓毛從 2 號出口出站，前往台北市立圖書館總館。',
       // 2026-11-05 Ming 換書：拿掉猜書名，只剩一題猜索書號後 4 碼；找到書才知道書名（舊書《莉莉的相片》873.57 7760／ISBN 末 3 碼 164 留在備份）
@@ -682,9 +682,9 @@ const CONFIG = {
       hints:[] },
 
     { id:'g2', name:'科技大樓 >> 大安森林公園', code:'移動中', line:'red', transit:true, type:'game', game:'song', arriveArt:'passerby',
-      arriveStory:'妳在路途上，遇到好心的路人，他告訴妳，想解除胖貓的封印必須要有徽章。但解封的徽章碎成 2 半，被藏進不同地點的異次元夾縫，路人給了妳異次元觀測器後就去旁邊尬舞了。',   // 抵達頁上方的敘述（貓毛已失去魔力）
+      arriveStory:'妳在路途上，遇到好心的路人，他告訴妳，想解除胖貓的封印必須要有徽章。但解封的徽章碎成兩半，被藏進不同地點的異次元夾縫，路人給了妳異次元觀測器後就去旁邊尬舞了。',   // 抵達頁上方的敘述（貓毛已失去魔力）
       sub:'秘密任務 2 · 莉莉之歌',
-      intro:'這 4 句歌詞裡都藏著莉莉。聽一聽，把歌名填進來。',
+      intro:'這四句歌詞裡都藏著莉莉。聽一聽，把歌名填進來。',
       // 歌詞是莉莉諧音版；yt＝YouTube 影片 id，start／end＝播放起訖秒數（估的，試聽後校正）
       songs:[
         { lyric:'莉莉 was a little girl', artist:'Alan Walker', answers:['Lily'], audio:'audio/clip_lily.m4a', clip:true, },
@@ -696,8 +696,8 @@ const CONFIG = {
 
     { id:'s3', name:'大安森林公園', code:'R06', line:'red', type:'firebadge',
       sub:'封印之地 · 拯救胖貓',
-      goStory:'列車長肚子餓了，請前往妳最熟悉的地方，幫助他填飽肚子，並完成第 3 個秘密任務。',   // 目的地頁（往東門）上方的敘述
-      litStory:'胖貓幫妳點燃 1 根蠟燭，並告訴妳，危急時刻丟出徽章，會有好事發生，接著就去睡覺了。',   // 點亮第 3 根蠟燭頁上方的故事
+      goStory:'列車長肚子餓了，請前往妳最熟悉的地方，幫助他填飽肚子，並完成第三個秘密任務。',   // 目的地頁（往東門）上方的敘述
+      litStory:'胖貓幫妳點燃一根蠟燭，並告訴妳，危急時刻丟出徽章，會有好事發生，接著就去睡覺了。',   // 點亮第 3 根蠟燭頁上方的故事
       story:'抵達胖貓的封印之地。用異次元觀測器找到藏在異次元的徽章，合成後就能解開胖貓的封印。',
       clue:'11 月盛開的美麗',
       // 輪盤上的兩個方位（度，0＝北）；〈四季〉在穿堂層北側牆面、〈大安之花〉在車站西側空橋旁廣場，現勘校正
@@ -710,13 +710,13 @@ const CONFIG = {
     { id:'g3', name:'大安森林公園 >> 東門', code:'移動中', line:'red', transit:true, type:'game', arriveArt:'momoHungry', game:'memory',
       arriveStory:'列車長的肚子咕嚕咕嚕叫。',   // 抵達頁（往東門）地標上方的敘述
       sub:'秘密任務 3 · 記憶莉考驗',
-      intro:'翻開 2 張一樣的牌。翻錯會蓋回去。',
+      intro:'翻開兩張一樣的牌。翻錯會蓋回去。',
       icons:['man','lily','ball','wine','cat','donut'],   // 像素圖示：男主角、莉莉、排球、酒杯、橘貓、甜甜圈（6 對）
       nextText:'' },
 
     { id:'s4', name:'東門', code:'R07 / O06', line:'red', type:'photo_task',
-      goStory:'列車長說：「我知道附近有個人能幫妳點燃蠟燭，邊移動邊完成第 4 個秘密任務吧。」',   // 目的地頁（往忠孝新生）上方的敘述
-      litStory:'吃飽後列車長魔力恢復了一部分，再次幫妳點燃了 1 根蠟燭。',   // 點亮第 4 根蠟燭頁上方的故事
+      goStory:'列車長說：「我知道附近有個人能幫妳點燃蠟燭，邊移動邊完成第四個秘密任務吧。」',   // 目的地頁（往忠孝新生）上方的敘述
+      litStory:'吃飽後列車長魔力恢復了一部分，再次幫妳點燃了一根蠟燭。',   // 點亮第 4 根蠟燭頁上方的故事
       sub:'莉莉的家 · 莉害的美食',
       intro:'挑一個妳覺得好吃的食物，帶列車長去吃。',
       preStep:{ button:'列車長滿意', icon:'food' },   // 按了才進合照；icon 畫在說明下面
@@ -728,7 +728,7 @@ const CONFIG = {
       nextText:'' },
 
     { id:'s5d', name:'忠孝新生', code:'O07 / BL14', line:'orange', type:'director',
-      goStory:'此時列車長也給妳第 5 個秘密任務，難道要集齊 6 個秘密數字了嗎？',   // 目的地頁（往忠孝復興）上方的敘述
+      goStory:'此時列車長也給妳第五個秘密任務，難道要集齊六個秘密數字了嗎？',   // 目的地頁（往忠孝復興）上方的敘述
       litStory:'IG 總編替妳點燃蠟燭了！同時他告訴妳，附近出現一隻邪惡的惡魔，似乎打著壞壞的主意，他要求妳前往忠孝復興調查。',   // 點亮第 5 根蠟燭頁上方的故事
       sub:'天地攝影棚 · 好美莉',
       intro:'在忠孝新生站遇到 IG 總編了！這一關妳是模特兼動作指導，總編是攝影師，他只能照妳的話做：拍出一張總編給過並且可以發 IG 的照片，總編會替妳點燃蠟燭。',
@@ -751,7 +751,7 @@ const CONFIG = {
       theme:'秘密任務！' },
 
     { id:'s6', name:'忠孝復興', code:'BL15 / BR10', line:'blue', type:'spot', bossHits:90,   /* 三階段各 30 下（Ming 2026-11-10） */ litStory:'次元惡魔消散的魔力點燃了蠟燭，胖貓揍完惡魔心滿意足的回去睡覺了。',
-      goStory:'6 根蠟燭都點燃了，燭火都指向同個方向，是麟光！回到麟光並執行第 5 個秘密任務，列車長這次不會騙人了，應該吧。',   // 目的地頁（回麟光）上方的敘述   // 全部看破 → 次元惡魔出現 → 丟徽章召喚胖貓 → 按拳頭 90 下打敗（三階段各 30 下，不告訴玩家幾下）
+      goStory:'六根蠟燭都點燃了，燭火都指向同個方向，是麟光！回到麟光並執行第六個秘密任務。',   // 目的地頁（回麟光）上方的敘述   // 全部看破 → 次元惡魔出現 → 丟徽章召喚胖貓 → 按拳頭 90 下打敗（三階段各 30 下，不告訴玩家幾下）
       sub:'次元入侵 · 好眼莉',
       intro:'次元惡魔想用虛假的空間替換現實，請依序找到惡魔想替換的地點，並看破假空間的破綻，阻止惡魔！',
       // 一張一張來：先看圖 →「已找到地點 N」→ 開始找哪裡不一樣＋答題，答對才給下一張
@@ -796,12 +796,12 @@ const CONFIG = {
     { id:'g5', name:'忠孝復興 >> 麟光', code:'移動中', line:'brown', type:'game', game:'puzzle', transit:true, arriveArt:'rainbowCandle',
       arriveStory:'隨著麟光越來越近，蠟燭的魔力越來越強了。',   // 抵達頁（回麟光）地標上方的敘述
       sub:'秘密任務 5 · 莉莉皆辛苦',
-      intro:'點 2 個交換位置，完成拼圖。',
+      intro:'點兩個交換位置，完成拼圖。',
       grid:8, image:'img/s0_puzzle_pixel.png' },
 
     { id:'s7', name:'麟光', code:'BR03', line:'brown', type:'final',
       sub:'三十而莉',
-      intro:'到達麟光後，列車長給了妳第 7 根蠟燭，是金色的，最重要的蠟燭只能由妳自己注入魔力點燃！',
+      intro:'到達麟光後，列車長給了妳第七根蠟燭，是金色的，最重要的蠟燭只能由妳自己注入魔力點燃！',
       hints:['6 碼的順序＝妳拿到的順序。','第 1 碼是在這裡拿到的。','再吹用力一點。'] },
     { id:'s9', name:'麟光', code:'BR03', line:'brown', type:'photo_task', noCandle:true, finalPhoto:true, photoPrompt:'最後的秘密任務，請拍一張合照，合照主題：',
       sub:'生日快樂！',
@@ -1033,6 +1033,7 @@ function updateBar(){ const b=document.getElementById('candlebar'); if(!b || typ
   const cb=document.getElementById('codebar'); if(cb) cb.innerHTML=CODE_ORDER.map(k=>{ const v=state.codes[k]!=null?CONFIG.digits[k]:null; return `<span class="${v!=null?'got':''}">${v!=null?v:'?'}</span>`; }).join(''); }
 const CODE_ORDER=CONFIG.codeOrder;
 /* 置物櫃密碼（控制者輸入，存在這台手機；全部重來也不會清掉） */
+const ZH=n=>['〇','一','二','三','四','五','六','七','八','九','十'][n]||String(n);   // 敘述裡的數量用中文（Ming 2026-11-19：編號、計數、密碼仍用數字）
 const LOCKER_KEY='mrt-lockercode', LOCKERNO_KEY='mrt-lockerno', DIGITS0=Object.fromEntries(CONFIG.codeOrder.map((k,i)=>[k,String(CONFIG.lockerCode)[i]||'0']));
 function lockerNoSet(){ try{ return (localStorage.getItem(LOCKERNO_KEY)||'').replace(/\D/g,''); }catch(e){ return ''; } }   // 控制者介面輸入的櫃號
 function lockerCode(){ try{ return (localStorage.getItem(LOCKER_KEY)||'').replace(/\D/g,''); }catch(e){ return ''; } }
@@ -1458,7 +1459,7 @@ const litHTML=()=>`<div class="candles big hero" style="margin-bottom:24px">${ca
 function litStep(s, idx){                      // 回 true＝這次畫的是「成功點亮」頁；按下一步後 _go 記起來，下次 render 才給目的地
   if(state.extra[s.id+'_go']) return false;
   main.innerHTML = ticket(s, `${steps()}
-    ${s.litStory?`<p>${s.litStory}</p>`:''}${ok(`成功點亮第 ${litCount()} 根蠟燭！`)}
+    ${s.litStory?`<p>${s.litStory}</p>`:''}${ok(`成功點亮第${ZH(litCount())}根蠟燭！`)}
     ${litHTML()}
     <button class="nes-btn is-success btn" id="nextl">下一步</button>
     ${backupScanBox()}${npcBox(s,idx)}`);
@@ -1503,13 +1504,13 @@ function progIcon(id){ const m=PROG_ICON_MAP[id]; if(!m) return '';
     const svg=spriteSVG(eval(m.rows), eval(m.pal), m.w); return m.dy?`<span style="display:block;transform:translateY(${m.dy}px)">${svg}</span>`:svg; }catch(e){ return ''; } }
 /* 每一站的回顧（旅程進度點已完成的站看到的）：Ming 用 回顧編輯器.html 填；沒填的站照下面自動組 */
 const STAGE_REVIEWS={   // 2026-11-05 Ming 用 回顧編輯器.html 填的；「{heart}」＝像素愛心
-  s0:"出發後拍了一張可愛的合照，列車長用魔力幫妳點燃了 1 根蠟燭。",
+  s0:"出發後拍了一張可愛的合照，列車長用魔力幫妳點燃了一根蠟燭。",
   g1:"跟列車長打了一場頂尖對決...嗎？",
-  s1:"跟隨貓毛前往圖書館，破解謎題後，小精靈幫妳點燃了 1 根蠟燭，並告訴妳，原來胖貓被封印在大安森林公園，胖貓可以幫妳點燃蠟燭。",
+  s1:"跟隨貓毛前往圖書館，破解謎題後，小精靈幫妳點燃了一根蠟燭，並告訴妳，原來胖貓被封印在大安森林公園，胖貓可以幫妳點燃蠟燭。",
   g2:"莉莉呀～幸福不在遠方～\n在路途上，遇到 E 姓路人，獲得異次元觀測器，出發解救胖貓。",
-  s3:"成功找到徽章，解封了胖貓，胖貓幫妳點燃 1 根蠟燭，並告訴妳，危急時刻丟出徽章，會有好事發生。",
+  s3:"成功找到徽章，解封了胖貓，胖貓幫妳點燃一根蠟燭，並告訴妳，危急時刻丟出徽章，會有好事發生。",
   g3:"30 歲了，記憶莉還是沒問題的，但列車長肚子餓了。",
-  s4:"吃了好吃的食物，列車長再次幫妳點燃了 1 根蠟燭。",
+  s4:"吃了好吃的食物，列車長再次幫妳點燃了一根蠟燭。",
   g4:"成為超級莉莉了！",
   s5d:"拍了一張絕世美照，IG 總編替妳點燃了蠟燭，同時也得知，忠孝復興出現一隻邪惡的惡魔。",
   m1:"跟列車長拍了合照，空間已經開始不穩定了！",
@@ -1592,13 +1593,13 @@ function pageKey(){ const s=CONFIG.stages[state.stage], m=document.querySelector
   if(s.type==='game' && m.querySelector('#gamebox')) return s.id+':play';           // 小遊戲畫面（打贏前後同一頁）
   const b=m.querySelector('.nes-btn[id]:not(.small)'); return s.id+':'+(b?b.id:'end'); }
 function pageTips(){ const k=pageKey(); if(PAGE_TIPS[k]) return PAGE_TIPS[k];
-  const s=CONFIG.stages[state.stage]; if(document.querySelector('#main .secret')) return [`獲得第 ${CODE_ORDER.indexOf(s.id)+1} 個秘密數字：${CONFIG.digits[s.id]}`];   // 秘密數字頁一律這樣（Ming）
+  const s=CONFIG.stages[state.stage]; if(document.querySelector('#main .secret')) return [`獲得第${ZH(CODE_ORDER.indexOf(s.id)+1)}個秘密數字：${CONFIG.digits[s.id]}`];   // 秘密數字頁一律這樣（Ming）
   return null; }   // 還沒填的頁不顯示提示（不再退回整關的 STAGE_TIPS，免得格式混在一起）
 /* 舊的整關提示：已不顯示，只留著當填每頁提示的參考 */
 const STAGE_TIPS={
   s0:['莉莉加油！'],
   g1:['秘密任務進行中。'],
-  s1:['跟著貓毛從 2 號出口出站，到台北市立圖書館總館。','找到小精靈，解開 1 道謎題。','照索書號在書架上找到那本書。'],
+  s1:['跟著貓毛從 2 號出口出站，到台北市立圖書館總館。','找到小精靈，解開一道謎題。','照索書號在書架上找到那本書。'],
   g2:['秘密任務進行中。'],
   s3:['地點：一半在站內、一半在站外。','左半：藏在牆上的季節。','右半：藏在一朵大花內。','打開異次元觀測器，對準就會找到。'],
   g3:['秘密任務進行中。'],
@@ -1606,9 +1607,9 @@ const STAGE_TIPS={
   g4:['秘密任務進行中。'],
   s5d:['妳是模特兼動作指導，IG 總編只能照妳的話拍。','拍到總編給過的照片，他就會幫妳點燃蠟燭。'],
   m1:['跟列車長拍一張「秘密任務！」合照。'],
-  s6:['依序找到 5 張照片拍的地點。','把照片跟現場對照，用眼睛準星對準不一樣的地方，按「偵查」。','全部看破後，丟出胖貓徽章打倒次元惡魔。'],
+  s6:['依序找到五張照片拍的地點。','把照片跟現場對照，用眼睛準星對準不一樣的地方，按「偵查」。','全部看破後，丟出胖貓徽章打倒次元惡魔。'],
   g5:['秘密任務進行中。'],
-  s7:['把手掌放在金色蠟燭上方，集中精神擺動注入魔力。','許下 3 個願望後吹熄蠟燭。','煙霧聚成的數字就是寶藏的座標。'],
+  s7:['把手掌放在金色蠟燭上方，集中精神擺動注入魔力。','許下三個願望後吹熄蠟燭。','煙霧聚成的數字就是寶藏的座標。'],
   s9:['最後的秘密任務：跟列車長拍一張「生日快樂！」合照。'] };
 let progSel=null;
 function progPanel(){
@@ -2065,7 +2066,7 @@ function renderWelcome(){
     <p class="title">一日有效</p>
     <div class="station"><span class="code" style="background:#000;box-shadow:var(--px) var(--px) 0 #9a9a9a">MOMO</span><span class="name">${CONFIG.playerName}專屬</span></div>
     <p class="sub">三十而莉 · 生日列車</p>
-    <p>${'歡迎搭乘[三十而莉．生日列車]，30 歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，列車長-墨墨給了妳 6 根魔力蠟燭，妳要把它們全部點燃，並在旅途中獲得 6 個秘密數字，最終才能找到藏寶地點，如果卡關可以求助列車長，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--pink)">${m}</span>`)}</p>
+    <p>${'歡迎搭乘[三十而莉．生日列車]，30 歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，列車長-墨墨給了妳六根魔力蠟燭，妳要把它們全部點燃，並在旅途中獲得六個秘密數字，最終才能找到藏寶地點，如果卡關可以求助列車長，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--pink)">${m}</span>`)}</p>
     ${candles()}
     <button class="nes-btn is-primary btn" id="go" style="margin-top:10px">我準備好了！</button></section>`;
   $('#go').onclick=()=>{ state.started=Date.now(); save(); render(); };   // 接著 render 會先進權限閘門頁
@@ -2096,7 +2097,7 @@ function renderTicketPuzzle(s, idx){
     bindPframes(main);
   } else if(d.step==='lit'){
     main.innerHTML = ticket(s, `${steps()}
-      ${s.litStory?`<p>${s.litStory}</p>`:''}${ok('成功點亮第 1 根蠟燭！')}
+      ${s.litStory?`<p>${s.litStory}</p>`:''}${ok('成功點亮第一根蠟燭！')}
       ${litHTML()}
       <button class="nes-btn is-success btn" id="nextl">下一步</button>
       ${backupScanBox()}${npcBox(s,idx)}`);
@@ -2795,7 +2796,7 @@ function renderGpsQr(s, idx){
 }
 function haversine(a,b,c,d){ const R=6371000, toR=x=>x*Math.PI/180; const dLat=toR(c-a), dLng=toR(d-b); const h=Math.sin(dLat/2)**2+Math.cos(toR(a))*Math.cos(toR(c))*Math.sin(dLng/2)**2; return 2*R*Math.asin(Math.sqrt(h)); }
 
-/* 1 圖書館：已抵達 → 謎語猜書名 → 找書輸入 ISBN 末 4 碼 */
+/* 1 圖書館：已抵達 → 猜索書號後 4 碼 → 找書輸入 ISBN 末 3 碼 */
 function lockerNo(){ return lockerNoSet() || (state.extra.locker_bk ? CONFIG.lockerBackup : CONFIG.lockerNumber); }   // 控制者輸入的櫃號優先，其次備援櫃、預設櫃號
 function libStage(s){ return (s.backup && state.extra[s.id+'_bk']) ? {...s, ...s.backup} : s; }   // 控制者切了備案書就換成備案的書／索書號／ISBN
 function renderLibrary(s, idx){
@@ -2805,7 +2806,7 @@ function renderLibrary(s, idx){
   const gk=s.id+'_guess'; const guesses=state.extra[gk]||[];
   let body='';
   if(step==='go') body=`<p>${s.intro}</p><div class="center hero" style="margin-bottom:24px">${SHELF}</div><button class="nes-btn is-arrive btn" id="arr" style="--arrive:#209cee">${PIN} 已抵達圖書館</button>`;
-  else if(step==='sit') body=`<p>進入圖書館，貓毛的魔力消失了，掉落在地上一動也不動，但妳遇到了圖書小精靈，她給了妳 1 道謎題，並告訴妳：「解開謎題，妳能找到一本書，給我 ISBN 的最後 3 個數字，我會幫妳點亮蠟燭並跟妳說一個秘密。」</p>
+  else if(step==='sit') body=`<p>進入圖書館，貓毛的魔力消失了，掉落在地上一動也不動，但妳遇到了圖書小精靈，她給了妳一道謎題，並告訴妳：「解開謎題，妳能找到一本書，給我 ISBN 的最後 3 個數字，我會幫妳點亮蠟燭並跟妳說一個秘密。」</p>
     <div class="hero">${spriteSVG(FAIRY_ROWS, FAIRY_PAL, '160px', 'class="mx" aria-label="圖書館的小精靈"')}</div>
     <button class="nes-btn is-primary btn" id="start">開始解謎</button>`;
   else if(step==='code') body=`<p class="tag">謎題</p><div class="letter nes-container is-rounded" style="font-size:17px">有一本書的索書號是\n<b>${s.callFront}${'?'.repeat(s.callDigits.length)}</b>\n\n猜 ${s.callDigits.length} 個數字。\nA＝數字對、位置也對\nB＝數字對、位置不對</div>
@@ -3029,7 +3030,7 @@ function renderDirectorShoot(s, idx){            // 備案：原本的拍 3 張�
       <div class="row">${d.shots.map(u=>`<img src="${u}" style="width:30%;border:4px solid #000" alt="">`).join('')}</div>
       <label class="nes-btn ${d.shots.length?'':'is-primary'} btn" style="display:block;text-align:center">${PHOTO_ICON} ${d.shots.length?'再拍一張':'把手機交給列車長拍'}<input type="file" accept="${PHOTO_ACCEPT}" id="file" hidden></label>
       ${d.shots.length?'<button class="nes-btn is-primary btn" id="pickgo" style="margin-top:14px">選照片定案</button>':''}`
-    : stage==='choose'?`<p>選 1 張最像妳要的。</p><div class="row">${d.shots.map((u,i)=>`<img data-i="${i}" class="pickshot" src="${u}" style="width:30%;border:4px solid #000;cursor:pointer" alt="">`).join('')}</div>`
+    : stage==='choose'?`<p>選一張最像妳要的。</p><div class="row">${d.shots.map((u,i)=>`<img data-i="${i}" class="pickshot" src="${u}" style="width:30%;border:4px solid #000;cursor:pointer" alt="">`).join('')}</div>`
     : `<img class="photo" id="final" src="${d.shots[d.chosen]}" style="filter:${d.filter>=0?s.styles[d.filter].filter:'none'}" alt="">
       <p class="tag">選一個色調</p><div class="row">${s.styles.map((x,i)=>`<button class="nes-btn btn small ${d.filter===i?'is-primary':''}" data-f="${i}">${x.n}</button>`).join('')}<button class="nes-btn btn small ${d.filter===-1?'is-primary':''}" data-f="-1">原色</button></div>
       <div class="row" style="margin-top:8px"><button class="nes-btn btn small" id="redo">重拍</button><button class="nes-btn is-primary btn" id="ok">定案，這就是今天的照片</button></div>`}
@@ -3222,7 +3223,7 @@ function renderFinal(s, idx){
   if(gameCleanup){ gameCleanup(); gameCleanup=null; }
   if(CONFIG.finalVolley && state.codes[s.id]==null){   // 回麟光的車上：排球對決拿最後一碼（目前關閉）
     main.innerHTML = ticket(s, `${steps()}
-      <p>回麟光的車上，跟列車長打一場排球。贏了拿最後 1 碼。</p>
+      <p>回麟光的車上，跟列車長打一場排球。贏了拿最後一碼。</p>
       <div id="gamebox"></div>${backupScanBox()}${npcBox(s,idx)}`);
     gameCleanup = MiniGames.volley($('#gamebox'), {target:CONFIG.volleyTarget}, ()=>{ giveDigit(s.id); save(); render(); });
     bindBackupScan(s); bindNpc(s,idx); return;
@@ -3233,7 +3234,7 @@ function renderFinal(s, idx){
   const expect = CODE_ORDER.map(k=>CONFIG.digits[k]).join('');
   const dial = state.extra.s7_dial || [0,0,0,0,0];
   main.innerHTML = ticket(s, `${steps()}
-    <p>置物櫃 <span class="big">${lockerNo()}</span> 號。把妳在車上拿到的 6 碼轉出來，打開它。</p>
+    <p>置物櫃 <span class="big">${lockerNo()}</span> 號。把妳在車上拿到的六碼轉出來，打開它。</p>
     <div class="dials" id="dials">${dial.map((v,i)=>`<div class="dial"><button data-i="${i}" data-d="1">▲</button><div class="v">${v}</div><button data-i="${i}" data-d="-1">▼</button></div>`).join('')}</div>
     <div id="res"></div><button class="nes-btn is-primary btn" id="chk" style="margin-top:6px">轉開</button>
     ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
@@ -3243,7 +3244,7 @@ function renderFinal(s, idx){
 }
 function renderFinalOpen(s){
   main.innerHTML = ticket(s, `
-    <p>蠟燭的魔力進化成許願之力了！許下 3 個願望，將前 2 個說出來，第 3 個藏心裡。</p>
+    <p>蠟燭的魔力進化成許願之力了！許下三個願望，將前兩個說出來，第三個藏心裡。</p>
     <div class="candles mid" id="fc">${Array.from({length:MID},()=>candleHTML('lit')).join('')}</div>
     <progress class="nes-progress is-warning" id="mic" value="0" max="100"></progress>
     <button class="nes-btn is-primary btn" id="blow">吹熄蠟燭</button><button class="nes-btn is-success btn" id="wish" style="display:none">願望會實現！</button><div id="micmsg"></div>${npcBox(s,CONFIG.stages.indexOf(s))}
@@ -3269,7 +3270,7 @@ const sparkles=(n,w,h)=>Array.from({length:n},(_,i)=>`<i class="spk" style="left
 function renderGoldGift(s){   // 第 1 頁：列車長拿出金色蠟燭
   const idx=CONFIG.stages.indexOf(s), {MOMO,MOMO_PAL}=window.MG_SPRITES;
   main.innerHTML = ticket(s, `${steps()}
-    <p>到達麟光後，列車長給了妳第 7 根蠟燭，是金色的，最重要的蠟燭只能由妳自己注入魔力點燃！</p>
+    <p>到達麟光後，列車長給了妳第七根蠟燭，是金色的，最重要的蠟燭只能由妳自己注入魔力點燃！</p>
     <div class="gold-gift hero"><div class="gg-momo">${spriteSVG(MOMO_GIVE_ROWS, MOMO_PAL, '176px', 'aria-label="列車長"')}</div><div class="gg-candle">${candleHTML('gold')}${sparkles(7,60,110)}</div></div>
     <button class="nes-btn is-primary btn" id="inject">注入魔力</button>${npcBox(s,idx)}`);
   $('#inject').onclick=()=>{ state.extra.s7_step='inject'; state.extra.s7_gold=true; save(); render(); goldStart(); };   // 同一個點擊裡開前鏡頭
@@ -3343,7 +3344,7 @@ function renderWish(s){   // 第 3 頁：7 根一字排開，四周變暗，2～
   main.innerHTML = ticket(s, `${steps()}
     <div class="wish-front">
       <div class="wish-row" id="wishrow"><i class="wish-rays" id="rays"></i><div class="candles mid" id="fc">${candleHTML('gold lit')}${Array.from({length:MID},()=>candleHTML('lit')).join('')}</div></div>
-      <p class="wish-text" id="wtext">蠟燭的魔力進化成許願之力了！<br>許下 3 個願望後，吹熄蠟燭！</p>
+      <p class="wish-text" id="wtext">蠟燭的魔力進化成許願之力了！<br>許下三個願望後，吹熄蠟燭！</p>
       <progress class="nes-progress is-warning" id="mic" value="0" max="100" style="display:none"></progress>
       <button class="nes-btn is-primary btn wish-late" id="wished">許完願了！</button>
       <button class="nes-btn is-success btn" id="wish" style="display:none">願望會實現！</button><div id="micmsg"></div>
