@@ -641,8 +641,10 @@ const CONFIG = {
   // 5 碼只從 App 小遊戲拿（Ming 2026-11-03）；g5＝第 5 個小遊戲，還沒設計
   // 5 個小遊戲：拼圖（麟光）、猜歌名（大安）、翻翻牌（大安森林公園）、超級莉莉（忠孝新生）、排球對決（回麟光的車上）
   // 5 碼只從小遊戲拿：目前只有麟光拼圖接上；g2～g5 等小遊戲放進搭車路段再接（猜歌名／翻翻牌／超級莉莉／排球）
-  digits: { g1:'1', g2:'1', g3:'5', g4:'2', g5:'0' },
-  codeOrder: ['g1','g2','g3','g4','g5'],
+  // 2026-11-18 Ming：置物櫃密碼是機器隨機給的 6 碼，不能自己設 → 控制者介面輸入當天的密碼，6 個秘密數字就照那 6 碼給（第 5 碼改在「秘密任務！」合照那關 m1 拿）
+  //   5 碼的舊版（11520、m1 是 ㄏㄏ）備案在 _備份/三十而莉/app_5碼備案.html，只放本機不發版
+  digits: { g1:'1', g2:'1', g3:'5', g4:'2', m1:'0', g5:'0' },   // 控制者還沒輸入密碼時的預設值（輸入後會被蓋掉）
+  codeOrder: ['g1','g2','g3','g4','m1','g5'],
   finalVolley: false,        // 回麟光車上的排球，先關掉
   volleyTarget: 11,          // 排球打 11 分；墨墨超強，莉莉輸了也算通關
   codeMeaning: '',   // 五碼的意思（莉莉我愛妳）；2026-11-05 Ming：開櫃頁面上不顯示，只放在旅程進度提示
@@ -1025,8 +1027,13 @@ function testBar(){ if(CONFIG.testMode) document.body.classList.add('testing'); 
 function updateBar(){ const b=document.getElementById('candlebar'); if(!b || typeof MID==='undefined') return;
   const lit=litCount();
   b.innerHTML=(state.extra.s7_gold?candleHTML('gold'+(state.extra.s7_goldLit?' lit':'')):'')+Array.from({length:MID},(_,i)=>candleHTML((i<lit?'lit':'')+(state.extra.s7_rainbow&&i<lit?' cc'+(i+1):''))).join('');   // 麟光拿到第 7 根金色蠟燭後排在最前面；許願頁變成七彩後，上面這排也跟著七彩（Ming 2026-11-06）
-  const cb=document.getElementById('codebar'); if(cb) cb.innerHTML=CODE_ORDER.map(k=>{ const v=state.codes[k]; return `<span class="${v!=null?'got':''}">${v!=null?v:'?'}</span>`; }).join(''); }
+  const cb=document.getElementById('codebar'); if(cb) cb.innerHTML=CODE_ORDER.map(k=>{ const v=state.codes[k]!=null?CONFIG.digits[k]:null; return `<span class="${v!=null?'got':''}">${v!=null?v:'?'}</span>`; }).join(''); }
 const CODE_ORDER=CONFIG.codeOrder;
+/* 置物櫃密碼（控制者輸入，存在這台手機；全部重來也不會清掉） */
+const LOCKER_KEY='mrt-lockercode', DIGITS0={...CONFIG.digits};
+function lockerCode(){ try{ return (localStorage.getItem(LOCKER_KEY)||'').replace(/\D/g,''); }catch(e){ return ''; } }
+function applyLockerCode(){ const c=lockerCode(); CONFIG.digits = c.length===CODE_ORDER.length ? Object.fromEntries(CODE_ORDER.map((k,i)=>[k,c[i]])) : {...DIGITS0}; }
+applyLockerCode();
 function reset(){ try{ localStorage.removeItem(STATE_KEY); }catch(e){} location.replace(location.pathname+(BOSS_ONLY?'?boss':location.search.includes('test')?'?test':'')); }   // 全部重來；測試模式維持
 
 /* 時鐘 */
@@ -1334,7 +1341,8 @@ function npcInner(s, idx){
   ${s.type==='final'?`<button class="nes-btn is-warning btn small" id="npclk" style="margin-top:8px;width:100%">${state.extra.locker_bk?'改回 '+CONFIG.lockerNumber+' 號櫃':'改用備援櫃 '+CONFIG.lockerBackup+' 號'}</button>`:''}
   ${s.type==='library'&&s.backup?`<button class="nes-btn is-warning btn small" id="npcbk" style="margin-top:8px;width:100%">${state.extra[s.id+'_bk']?'改回主書':'改用備案書（'+s.backup.book.title+'）'}</button>`:''}
   ${s.type==='firebadge'?'<p class="tag" id="ardbg" style="margin:8px 0 0">AR：未啟動</p>':''}
-  ${answerNote(s)}<p class="tag" style="margin-top:8px">頁面代號：${pageKey()}　5 碼：${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}　櫃號：${lockerNo()}</p></div>`;
+  ${answerNote(s)}<p class="tag" style="margin-top:8px">頁面代號：${pageKey()}　密碼：${CODE_ORDER.map(k=>CONFIG.digits[k]).join(' ')}${lockerCode().length===CODE_ORDER.length?'':'（未設定）'}　櫃號：${lockerNo()}</p>
+  <div class="row" style="margin-top:8px"><input class="nes-input" id="lkcode" inputmode="numeric" maxlength="${CODE_ORDER.length}" value="${lockerCode()}" style="flex:1;min-width:0;font-size:18px;padding:4px 8px"><button class="nes-btn is-warning btn small" id="lkset" style="flex:none">設定密碼</button></div></div>`;
 }
 /* 控制者看的解答（依關卡型別）；要輸入的答案附「複製」鈕 */
 function answerNote(s){
@@ -1360,6 +1368,10 @@ function bindNpcPanel(s, idx){
   const bk=$('#npcbk'); if(bk) bk.onclick=()=>{ const k=s.id+'_bk'; state.extra[k]=!state.extra[k]; delete state.extra[s.id+'_guess'];   // 換書：清掉舊的猜測紀錄
     const lk=s.id+'_lib'; if(['code_ok','find'].includes(state.extra[lk])) state.extra[lk]='code';   // 已猜過索書號的退回猜題
     save(); render(); };
+  const lks=$('#lkset'); if(lks) lks.onclick=()=>{ const v=($('#lkcode').value||'').replace(/\D/g,'');
+    if(v && v.length!==CODE_ORDER.length){ lks.textContent=`要 ${CODE_ORDER.length} 碼`; return; }
+    try{ if(v) localStorage.setItem(LOCKER_KEY,v); else localStorage.removeItem(LOCKER_KEY); }catch(e){}
+    applyLockerCode(); save(); render(); };
   const lkb=$('#npclk'); if(lkb) lkb.onclick=()=>{ state.extra.locker_bk=!state.extra.locker_bk; save(); render(); };
   const nw=$('#npcwin'); if(nw) nw.onclick=()=>{ if(window.__MG_WIN) window.__MG_WIN(); };   // 走遊戲自己的通關畫面
   // AR 關：控制者直接給左半／右半（兩半都有就跟真的掃到一樣，出現「解除封印」）
@@ -1536,7 +1548,6 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   's5d:lit':['點燃蠟燭了！'],
   's5d:go':['東區 東區'],
   'm1:photo':['秘密任務進行中'],
-  'm1:next':['ㄏㄏ'],
   'm1:arrive':['趕緊前往！'],
   's6:here':['提示：在藍線 不在咖啡線'],
   's6:scan':['提示：在藍線 不在咖啡線'],
@@ -1553,7 +1564,7 @@ const PAGE_TIPS={   // 2026-11-05 Ming 用 提示編輯器.html 填的；「{hea
   's7:goldok':['燃燒吧！！！'],
   's7:wished':['請許下最棒的願望！'],
   's7:gocode':['請許下最棒的願望！'],
-  's7:next':['1 1 5 2 0 莉莉我愛妳'],
+  // 's7:next':['1 1 5 2 0 莉莉我愛妳'],   // 2026-11-18 Ming：改隨機 6 碼，這句先收起來，之後再想
   's9:photo':['最後的秘密任務進行中'],
   's9:openletter':['{heart}'],
   's9:cert':['{heart}'],
@@ -1571,7 +1582,7 @@ function pageKey(){ const s=CONFIG.stages[state.stage], m=document.querySelector
   if(s.type==='game' && m.querySelector('#gamebox')) return s.id+':play';           // 小遊戲畫面（打贏前後同一頁）
   const b=m.querySelector('.nes-btn[id]:not(.small)'); return s.id+':'+(b?b.id:'end'); }
 function pageTips(){ const k=pageKey(); if(PAGE_TIPS[k]) return PAGE_TIPS[k];
-  const s=CONFIG.stages[state.stage]; if(s.type==='game' && document.querySelector('#main .secret')) return [`獲得第 ${CODE_ORDER.indexOf(s.id)+1} 個秘密數字：${state.codes[s.id]}`];   // 秘密數字頁一律這樣（Ming）
+  const s=CONFIG.stages[state.stage]; if(document.querySelector('#main .secret')) return [`獲得第 ${CODE_ORDER.indexOf(s.id)+1} 個秘密數字：${CONFIG.digits[s.id]}`];   // 秘密數字頁一律這樣（Ming）
   return null; }   // 還沒填的頁不顯示提示（不再退回整關的 STAGE_TIPS，免得格式混在一起）
 /* 舊的整關提示：已不顯示，只留著當填每頁提示的參考 */
 const STAGE_TIPS={
@@ -1949,10 +1960,10 @@ const SND_OFF_ROWS=['....B.......','...BB.......','.BBBB..B..B.','.BBBB...BB..',
 const sndIcon=()=>spriteSVG(SND.on()?SND_ON_ROWS:SND_OFF_ROWS,{B:'#111'},'22px','aria-label="音效"')+(SND.on()?'':'');
 /* 換頁音效：同一頁只響一次 */
 let lastSfxPk='';
-const PAGE_SFX={'m1:next':'smirk','s6:allclear':'omen','s1:sit':'fairy','s4:pre':'yum','s9:end':'finale'};
+const PAGE_SFX={'s6:allclear':'omen','s1:sit':'fairy','s4:pre':'yum','s9:end':'finale'};
 function sfxPage(){ const pk=pageKey(); if(pk===lastSfxPk) return; lastSfxPk=pk; const m=document.querySelector('#main'); const name=(m.querySelector('.name')||{}).textContent||'';
   if(m.querySelector('.candle.ignite')){ SND.hush(); setTimeout(()=>SND.sfx('burn'),320); }   /* 點亮頁：真的火柴燃燒聲，劃燃那下對準火冒出來（570ms）（Ming 2026-11-10） */
-  else if(/專屬$/.test(name)) SND.sfx('invite'); else if(m.querySelector('#got')) SND.sfx('ticket');   // 歡迎頁／拿車票頁
+  else if(/專屬$/.test(name)) SND.sfx('invite'); else if(m.querySelector('#got')) SND.sfx('smirk');   // 歡迎頁／拿車票頁（拿車票頁 2026-11-18 改放 ㄏㄏ 奸笑，跟奸笑墨墨一起從 m1 搬來）
   else if(PAGE_SFX[pk]) SND.sfx(PAGE_SFX[pk]); else if(/:number$/.test(pk)) SND.sfx('digit'); else if(/:(go|depart)$/.test(pk)) SND.sfx('train');
   else if(m.querySelector('#bosscall.boss-call') && !m.querySelector('#hole.pre-intro')) SND.sfx('devil'); else if(pk==='s7:gocode') SND.sfx('smoke'); else if(m.querySelector('.stripwrap')) SND.sfx('heart'); else if(/置物櫃/.test(name)) SND.sfx('locker');
   else if(m.querySelector('.passerby')) SND.sfx('breakdown');                   // 路人：break it down like this（Ming 給的音檔）
@@ -2036,7 +2047,7 @@ function renderWelcome(){
     <p class="title">一日有效</p>
     <div class="station"><span class="code" style="background:#000;box-shadow:var(--px) var(--px) 0 #9a9a9a">MOMO</span><span class="name">${CONFIG.playerName}專屬</span></div>
     <p class="sub">三十而莉 · 生日列車</p>
-    <p>${'歡迎搭乘[三十而莉．生日列車]，30 歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，列車長-墨墨給了妳 6 根魔力蠟燭，妳要把它們全部點燃，並在旅途中獲得 5 個秘密數字，最終才能找到藏寶地點，如果卡關可以求助列車長，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--pink)">${m}</span>`)}</p>
+    <p>${'歡迎搭乘[三十而莉．生日列車]，30 歲是個成熟的大人了，身為成熟的大人，生日禮物要自己爭取，列車長-墨墨給了妳 6 根魔力蠟燭，妳要把它們全部點燃，並在旅途中獲得 6 個秘密數字，最終才能找到藏寶地點，如果卡關可以求助列車長，妳準備好了嗎？'.replace(/\[[^\]]+\]/g, m=>`<span style="color:var(--pink)">${m}</span>`)}</p>
     ${candles()}
     <button class="nes-btn is-primary btn" id="go" style="margin-top:10px">我準備好了！</button></section>`;
   $('#go').onclick=()=>{ state.started=Date.now(); save(); render(); };   // 接著 render 會先進權限閘門頁
@@ -2050,6 +2061,7 @@ function renderTicketPuzzle(s, idx){
   if(d.step==='ticket'){
     main.innerHTML = ticket(s, `${steps()}
       <div class="letter nes-container is-rounded" style="font-size:17px">${icons(s.ticketText)}</div>
+      <div class="center hero" style="margin-bottom:24px">${MOMO_SMIRK}</div>   <!-- 奸笑墨墨從 m1 的 ㄏㄏ 頁搬來（Ming 2026-11-18） -->
       <button class="nes-btn is-primary btn" id="got" style="margin-top:0">已獲得票券</button>
       ${hintBox(s)}${backupScanBox()}${npcBox(s,idx)}`);
     $('#got').onclick=()=>{ state.extra[k]={step:'photo'}; save(); render(); };
@@ -3041,6 +3053,17 @@ function renderPhotoTask(s, idx){
   if(state.done[s.id]){
     if(!s.noCandle && litStep(s,idx)) return;
     if(s.noCandle && state.extra[s.id+'_arrive']) return arrivePage(s,idx);
+    if(s.noCandle && CODE_ORDER.includes(s.id)){   /* 秘密任務合照：拿秘密數字（2026-11-18 改 6 碼；原本是列車長 ㄏㄏ 頁） */
+      giveDigit(s.id);
+      main.innerHTML = ticket(s, `${steps()}
+        ${ok('獲得秘密數字')}
+        <p class="secret">SECRET NUMBER-${CODE_ORDER.indexOf(s.id)+1}</p>
+        <p class="bignum">${CONFIG.digits[s.id]}</p>
+        <button class="nes-btn is-success btn" id="next">下一步</button>
+        ${backupScanBox()}${npcBox(s,idx)}`);
+      $('#next').onclick=()=>{ state.extra[s.id+'_arrive']=true; save(); render(); };
+      bindBackupScan(s); bindNpc(s,idx); return;
+    }
     main.innerHTML = ticket(s, `${steps()}
       ${s.noCandle?`<p>${s.noCandleText||''}</p><div class="center hero" style="margin-bottom:24px">${MOMO_SMIRK}</div>`:''}
       ${goNextHTML(s,idx)}
@@ -3157,7 +3180,7 @@ function renderGame(s, idx){
     main.innerHTML = ticket(s, `${steps()}
       ${ok('獲得秘密數字')}
       <p class="secret">SECRET NUMBER-${nth}</p>
-      <p class="bignum">${state.codes[s.id]}</p>
+      <p class="bignum">${CONFIG.digits[s.id]}</p>
       ${s.nextText?`<p style="margin-top:14px;font-size:18px">${s.nextText}</p>`:''}<button class="nes-btn is-success btn" id="next">下一步</button>
       ${backupScanBox()}${npcBox(s,idx)}`);
     $('#next').onclick=()=>{ state.extra[s.id+'_arrive']=true; save(); render(); };
