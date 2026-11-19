@@ -4,6 +4,7 @@
 <input type="file" accept="image/*" id="a">
 <b>B　跟 App 一樣的寫法</b>
 <label class="b">上傳合照<input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,application/x-lily-photo" id="b" hidden></label>
+<label class="b" id="d">D　另一種上傳方式</label>
 <a class="b" href="t.html" target="_blank" rel="noopener">C　開新分頁再測</a>
 <div id="log"></div>
 <script>
@@ -15,5 +16,8 @@ for(const id of ['a','b']){ const i=document.getElementById(id);
   i.addEventListener('click',()=>log(id.toUpperCase()+' 按下'));
   i.addEventListener('cancel',()=>log(id.toUpperCase()+' 取消'));
   i.addEventListener('change',()=>log(id.toUpperCase()+' 選到 '+i.files.length+' 張')); }
+document.getElementById('d').onclick=async()=>{ if(!window.showOpenFilePicker){ log('D 這台不支援'); return; } log('D 按下');
+  try{ const hs=await showOpenFilePicker({types:[{description:'照片',accept:{'image/*':['.jpg','.jpeg','.png','.webp','.heic','.heif']}}],excludeAcceptAllOption:true}); const f=await hs[0].getFile(); log('D 選到 '+f.name+' '+Math.round(f.size/1024)+'KB'); }
+  catch(e){ log('D 取消 '+e.name); } };
 document.addEventListener('visibilitychange',()=>log(document.hidden?'離開頁面':'回到頁面'));
 </script></body></html>
