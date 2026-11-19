@@ -259,6 +259,7 @@
   .bkbtn{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:4900;width:52px;height:52px;border-radius:50%;border:4px solid #000;background:#eceef0;box-shadow:3px 3px 0 #000;display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer}   /* 右下角備援扳手鈕 */
   :root{--panel-sink:80px;--panel-h:min(464px,calc(100dvh - 16px))}   /* 視窗再往下沉 40px 到螢幕外（Ming 2026-11-06），沉下去的部分是內側留白，內容滑到底仍看得到 */   /* 兩個浮動視窗直接貼到螢幕最底（連 Home 條的位置也用掉），被擋到的內容在視窗裡用手指滑（Ming 2026-11-06） */
   #bkpanel{position:fixed;left:8px;right:8px;bottom:calc(0px - var(--panel-sink));z-index:5000;background:#fdeef3;height:var(--panel-h);overflow-y:auto;overscroll-behavior:contain;padding:0 14px calc(12px + var(--panel-sink) + env(safe-area-inset-bottom));margin:0}
+  .npc-jump{width:100%;font:inherit;font-size:16px;padding:6px 8px;border:3px solid #000;border-radius:0;background:#fff;color:#000}   /* 控制者跳頁選單 */
   #progpanel{position:fixed;left:8px;right:8px;bottom:calc(0px - var(--panel-sink));z-index:5000;background:#fdeef3;height:var(--panel-h);overflow-y:auto;overscroll-behavior:contain;padding:0 14px calc(12px + var(--panel-sink) + env(safe-area-inset-bottom));margin:0}   /* 左下、右下同一個高度：在最窄 320px 量進度視窗最長內容（s6 提示）＝434px，取 440；矮螢幕不超出畫面（Ming 2026-11-05） */
   .pg-pin{position:sticky;top:0;z-index:2;background:#fdeef3;margin:0 -14px;padding:12px 14px 6px}   /* 標題列＋站點列／按鈕列釘在視窗最上面，只有下面的內容捲（Ming 2026-11-06） */
   .pg-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
@@ -973,7 +974,45 @@ function pageBack(){
     else { stageStart(0); delete state.started; save(); render(); window.scrollTo(0,0); return; }   /* 第一關第一頁再上一頁 → 回歡迎頁「我準備好了！」，時間歸零（Ming 2026-11-18） */
     if(target){ restoreSnap(target); window.scrollTo(0,0); }
     else { const o=JSON.parse(keep); Object.keys(state).forEach(k=>delete state[k]); Object.assign(state,o); save(); render(); }
-  } finally { walking=false; }
+  } finally { walking=false; SND.page(); sfxPage(); }
+}
+/* 控制者跳頁（2026-11-19 Ming：測哪一頁都要慢慢按）：從第一關開頭用「下一頁」一路自動走到選的那頁；照片保留，走不到就退回原狀 */
+const JUMP_PAGES=[
+ ['開場',[['welcome','歡迎頁']]],
+ ['起點 · 麟光',[['s0:got','沒有車票'],['s0:photo','出發合照'],['s0:lit','點亮第一根'],['s0:go','貓毛帶路']]],
+ ['秘密任務一 · 排球',[['g1:play','排球'],['g1:number','秘密數字 1'],['g1:arrive','抵達科技大樓']]],
+ ['圖書館',[['s1:go','前往圖書館'],['s1:sit','圖書小精靈'],['s1:code','猜索書號'],['s1:code_ok','猜中索書號'],['s1:find','找書'],['s1:lit','點亮第二根'],['s1:depart','出發救胖貓']]],
+ ['秘密任務二 · 猜歌',[['g2:play','猜歌'],['g2:number','秘密數字 2'],['g2:arrive','抵達大安森林公園']]],
+ ['封印之地 · 胖貓',[['s3:scan','異次元觀測器'],['s3:summon','解除封印'],['s3:nextl','胖貓自由了'],['s3:lit','點亮第三根'],['s3:go','前往東門']]],
+ ['秘密任務三 · 翻牌',[['g3:play','翻翻牌'],['g3:number','秘密數字 3'],['g3:arrive','抵達東門']]],
+ ['東門 · 美食',[['s4:pre','挑好吃的'],['s4:photo','好吃合照'],['s4:lit','點亮第四根'],['s4:go','前往忠孝新生']]],
+ ['秘密任務四 · 超級莉莉',[['g4:play','超級莉莉'],['g4:number','秘密數字 4'],['g4:arrive','抵達忠孝新生']]],
+ ['忠孝新生 · IG 總編',[['s5d:ok','IG 總編'],['s5d:lit','點亮第五根'],['s5d:go','前往忠孝復興']]],
+ ['秘密任務五 · 合照',[['m1:photo','秘密任務合照'],['m1:number','秘密數字 5'],['m1:arrive','抵達忠孝復興']]],
+ ['忠孝復興 · 次元惡魔',[['s6:here','找虛假空間'],['s6:scan','偵查'],['s6:nextp','看破一張'],['s6:allclear','看破全部'],['s6:end','次元惡魔'],['s6:nextboss','惡魔被打敗'],['s6:lit','點亮第六根'],['s6:go','回麟光']]],
+ ['秘密任務六 · 拼圖',[['g5:play','拼圖'],['g5:number','秘密數字 6'],['g5:arrive','抵達麟光']]],
+ ['麟光 · 金色蠟燭',[['s7:inject','金色蠟燭'],['s7:gstart','注入魔力'],['s7:wished','許願'],['s7:gocode','煙霧數字'],['s7:next','置物櫃']]],
+ ['生日快樂',[['s9:photo','最後合照'],['s9:openletter','獲得一封信'],['s9:cert','信'],['s9:end','通關']]],
+];
+function jumpTo(pk){
+  if(walking || !pk) return;
+  walking=true; const keep=JSON.stringify(state); let ok=false;
+  try{
+    stageStart(0); delete state.extra.letterOpen; delete state.extra.endLetter;
+    if(pk==='welcome'){ delete state.started; save(); render(); keepPanels(); ok=true; return; }   /* 歡迎頁不經過 render 的面板更新，自己叫 */
+    state.extra.openLetter=true; if(!state.started) state.started=Date.now(); save(); render();
+    let same=0, last='';
+    for(let n=0;n<400;n++){
+      if(pageKey()===pk){ ok=true; break; }
+      if(permGate(CONFIG.stages[state.stage])){ ok=true; break; }   /* 權限還沒給：停在權限頁，給完再跳一次 */
+      const sig=pageKey()+walkKey(); if(sig===last){ if(++same>3) break; } else { same=0; last=sig; }
+      pageNext();
+    }
+  } catch(e){ ok=false; }
+  finally{
+    if(!ok){ const o=JSON.parse(keep); Object.keys(state).forEach(k=>delete state[k]); Object.assign(state,o); save(); render(); }
+    walking=false; window.scrollTo(0,0); SND.page(); sfxPage();
+  }
 }
 function pageNext(){
   const nx=document.getElementById('next'); if(nx){ nx.click(); return; }       // 過關畫面 → 前往下一站
@@ -1340,7 +1379,8 @@ function npcInner(s, idx){
     <button class="nes-btn btn small" id="npcback" ${idx===0?'disabled':''}>回上一關</button>
     <button class="nes-btn btn small" id="npcredo">這關重來</button>
     <button class="nes-btn is-error btn small" id="npcreset">全部重來</button>
-  </div></div>${s.id==='s7'&&state.extra.s7_step==='inject'&&!state.extra.s7_goldLit?'<p class="tag" id="gmeter" style="margin:8px 0 0">鏡頭讀數：按「開始注入魔力」後顯示</p>':''}${s.type==='game' && !state.extra[s.id+'_won']?'<button class="nes-btn is-warning btn small" id="npcwin" style="margin-top:8px;width:100%">小遊戲通關</button>':''}
+  </div><div class="row" style="margin-top:8px"><select id="npcjump" class="npc-jump">${(()=>{ const here=pageKey(); const has=JUMP_PAGES.some(g=>g[1].some(x=>x[0]===here));
+    return (has?'':'<option value="" selected>跳到…</option>')+JUMP_PAGES.map(([g,ps])=>`<optgroup label="${g}">${ps.map(([k,t])=>`<option value="${k}" ${k===here?'selected':''}>${t}</option>`).join('')}</optgroup>`).join(''); })()}</select></div></div>${s.id==='s7'&&state.extra.s7_step==='inject'&&!state.extra.s7_goldLit?'<p class="tag" id="gmeter" style="margin:8px 0 0">鏡頭讀數：按「開始注入魔力」後顯示</p>':''}${s.type==='game' && !state.extra[s.id+'_won']?'<button class="nes-btn is-warning btn small" id="npcwin" style="margin-top:8px;width:100%">小遊戲通關</button>':''}
   ${s.type==='firebadge' && !(state.extra[s.id+'_fb']||{}).summoned?`<div class="row" style="margin-top:8px"><button class="nes-btn is-warning btn small" id="npcL" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('winter')?'disabled':''}>完成左半</button><button class="nes-btn is-warning btn small" id="npcR" ${(state.extra[s.id+'_fb']||{got:[]}).got.includes('flower')?'disabled':''}>完成右半</button></div>`:''}
   ${s.type==='spot' && ['look','find'].includes((state.extra[s.id+'_quiz']||{step:'look'}).step)?'<button class="nes-btn is-warning btn small" id="npcphoto" style="margin-top:8px;width:100%">完成這張圖</button>':''}
   ${s.type==='final'&&!lockerNoSet()?`<button class="nes-btn is-warning btn small" id="npclk" style="margin-top:8px;width:100%">${state.extra.locker_bk?'改回 '+CONFIG.lockerNumber+' 號櫃':'改用備援櫃 '+CONFIG.lockerBackup+' 號'}</button>`:''}
@@ -1399,6 +1439,7 @@ function bindNpcPanel(s, idx){
     // 回上一關：這一關和要回去的那一關都清乾淨，從頭開始
     clearStage(s.id); state.stage=Math.max(0,idx-1); clearStage(CONFIG.stages[state.stage].id); save(); render(); };
   $('#npcreset').onclick=()=>{ if(confirm('全部重來？')) reset(); };
+  { const jp=$('#npcjump'); if(jp) jp.onchange=()=>jumpTo(jp.value); }
   const nc=$('#npcclose'); if(nc) nc.onclick=()=>{ /* 鎖起頁面：登出，下次點螺帽要重打密碼；按 ✕ 只是收起來不登出（Ming） */ state.npc=false; save(); const p=document.getElementById('bkpanel'); if(p) p.hidden=true; render(); };
 }
 /* 每關卡片底下的「機器壞了？輸入備援密碼」已移到右下角扳手鈕（2026-11-05 Ming）；呼叫處保留、這裡回空 */
@@ -2043,7 +2084,7 @@ function render(){
   if(gameCleanup){ gameCleanup(); gameCleanup=null; }
   if(state.done[s.id] && s.type!=='final' && !((s.type==='game'||s.type==='firebadge'||s.type==='photo_task') && !state.extra[s.id+'_left']) && !s.finalPhoto){ state.stage=Math.min(idx+1, CONFIG.stages.length-1); save(); return render(); }
   const r = { photo_task:renderPhotoTask, firebadge:renderFireBadge, game:renderGame, library:renderLibrary, ticket_puzzle:renderTicketPuzzle, spot:renderSpot, gps_qr:renderGpsQr, ar:renderAR, compass_color:renderCompassColor, food:renderFood, sound_puzzle:renderSoundPuzzle, rainbow:renderRainbow, director:renderDirector, final:renderFinal }[s.type];
-  const y=window.scrollY; r(s, idx); replayBar(); progButton(); backupButton(); keepPanels(); SND.page(); sfxPage();
+  const y=window.scrollY; r(s, idx); replayBar(); progButton(); backupButton(); keepPanels(); if(!walking){ SND.page(); sfxPage(); }   /* 上一頁／跳頁一路自動走的時候不放，走完再放 */
   window.scrollTo(0, Math.min(y, Math.max(0, document.documentElement.scrollHeight-window.innerHeight)));   // 按按鈕換頁後維持原本的捲動位置（Ming）；新頁比較短就停在最底
 }
 
