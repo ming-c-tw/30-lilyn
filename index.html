@@ -1411,7 +1411,7 @@ function clearStage(id){
   const st=CONFIG.stages.find(x=>x.id===id); if(st && st.type==='director') delete state.extra.birthdayCard;
 }
 /* 上傳照片一律從相簿選：列出明確的圖片格式（不用 image/*），Android 會直接開相簿，不會跳出相機選項（Ming：開相機再關掉會卡住） */
-const PHOTO_ACCEPT='image/jpeg,image/png,image/webp,image/heic,image/heif'+(/Android/i.test(navigator.userAgent)?',application/x-lily-photo':'');   /* 2026-11-19 Ming 錄影：Android 只收圖片類型時 Chrome 會開系統「相片」選擇器，按返回取消後整個分頁的上傳都會卡死（重新載入也沒用）。多一個假的非圖片類型，Chrome 就改開一般選檔畫面（仍只列圖片）；iPhone 不加 */
+const PHOTO_ACCEPT='image/jpeg,image/png,image/webp,image/heic,image/heif';   /* 2026-11-19：「選照片按返回後上傳卡死」是 Chrome 149 的 bug（測試頁純 input 也中，更新到 157 就好），App 這邊繞不過去也不用繞；曾加假類型改開「相機／Files」選單，沒用，已拿掉 */
 function savePhoto(key, theme, url){ photoAdj=null; SND.sfx('shutter'); state.extra.strip = state.extra.strip||{}; state.extra.strip[key]={theme,url,ox:.5,oy:.5}; save(); }
 /* 照片框：背景圖 cover＋位置百分比（跟拍貼 drawImage 的裁法一樣），可拖曳 */
 let photoAdj=null;   // 正在調整哪一張照片（key）；換頁或重畫別張就自動關掉
