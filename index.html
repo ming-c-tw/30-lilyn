@@ -1517,8 +1517,8 @@ function arrivePage(s, idx){                   // 「已抵達 X」頁：大紅�
   $('#next').onclick=()=>{ state.extra[s.id+'_left']=true; state.stage=Math.min(idx+1,CONFIG.stages.length-1); save(); render(); };
   bindBackupScan(s); bindNpc(s,idx);
 }
-const TRIPOD_ROWS=['............', '...LLLLLL...', '...LKLLLL...', '...LLLLLL...', '...LKLLLL...', '...LLLLLL...', '...LLLLLL...', '...LLLLLL...', '...LLLLLL...', '...LLLLLL...', '....KKKK....', '.....KK.....', '.....KK.....', '....KKKK....', '...K.KK.K...', '..K..KK..K..', '.K...KK...K.'];   // 架在三腳架上的手機（背面朝外：沒有邊框、兩顆黑色鏡頭）
-const TRIPOD_PAL={K:'#222',G:'#5a5a64',L:'#3a78c4',W:'#dcf0ff',R:'#e63946'};
+const TRIPOD_ROWS=['............', '...LLLLLL...', '...LKLLLL...', '...LLLKLL...', '...LKLLLL...', '...LLLLLL...', '...LLLLLL...', '...LLLLLL...', '...LLLLLL...', '...LLLLLL...', '....KKKK....', '.....KK.....', '.....KK.....', '....KKKK....', '...K.KK.K...', '..K..KK..K..', '.K...KK...K.'];   // 架在三腳架上的手機（背面朝外：沒有邊框、三顆黑色鏡頭，2026-11-23 Ming 改紫灰色）
+const TRIPOD_PAL={K:'#222',G:'#5a5a64',L:'#8e84a3',W:'#dcf0ff',R:'#e63946'};
 /* 合照頁：莉莉和墨墨站在一起，前面架一台相機（還沒上傳照片時顯示） */
 function poseHTML(){ const {LILY,LILY_PAL,MOMO,MOMO_PAL}=window.MG_SPRITES;
   return `<div class="pose" aria-label="莉莉和墨墨準備合照">${spriteSVG(LILY, LILY_PAL, '84px')}${spriteSVG(MOMO, MOMO_PAL, '84px')}<span class="pose-gap"></span>${spriteSVG(TRIPOD_ROWS, TRIPOD_PAL, '84px')}</div>`; }
