@@ -2785,13 +2785,14 @@ function renderBoss(s, idx, d, k){
   let backT=0, hitT=0;
   fist.onclick=()=>{ if(d.boss!=='fight') return; SND.sfx('punch'); punchAt=performance.now();
     d.hits=(d.hits||0)+1; keep(); const last=d.hits>=MAX, exileNow=!last && d.hits%30===0;   // 第 30、60 下：次元放逐
-    cat.getAnimations().forEach(a=>a.cancel()); clearTimeout(backT); clearTimeout(hitT);
+    cat.getAnimations().forEach(a=>a.cancel()); clearTimeout(backT);   /* 不清 hitT：連點時每一拳都要打到惡魔（Ming 2026-11-25：連點太快被揍圖來不及出現） */
     cat.innerHTML=punch;
     // 拳頭在出拳圖的右上（第 31.5 欄、第 9.5 列）→ 算出要衝多遠才會打到惡魔本體
     const cr=cat.querySelector('svg').getBoundingClientRect(), dr=devil.getBoundingClientRect();
     const dx=(dr.left+dr.width*.49)-(cr.left+cr.width*31.5/34), dy=(dr.top+dr.height*.59)-(cr.top+cr.height*9.5/28);
     cat.animate([{transform:'translate(0,0)'},{transform:`translate(${dx}px,${dy}px)`,offset:.4},{transform:`translate(${dx*.94}px,${dy*.94}px)`,offset:.62},{transform:'translate(0,0)'}],{duration:360,easing:'ease-out'});
-    hitT=setTimeout(()=>{ fade(); devil.classList.remove('hit'); void devil.offsetWidth; devil.classList.add('hit');
+    hitT=setTimeout(()=>{ if(!document.body.contains(devil)) return; fade();
+      const now=performance.now(); if(!devil.classList.contains('hit') || now-(devil._hs||0)>=160){ devil.classList.remove('hit'); void devil.offsetWidth; devil.classList.add('hit'); devil._hs=now; }   /* 160ms 內連打就只延長被揍圖、不重播閃白，免得一直狂閃 */
       clearTimeout(devil._ht); devil._ht=setTimeout(()=>devil.classList.remove('hit'),420);
       if(last){ devil.classList.remove('hit'); cat.innerHTML=back; startRub(); }
       else if(exileNow) T(300,()=>{ if(d.boss==='fight') startExile(); }); },145);
