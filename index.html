@@ -965,6 +965,9 @@ function pageBack(){
   walking=true;
   const keep=JSON.stringify(state), here=walkKey(), i=state.stage;
   try{
+    if(document.getElementById('permgo')){   /* 權限頁上一頁：開場那次回歡迎頁；半路的回上一關最後一頁 */
+      if(!state.extra.permsDone || i===0){ stageStart(0); delete state.started; save(); render(); window.scrollTo(0,0); return; }
+      const prev=walkStage(i-1); restoreSnap(prev[prev.length-1].sn); window.scrollTo(0,0); return; }
     const pages=walkStage(i); const pos=pages.map(p=>p.key).lastIndexOf(here);
     let target=null;
     if(pos>0) target=pages[pos-1].sn;
@@ -1018,6 +1021,7 @@ function pageNext(){
   const nl=document.getElementById('nextl'); if(nl){ nl.click(); return; }     // 點亮蠟燭頁 → 目的地
   const wn=document.getElementById('won'); if(wn && wn.style.display!=='none'){ wn.click(); return; }   // 小遊戲打贏 → 看秘密數字
   const go=document.getElementById('go'); if(go){ go.click(); return; }          // 開場
+  const ps=document.getElementById('permskip'); if(ps){ ps.click(); return; }    // 權限頁 → 略過權限
   if(document.getElementById('fc') && !document.getElementById('gocode')){
     if(state.extra.s7_step==='wish'){ const dm=document.querySelector('.wish-dim'); if(dm) dm.remove(); state.extra.s7_step='smoke'; save(); render(); return; }   /* 許願頁（七彩蠟燭、四周變暗）：要把暗幕收掉、步驟記成 smoke，不然畫面會一直黑著（Ming 2026-11-18） */
     renderSmoke(); setTimeout(recordPage,0); return; }   // 吹蠟燭 → 煙霧櫃號（跳過願望鈕）
@@ -2036,7 +2040,7 @@ function sfxPage(){ const pk=pageKey(); if(pk===lastSfxPk) return; lastSfxPk=pk;
 /* 權限閘門：開場「我準備好了！」後先把整趟要用的權限一次開好；之後每切到需要權限的頁，先確認再畫內容（Ming 2026-11-10） */
 const PERMS={
   camera:{label:'相機', query:'camera', ask:async()=>{ const ms=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false}); ms.getTracks().forEach(t=>t.stop()); }},
-  microphone:{label:'麥克風', query:'microphone', ask:async()=>{ const ms=await navigator.mediaDevices.getUserMedia({audio:true,video:false}); ms.getTracks().forEach(t=>t.stop()); }},
+  microphone:{label:'麥克風', query:'microphone', ask:async()=>{ micSession(true); try{ const ms=await navigator.mediaDevices.getUserMedia({audio:true,video:false}); ms.getTracks().forEach(t=>t.stop()); } finally { micSession(false); } }},
   motion:{label:'動作感應', query:null, ask:async()=>{ if(typeof DeviceMotionEvent!=='undefined' && DeviceMotionEvent.requestPermission){ const r=await DeviceMotionEvent.requestPermission(); if(r!=='granted') throw new Error(r); } }},
 };
 const permOK={};
@@ -2064,7 +2068,7 @@ function renderPermGate(need){
     const g=$('#permgo'); g.disabled=!all; g.className='nes-btn btn'+(all?' is-success':''); };
   main.querySelectorAll('[data-p]').forEach(b=>b.onclick=async()=>{ const n=b.dataset.p; b.classList.remove('is-error');
     try{ await PERMS[n].ask(); permOK[n]=true; SND.sfx('correct'); }catch(e){ b.classList.add('is-error'); SND.sfx('wrong'); } paint(); });
-  $('#permgo').onclick=done;
+  $('#permgo').onclick=done; backupButton(); keepPanels();   /* 權限頁也要有右下控制台（Ming 2026-11-26：卡住時不能上一頁／下一頁） */
   const sk=$('#permskip'); if(sk) sk.onclick=()=>{ need.forEach(n=>permOK[n]=true); done(); };
   paint();
   Promise.all(need.map(permState)).then(()=>{ if(!main.querySelector('#permgo')) return; paint(); if(need.every(n=>permOK[n])) done(); });   // 之前已經給過：直接進
@@ -2996,9 +3000,11 @@ let actx=null;
 /* 吹蠟燭的麥克風（Ming 2026-11-11：剛吹跟吹完背景音樂會斷一下）：iOS 開／關麥克風都會切換音訊模式、打斷正在播的聲音。
    改成：分析用 SND 同一個 AudioContext（不再另開一個）；開麥克風後立刻把音樂叫醒；吹完不關麥克風，離開終點關（換到下一關、音樂本來就會換）才關 */
 let micKeep=null;
+/* iOS 音訊模式設成 playback（只播放）時要麥克風會直接被拒、權限鈕變紅（Ming 2026-11-26）→ 要麥克風前切 play-and-record，關掉再切回 */
+function micSession(on){ try{ if(navigator.audioSession) navigator.audioSession.type=on?'play-and-record':'playback'; }catch(e){} }
 async function openMic(){ if(micKeep && micKeep.getTracks().some(t=>t.readyState==='live')) return micKeep;
-  micKeep=await navigator.mediaDevices.getUserMedia({audio:true,video:false}); SND.wake(); setTimeout(SND.wake,300); setTimeout(SND.wake,1000); return micKeep; }
-function closeMic(){ if(!micKeep) return; micKeep.getTracks().forEach(t=>t.stop()); micKeep=null; setTimeout(SND.wake,300); }
+  micSession(true); try{ micKeep=await navigator.mediaDevices.getUserMedia({audio:true,video:false}); }catch(e){ micSession(false); throw e; } SND.wake(); setTimeout(SND.wake,300); setTimeout(SND.wake,1000); return micKeep; }
+function closeMic(){ if(!micKeep) return; micKeep.getTracks().forEach(t=>t.stop()); micKeep=null; micSession(false); setTimeout(SND.wake,300); }
 function playTone(i){ // 示意音：正式版換成現場錄的到站音 audio 檔
   try{ actx = actx || new (window.AudioContext||window.webkitAudioContext)(); const seqs=[[523,659,784],[659,523,440,659],[784,784,659]]; let t=actx.currentTime; seqs[i].forEach(f=>{ const o=actx.createOscillator(), g=actx.createGain(); o.type='square'; o.frequency.value=f; o.connect(g); g.connect(actx.destination); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.2,t+.02); g.gain.exponentialRampToValueAtTime(.0001,t+.28); o.start(t); o.stop(t+.3); t+=.32; }); }catch(e){}
 }
